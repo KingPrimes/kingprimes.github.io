@@ -5,9 +5,9 @@
 # Refer to the theme docs for more details about each of these parameters.
 # https://blowfish.page/docs/configuration/#theme-parameters
 # 主题使用的颜色方案。合法的值有： blowfish （默认）、avocado、fire、ocean、forest、princess、neon、bloody、terminal、marvel、noir、autumn、congo 和 slate
-colorScheme = "blowfish"
+colorScheme = "avocado"
 # 默认的主题外观，可以是 light 或者 dark。
-defaultAppearance = "light" # valid options: light or dark
+defaultAppearance = "dark" # valid options: light or dark
 # 主题外观是否根据访问者操作系统的偏好自动切换。设置为 false 会强制网站始终使用 defaultAppearance。
 autoSwitchAppearance = true
 # 是否开启网站的搜索功能，设为 true 即为启用。注意，搜索功能依赖于站点设置中的 outputs.home 设置，请确保此值配置正确。
@@ -42,7 +42,7 @@ forgejoDefaultServer = "https://v8.next.forgejo.org"
 
 # 定义整个站点的页头的布局，支持的参数有 basic、fixed、fixed-fill、and fixed-fill-blur.
 [header]
-  layout = "basic" # valid options: basic, fixed, fixed-fill, fixed-gradient, fixed-fill-blur
+  layout = "fixed-gradient" # valid options: basic, fixed, fixed-fill, fixed-gradient, fixed-fill-blur
 # 页脚
 [footer]
   # 显示/隐藏页面底部菜单，该菜单可以在 config/_default/menus.en.toml 文件中的 [[footer]] 部分进行配置。
@@ -63,11 +63,11 @@ forgejoDefaultServer = "https://v8.next.forgejo.org"
   # 在 hero 和 card 布局中使用的图像。图片可以来自于本地的资源目录，也可以是外部图像 URL。参考 主页布局 来获取更多信息。
   homepageImage = "https://img.picgo.net/2024/11/20/6640a959e9dec28ba14780b8df556.jpg" # used in: hero, and card
   # 是否在主页展示最新文章列表。
-  showRecent = false
+  showRecent = true
   # 如果将 showRecent 设置为 true，此参数用于显示多少篇文章。如果没有设置或者为0，则默认显示5篇文章。
-  showRecentItems = 0
+  showRecentItems = 4
   # 是否在主页底部添加“显示更多”，该链接会降会用带到一个预定义位置。
-  showMoreLink = false
+  showMoreLink = true
   # 更多按钮所指向的位置。
   showMoreLinkDest = "/posts/"
   # 将列表展示为卡片容器。
@@ -175,7 +175,7 @@ forgejoDefaultServer = "https://v8.next.forgejo.org"
 # 网站地图
 [sitemap]
   # 从生成的 /sitemap.xml 文件中排除的内容。 具体的配置请参考Hugo 文档。
-  excludedKinds = ["taxonomy", "term"]
+  # excludedKinds = ["taxonomy", "term"]
 
 # 分类法
 [taxonomy]
