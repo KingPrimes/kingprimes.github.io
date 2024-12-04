@@ -1,0 +1,263 @@
+# -- Theme Options --
+# These options control how the theme functions and allow you to
+# customise the display of your website.
+#
+# Refer to the theme docs for more details about each of these parameters.
+# https://blowfish.page/docs/configuration/#theme-parameters
+# 主题使用的颜色方案。合法的值有： blowfish （默认）、avocado、fire、ocean、forest、princess、neon、bloody、terminal、marvel、noir、autumn、congo 和 slate
+colorScheme = "blowfish"
+# 默认的主题外观，可以是 light 或者 dark。
+defaultAppearance = "light" # valid options: light or dark
+# 主题外观是否根据访问者操作系统的偏好自动切换。设置为 false 会强制网站始终使用 defaultAppearance。
+autoSwitchAppearance = true
+# 是否开启网站的搜索功能，设为 true 即为启用。注意，搜索功能依赖于站点设置中的 outputs.home 设置，请确保此值配置正确。
+enableSearch = true
+# 是否可以将<code>代码块复制到剪贴板。想要使用代码复制功能，需要将 highlight.noClasses 参数设置为 false。 阅读 其他配置文件 以获取更多信息。
+enableCodeCopy = false
+
+replyByEmail = false
+# # 指定最近文章中应该展示的模块。 如果没有指定，则使用文章数量最多的板块。
+# mainSections = ["section1", "section2"]
+# 用于支持搜索引擎爬虫如何处理你的网站。如果设置了该值，它将被输出在页面头部。具体的参数值请参考 Google 文档。
+# robots = ""
+
+# 禁用图片上所有图片的调整大小和优化功能。
+disableImageOptimization = false
+# 禁用文本类型的标题，对基于 logo 的标题很有用。
+disableTextInHeader = false
+# backgroundImageWidth = 1200
+# 默认背景图
+# defaultBackgroundImage = "https://img.picgo.net/2024/11/20/6640a959e9dec28ba14780b8df556.jpg" # used as default for background images 
+# 用作所有文章中特色图片的默认值
+# defaultFeaturedImage = "IMAGE.jpg" # used as default for featured images in all articles
+# 当菜单被选择时，标记主菜单中的菜单项
+highlightCurrentMenuArea = true
+# 开启智能目录，视图中的项目将会被高亮显示。
+smartTOC = true
+# 当开启智能目录，如果目录级别不再被聚焦时，将会隐藏更深层次的目录。
+smartTOCHideUnfocusedChildren = true
+
+giteaDefaultServer = "https://git.fsfe.org"
+forgejoDefaultServer = "https://v8.next.forgejo.org"
+
+# 定义整个站点的页头的布局，支持的参数有 basic、fixed、fixed-fill、and fixed-fill-blur.
+[header]
+  layout = "basic" # valid options: basic, fixed, fixed-fill, fixed-gradient, fixed-fill-blur
+# 页脚
+[footer]
+  # 显示/隐藏页面底部菜单，该菜单可以在 config/_default/menus.en.toml 文件中的 [[footer]] 部分进行配置。
+  showMenu = true
+  # 是否在底部显示 copyright 版权信息。请注意，如果你想定制，可以在语言配置中使用 copyright 参数。
+  showCopyright = true
+  # 是否在网站底部中显示"powered by" 的主题归属信息。如果禁用此参数，请考虑在你网站的其他位置设置主题归属信息，例如在关于页面。
+  showThemeAttribution = true
+  # 是否在也页面底部显示外观切换器。浏览器的本地存储会缓存访问者的偏好设置。
+  showAppearanceSwitcher = true
+  # 当设置为 true 时，显示返回顶部的箭头按钮。
+  showScrollToTop = true
+
+# 主页
+[homepage]
+  # 首页布局参数。合法的参数值有： page、profile、hero、card、background 或 custom。当你设置为 custom 时，你必须创建 /layouts/partials/home/custom.html 文件以定制自己的布局。参考主页布局来获取更多信息。
+  layout = "background" # valid options: page, profile, hero, card, background, custom
+  # 在 hero 和 card 布局中使用的图像。图片可以来自于本地的资源目录，也可以是外部图像 URL。参考 主页布局 来获取更多信息。
+  homepageImage = "https://img.picgo.net/2024/11/20/6640a959e9dec28ba14780b8df556.jpg" # used in: hero, and card
+  # 是否在主页展示最新文章列表。
+  showRecent = false
+  # 如果将 showRecent 设置为 true，此参数用于显示多少篇文章。如果没有设置或者为0，则默认显示5篇文章。
+  showRecentItems = 0
+  # 是否在主页底部添加“显示更多”，该链接会降会用带到一个预定义位置。
+  showMoreLink = false
+  # 更多按钮所指向的位置。
+  showMoreLinkDest = "/posts/"
+  # 将列表展示为卡片容器。
+  cardView = true
+  # 增强列表中卡片的宽度，使其可以占据可用的全部宽度。
+  cardViewScreenWidth = true
+  # 向下滚动主页时，是否模糊背景图。
+  layoutBackgroundBlur = true # only used when layout equals background
+# 文章页
+[article]
+  # 是否显示日期。
+  showDate = true
+  # 是否显示文章阅读量。这需要集成 firebase ，具体可以看下面。
+  showViews = false
+  # 是否显示文章点赞量。这需要集成 firebase ，具体可以看下面。
+  showLikes = false
+  # 是否在文章内显示日期，不影响文章列表或卡片页面的日期显示。
+  showDateOnlyInArticle = true
+  # 是否展示文章的更新日期。
+  showDateUpdated = true
+  # 是否在文章底部显示作者框。
+  showAuthor = true
+  # 作者框显示在每页的底部而不是顶部。
+  # showAuthorBottom = false
+  # 缩略图是否会在每个页面中作为 hero 图像显示。
+  showHero = false
+  # hero 图像的展示样式，可选的参数值有：basic、big、background、thumbAndBackground。
+  # heroStyle = "basic" # valid options: basic, big, background, thumbAndBackground
+  # 向下滚动文章页时，是否模糊背景图。
+  layoutBackgroundBlur = true # only used when heroStyle equals background or thumbAndBackground
+  # 在标题和正文之间添加空白区域间隔。
+  layoutBackgroundHeaderSpace = true # only used when heroStyle equals background
+  # 是否在标题栏显示面包屑导航。
+  showBreadcrumbs = false
+  # 当使用 --buildDrafts 构建网站时，是否在文章旁边显示草稿。
+  showDraftLabel = true
+  # 是否展示编辑文章的链接。
+  showEdit = false
+  # 当激活 article.showEdit 参数，此参数用于设置文章的编辑链接。
+  # editURL = "https://github.com/username/repo/"
+  # 当激活 article.showEdit 参数，是否将文章的路径附加到 article.editURL 参数所设置的 URL 后面。
+  editAppendPath = true
+  # 是否默认显示打开系列模块、
+  seriesOpened = false
+  # 是否在文章标题旁添加锚点。
+  showHeadingAnchors = true
+  # 是否在文章末尾展示上一篇/下一篇的文章链接。
+  showPagination = true
+  # 是否翻转下一篇/上一篇文章链接的方向。
+  invertPagination = false
+  # 是否展示文章的阅读时间。如果你的语言包含 CJK 语言，需要在 config.toml 中开启 hasCJKLanguage 参数。
+  showReadingTime = true
+  # 是否展示文章的目录
+  showTableOfContents = false
+  # 为文章显示相关内容。如果你想要启用此功能，请检查 config.toml 文件并复制所有 related 相关的参数，如果你想自定义，也可以对 config.toml 添加额外配置。更多内容请参考 Hugo 文档 中关于 related 的内容。
+  showRelatedContent = true
+  # 如果启用showRelatedContent，则限制显示相关文章的数量。
+  relatedContentLimit = 3
+  # 是否显示文章的分类或标签信息。
+  showTaxonomies = true
+  # 是否在文章或列表中显示 authors 分类。这需要开启多个作者 multiple authors 和 authors 分类法。 请阅读 这个网页 来获取更多内容。
+  showAuthorsBadges = true
+  # 是否显示文章的字数。 如果你的语言属于 CJK 语言，需要在 config.toml 中开启 hasCJKLanguage 参数。
+  showWordCount = true
+  # 是否在文章末尾添加 评论部分。
+  showComments = true
+  # 在文章末尾显示的分享链接。如果没有提供或设置为 false，则不会显示任何分享链接。可用的值包括：“linkedin”、“bluesky”、“mastodon”、“twitter”、“reddit”、“pinterest”、“facebook”、“email”、“whatsapp” 和 “telegram”
+  # sharingLinks = [ "linkedin", "twitter", "bluesky", "mastodon", "reddit", "pinterest", "facebook", "email", "whatsapp", "telegram"]
+  # 指定是否激活文章阅读的禅模式，即隐藏常规的界面元素。
+  showZenMode = false
+
+# 列表页
+[list]
+  # 缩略图是否会在每个页面中作为 hero 图像显示。
+  showHero = false
+  # hero 图像的展示样式，可选的参数值有：basic、big、background、thumbAndBackground。
+  # heroStyle = "background" # valid options: basic, big, background, thumbAndBackground
+  # 是否在标题栏显示面包屑导航。
+  layoutBackgroundBlur = true # only used when heroStyle equals background or thumbAndBackground
+  # 向下滚动列表页时，是否模糊背景图。
+  layoutBackgroundHeaderSpace = true # only used when heroStyle equals background
+  # 在标题和正文之间添加空白区域间隔。
+  showBreadcrumbs = false
+  # 是否展示目录。
+  showSummary = false
+  # 是否在列表页显示文章摘要。如果在扉页参数中没有提供摘要，那么将会使用站点配置 中的 summaryLength 参数自动生成一个。
+  showViews = false
+  # 是否显示文章阅读量。这需要集成 firebase ，具体可以看下面。
+  showLikes = false
+  # 是否显示文章点赞量。这需要集成 firebase ，具体可以看下面。
+  showTableOfContents = false
+  # 是否将每个文章显示为卡片或简单的内联文本。
+  showCards = false
+  #
+  orderByWeight = false
+  # 是否根据年做聚合。
+  groupByYear = true
+  # 将列表展示为卡片容器。
+  cardView = false
+  # 增强列表中卡片的宽度，使其可以占据可用的全部宽度。
+  cardViewScreenWidth = false
+  # 将项目宽度限制为 prose 以提高可读性。在没有 featurn 图片的时候非常有用。
+  constrainItemsWidth = false
+
+# 网站地图
+[sitemap]
+  # 从生成的 /sitemap.xml 文件中排除的内容。 具体的配置请参考Hugo 文档。
+  excludedKinds = ["taxonomy", "term"]
+
+# 分类法
+[taxonomy]
+  # 是否在分类列表总显示对应的数量。
+  showTermCount = true
+  # 缩略图是否会在每个页面中作为 hero 图像显示。
+  showHero = false
+  # hero 图像的展示样式，可选的参数值有：basic、big、background、thumbAndBackground。
+  # heroStyle = "background" # valid options: basic, big, background, thumbAndBackground
+  # 是否在标题栏显示面包屑导航。
+  showBreadcrumbs = false
+  # 是否显示文章阅读量。这需要集成 firebase ，具体可以看下面。
+  showViews = false
+  # 是否显示文章点赞量。这需要集成 firebase ，具体可以看下面。
+  showLikes = false
+  # 是否显示目录。
+  showTableOfContents = false
+  # 将列表展示为卡片容器。
+  cardView = false
+
+# 术语
+[term]
+  # 缩略图是否会在每个页面中作为 hero 图像显示。
+  showHero = false
+  # hero 图像的展示样式，可选的参数值有： basic、big、background、thumbAndBackground。
+  # heroStyle = "background" # valid options: basic, big, background, thumbAndBackground
+  # 是否在标题栏显示面包屑导航。
+  showBreadcrumbs = false
+  # 是否显示文章阅读量。这需要集成 firebase ，具体可以看下面。
+  showViews = false
+  # 是否显示文章点赞量。这需要集成 firebase ，具体可以看下面。
+  showLikes = false
+  # 是否显示目录。
+  showTableOfContents = true
+  # 是否根据年做聚合。
+  groupByYear = false
+  # 将列表展示为卡片容器。
+  cardView = false
+  # 增强列表中卡片的宽度，使其可以占据可用的全部宽度。
+  cardViewScreenWidth = false
+
+# Firebase(Firebase 平台)
+[firebase]
+  # Firebase apiKey， 与 Firebase 集成的必填参数。了解如何将 Firebase 集成进 Blowfish 请参考 https://blowfish.page/zh-cn/docs/firebase-views/
+  # apiKey = "XXXXXX"
+  # authDomain = "XXXXXX"
+  # projectId = "XXXXXX"
+  # storageBucket = "XXXXXX"
+  # messagingSenderId = "XXXXXX"
+  # appId = "XXXXXX"
+  # measurementId = "XXXXXX"
+
+[fathomAnalytics]
+  # site = "ABC12345"
+  # domain = "llama.yoursite.com"
+
+# Umami Analytics(一种网站分析工具)
+[umamiAnalytics]
+  # websiteid = "ABC12345"
+  # domain = "llama.yoursite.com"
+  dataDomains = "kingprimes.github.io"
+  # scriptName = ""
+  # enableTrackEvent = true
+
+[selineAnalytics]
+  # token = "XXXXXX"
+  # enableTrackEvent = true
+
+[buymeacoffee]
+  # identifier = ""
+  # globalWidget = true
+  # globalWidgetMessage = "Hello"
+  # globalWidgetColor = "#FFDD00"
+  # globalWidgetPosition = "Right"
+
+[verification]
+  # google = ""
+  # bing = ""
+  # pinterest = ""
+  # yandex = ""
+  # fediverse = ""
+
+[rssnext]
+  # feedId = ""
+  # userId = ""
