@@ -67,9 +67,9 @@ forgejoDefaultServer = "https://v8.next.forgejo.org"
   # 如果将 showRecent 设置为 true，此参数用于显示多少篇文章。如果没有设置或者为0，则默认显示5篇文章。
   showRecentItems = 4
   # 是否在主页底部添加“显示更多”，该链接会降会用带到一个预定义位置。
-  showMoreLink = true
+  # showMoreLink = true
   # 更多按钮所指向的位置。
-  showMoreLinkDest = "/posts/"
+  # showMoreLinkDest = "/posts/"
   # 将列表展示为卡片容器。
   cardView = true
   # 增强列表中卡片的宽度，使其可以占据可用的全部宽度。

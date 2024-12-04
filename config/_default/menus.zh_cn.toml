@@ -1,5 +1,5 @@
 [[main]]
-name = "文章"
+name = "帖子"
 pageRef = "posts"
 weight = 1
 
