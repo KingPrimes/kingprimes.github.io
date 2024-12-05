@@ -1,0 +1,10 @@
+github.com/hugo-fixit/FixIt v0.3.16 h1:ZffekHaqk/fJyuiagCdj1IjPczh5Dd57nnPZKSFWT6Q=
+github.com/hugo-fixit/FixIt v0.3.16/go.mod h1:3XIRedrqakO7/a4ZnhE46haMRF8HgsT0N0B5j5D2iRU=
+github.com/hugo-fixit/fixit-bundle v1.3.1 h1:gXjWVAoWoL1jWn58yHQ+fkzIgL2vKHzpJgHiCZZDO+c=
+github.com/hugo-fixit/fixit-bundle v1.3.1/go.mod h1:dq/Qpstv2oRDoqinp7ZrPZSU24an4MNa7lMKh1uGy1w=
+github.com/hugo-fixit/hugo-json-feed v1.0.2 h1:xZABGHuoX/u0hnoF5AoP7ane7l9T7UNmlOAiFdWvBvA=
+github.com/hugo-fixit/hugo-json-feed v1.0.2/go.mod h1:ystvqmSnWdkU0aBybKKNztj8P1ViY6AhMaK/bsBL9uw=
+github.com/hugo-fixit/shortcode-mmt-netease v1.1.1 h1:ipXnqQ2mV57kEQ5CnslcVRQE3kOCZIsNVH+Uu2gMVaU=
+github.com/hugo-fixit/shortcode-mmt-netease v1.1.1/go.mod h1:uCRIQhOWONAycwsepEcQ+9ePRAeCQuxoCSWfctH1DI8=
+github.com/hugo-fixit/shortcode-rewards v1.0.4 h1:62qCmcGvAJf+qa+8ofRX6jwMUXo6Q4+PQvlOtu0ZGBA=
+github.com/hugo-fixit/shortcode-rewards v1.0.4/go.mod h1:+PA7wjtBgkQsI8s8bPOMJ6bNNfExUIWz4AxTearzZgw=

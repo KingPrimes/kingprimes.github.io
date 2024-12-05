@@ -1,0 +1,14 @@
+message: "> 本页面记录了自「老王的冒险之旅」博客创建以来，所有的打赏记录。感谢大家的支持！❤️"
+currency: CNY
+symbol: ¥
+logs:
+#- date: 2018-09-28
+# sponsor: "francs"
+# money: 50
+# origin: 支付宝
+# remark: "备注"
+  - date: 2018-09-28
+    sponsor: "测试数据"
+    money: 0
+    origin: 支付宝
+    remark: "备注"

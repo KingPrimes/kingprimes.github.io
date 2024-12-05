@@ -1,3 +1,29 @@
+# -------------------------------------------------------------------------------------
+# Modules Configuration
+# See: https://gohugo.io/hugo-modules/configuration/#module-config-imports
+# -------------------------------------------------------------------------------------
 [hugoVersion]
-  extended = false
-  min = "0.87.0"
+    extended = true
+    min = "0.134.1"
+[[imports]]
+    path = "github.com/hugo-fixit/FixIt"
+[[imports]]
+    path = "github.com/hugo-fixit/hugo-json-feed"
+[[imports]]
+    path = "github.com/hugo-fixit/shortcode-rewards"
+[[imports]]
+    path = "github.com/hugo-fixit/shortcode-mmt-netease"
+[[imports]]
+    path = "github.com/hugo-fixit/fixit-bundle"
+[[imports]]
+    path = "github.com/hugo-fixit/component-projects"
+[[imports]]
+    path = "github.com/hugo-fixit/cmpt-flyfish"
+[[imports]]
+    path = "github.com/hugo-fixit/cmpt-mdevtools"
+[[imports]]
+    path = "github.com/hugo-fixit/cmpt-translate"
+[[imports]]
+    path = "github.com/hugo-fixit/shortcode-caniuse"
+[[imports]]
+    path = "github.com/hugo-fixit/shortcode-docs-bookmark"
