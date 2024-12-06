@@ -13,7 +13,7 @@
 # website title
 title = "老王的冒险之旅"
 # Hostname (and path) to the root
-baseURL = "https://kingprimes.us.kg"
+baseURL = "https://kingprimes.github.io"
 # theme list
 theme = ["FixIt", "shortcode-mmt-netease","plugins-live2d"] # enable in your site config file
 # determines default content language ["en", "zh-cn", "fr", "pl", ...]
