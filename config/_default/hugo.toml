@@ -15,7 +15,7 @@ title = "老王的冒险之旅"
 # Hostname (and path) to the root
 baseURL = "https://kingprimes.github.io"
 # theme list
-theme = ["FixIt", "shortcode-mmt-netease","plugins-live2d"] # enable in your site config file
+# theme = ["plugins-live2d"] # enable in your site config file
 # determines default content language ["en", "zh-cn", "fr", "pl", ...]
 defaultContentLanguage = "zh-cn"
 # language code ["en", "zh-CN", "fr", "pl", ...]
