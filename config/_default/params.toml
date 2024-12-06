@@ -10,7 +10,7 @@ description = "老王的冒险之旅博客"
 # site keywords
 keywords = []
 # site default theme ["light", "dark", "auto"]
-defaultTheme = "dark"
+defaultTheme = "light"
 # which hash function used for SRI, when empty, no SRI is used
 # ["sha256", "sha384", "sha512", "md5"]
 fingerprint = ""
