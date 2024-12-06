@@ -1,8 +1,6 @@
 # -------------------------------------------------------------------------------------
-# Privacy Configuration
-# See: https://gohugo.io/about/hugo-and-gdpr/
+# Front Matter Configuration
+# See: https://gohugo.io/getting-started/configuration/#configure-front-matter
 # -------------------------------------------------------------------------------------
-[twitter]
-    enableDNT = true
-[youtube]
-    privacyEnhanced = true
+
+lastmod = ["lastmod", ":git", ":fileModTime", ":defalut"]

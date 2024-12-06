@@ -2,9 +2,6 @@
 # Modules Configuration
 # See: https://gohugo.io/hugo-modules/configuration/#module-config-imports
 # -------------------------------------------------------------------------------------
-[hugoVersion]
-    extended = true
-    min = "0.134.1"
 [[imports]]
     path = "github.com/hugo-fixit/FixIt"
 [[imports]]
@@ -27,3 +24,6 @@
     path = "github.com/hugo-fixit/shortcode-caniuse"
 [[imports]]
     path = "github.com/hugo-fixit/shortcode-docs-bookmark"
+[hugoVersion]
+    extended = true
+    min = "0.134.1"
