@@ -20,6 +20,6 @@ updates:
       interval: "monthly"
     open-pull-requests-limit: 1000
     assignees:
-      - "Lruihao"
+      - "KingPriems"
     labels:
       - "dependencies"
