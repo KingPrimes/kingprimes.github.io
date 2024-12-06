@@ -68,8 +68,8 @@ const PLUGINS_LIVE2D = new(function(){
     $.ajax({url: "https://live2d.fghrsh.net/assets/1.4.2/live2d.min.js", dataType:"script", cache: true, success: function() {
         /* 可直接修改部分参数 */
         live2d_settings['hitokotoAPI'] = 'hitokoto.cn'; // 一言 API
-        live2d_settings['modelId'] = 6;                    // 默认模型 ID
-        live2d_settings['modelTexturesId'] = 1;            // 默认材质 ID
+        live2d_settings['modelId'] = 2;                    // 默认模型 ID
+        live2d_settings['modelTexturesId'] = 4;            // 默认材质 ID
         live2d_settings['modelStorage'] = true;           // 不储存模型 ID
         live2d_settings['canCloseLive2d'] = true;         // 隐藏 关闭看板娘 按钮
         live2d_settings['canTurnToHomePage'] = true;      // 隐藏 返回首页 按钮
