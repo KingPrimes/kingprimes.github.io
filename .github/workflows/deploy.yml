@@ -3,27 +3,30 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main
+      - main  # 或者是你想要自动部署的分支
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v3
+      - uses: actions/checkout@v3
         with:
-          hugo-version: 'latest'
-          extended: true
+          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
 
-      - name: Build Hugo site
-        run: hugo --minify
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16  # 设置 Node.js 版本
 
-      - name: Deploy to GitHub Pages
+      - name: Install Dependencies
+        run: npm ci --silent
+
+      - name: Build Site
+        run: npm run build
+
+      - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+          publish_dir: ./public  # Hugo 默认的发布目录
