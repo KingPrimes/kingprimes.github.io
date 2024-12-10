@@ -139,7 +139,8 @@ repost:
     15. 默认链接地址：**ws;//localhost:8080/ws/shiro**
     16. 若您的NyxBot与OneBot客户端不在同一台机器上部署则根据您的IP地址自行更改链接地址
     17. 例如：**ws://ip地址:端口号/ws/shiro**
-    18. 点击保存
+    18. 完整示例
+    19. ![NapcatWebConfig.png](/images/NapcatWebConfig.png)
 3. 安装Java
     1. 执行 **sudo apt update** 命令 更新包管理器
     2. 执行 **sudo apt install openjdk-17-jdk 命令**
