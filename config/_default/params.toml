@@ -6,7 +6,7 @@
 # FixIt 0.2.15 | CHANGED FixIt theme version
 version = "0.3.X" # e.g. "0.2.X", "0.2.15", "v0.2.15" etc.
 # site description
-description = "老王的冒险之旅博客"
+description = "老王的冒险之旅博客,java,nyxbot,warframebot,warframe机器人"
 # site keywords
 keywords = []
 # site default theme ["light", "dark", "auto"]

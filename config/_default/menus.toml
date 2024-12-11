@@ -60,13 +60,24 @@
     [main.params]
         icon = "fa-solid fa-tags"
 [[main]]
+    identifier = "projects"
+    pre = ""
+    post = ""
+    name = "开源"
+    url = "/projects/"
+    title = "开源项目"
+    weight = 5
+    [main.params]
+    # icon = "fa-solid fa-code-branch"
+        icon = "fa-solid fa-lightbulb fa-shake"
+[[main]]
     identifier = "about"
     pre = ""
     post = ""
     name = "关于"
     url = "/about/"
     title = ""
-    weight = 5
+    weight = 6
     [main.params]
     icon = "fa-solid fa-quote-left"
 [[main]]
@@ -77,6 +88,6 @@
     name = ""
     url = "https://github.com/KingPrimes"
     title = ""
-    weight = 6
+    weight = 7
     [main.params]
         icon = "fa-brands fa-github"
