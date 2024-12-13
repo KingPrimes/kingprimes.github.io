@@ -103,3 +103,9 @@ logs:
     money: 50
     origin: 微信
     remark: ""
+
+  - date: 2024-12-13
+    sponsor: "即*"
+    money: 30
+    origin: 微信
+    remark: ""
