@@ -65,6 +65,7 @@ repost:
   enable: false
   # 原文链接
   url:
+reward: false
 
 # See details front matter: https://fixit.lruihao.cn/documentation/content-management/introduction/#front-matter
 ---
