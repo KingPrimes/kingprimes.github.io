@@ -346,7 +346,7 @@ disableThemeInject = false
     BuyMeaCoffee = ""
     Linktree = ""
     QQ = ""
-    QQGroup = "lsyRnyhUDQ" # https://qun.qq.com/join.html
+    #QQGroup = "lsyRnyhUDQ" # https://qun.qq.com/join.html
     Diaspora = ""
     CSDN = ""
     Discord = ""
@@ -367,6 +367,11 @@ disableThemeInject = false
     Phone = ""
     Email = ""
     RSS = true
+    [social.QQGroup]
+        id = "QQGroup"
+        weight = 3
+        prefix = "https://qm.qq.com/cgi-bin/qm/qr?k=oXOfy5e6XgWyQOrKgm5FUG06WI7DzdV4&jump_from=webapi&authKey=n6plkRlE8fp3ubbfpcyQM6+hiygMkxPwz55x3yKHTJbjB8JDGMfMUDjX3APYPJ/S"
+        Title = "QQGroup"
     # custom social links like the following
     # [social.twitter]
     #   id = "lruihao"
@@ -422,7 +427,7 @@ disableThemeInject = false
 # FixIt 0.2.12 | NEW Watermark config
 # Detail config see https://github.com/Lruihao/watermark#readme
 [watermark]
-    enable = true
+    enable = false
     # watermark's text (HTML format is supported)
     content = "KingPrimes"
     # watermark's transparency
