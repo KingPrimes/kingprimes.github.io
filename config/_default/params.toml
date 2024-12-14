@@ -477,7 +477,7 @@ disableThemeInject = false
 
 # Analytics config
 [analytics]
-    enable = true
+    enable = false
     # Google Analytics
     [analytics.google]
         id = "G-XDY1CQKZKW"
