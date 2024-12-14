@@ -461,10 +461,10 @@ disableThemeInject = false
 # Site verification code config for Google/Bing/Yandex/Pinterest/Baidu/360/Sogou
 [verification]
     google = ""
-    bing = ""
+    bing = "AF7CBB979F196E0A3165C61B2E95A93B"
     yandex = ""
     pinterest = ""
-    baidu = ""
+    baidu = "codeva-dKOMexd4eT"
     so = ""
     sogou = ""
 
