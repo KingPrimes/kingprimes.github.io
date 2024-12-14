@@ -17,7 +17,7 @@
     {{- /* TODO add config and page config to config.js (static) */ -}}
     {{- /* Custom head */ -}}
     {{- block "custom-head" . }}{{ end -}}
-    <script src='{{ "js/jquery-3.7.1.min.js" | relURL }}'></script>
+
   </head>
   <body data-header-desktop="{{ .Site.Params.header.desktopMode }}" data-header-mobile="{{ .Site.Params.header.mobileMode }}">
     {{- /* Body wrapper */ -}}
@@ -35,7 +35,6 @@
     {{- partial "widgets.html" . -}}
 
     {{- /* Load JavaScript scripts and CSS */ -}}
-    {{- partial "assets.html" . -}}
-    {{- partial "live2d.html" (dict "width" "200" "height" "220" "position" "left:10" ) -}}
+    {{- partial "live2d.html" . -}}
   </body>
 </html>
