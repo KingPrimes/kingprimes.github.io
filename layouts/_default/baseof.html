@@ -8,9 +8,9 @@
     {{ end }}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <title>{{ block "title" . }}{{ .Site.Title }}{{ end }}</title>
     <meta name="baidu-site-verification" content="codeva-dKOMexd4eT" />
     <meta name="msvalidate.01" content="AF7CBB979F196E0A3165C61B2E95A93B" />
-    <title>{{ block "title" . }}{{ .Site.Title }}{{ end }}</title>
     {{- partial "head/meta.html" . -}}
     {{- partial "head/link.html" . -}}
     {{- partial "head/seo.html" . -}}
