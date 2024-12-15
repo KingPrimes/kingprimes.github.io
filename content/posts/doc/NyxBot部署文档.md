@@ -91,7 +91,8 @@ reward: false
     6. 默认链接地址：**ws;//localhost:8080/ws/shiro**
     7. 若您的NyxBot与OneBot客户端不在同一台机器上部署则根据您的IP地址自行更改链接地址
     8. 例如：ws://ip地址:端口号/ws/shiro
-2. 安装完成之后下载安装 [Oracle Java17](https://www.oracle.com/java/technologies/downloads/#java17) 或 [Open jdk 17](https://www.openlogic.com/openjdk-downloads) 按照提示进行安装
+2. 安装完成之后下载安装 [Oracle Java17](https://www.oracle.com/java/technologies/downloads/#java17)
+   或 [Open jdk 17](https://www.openlogic.com/openjdk-downloads) 按照提示进行安装
 3. 此处以 [Oracle Java17](https://www.oracle.com/java/technologies/downloads/#java17) 为例
     1. 进入下载页面，选择**Windows**，下载 **X64 Installer**安装包进行 Java的安装
 4. Java安装完成之后下载 [NyxBot](https://github.com/KingPrimes/NyxBot/releases) 程序
@@ -104,22 +105,28 @@ reward: false
         1. **注意，此操作需要打开显示 文件扩展名**
     4. 编辑run.bat文件
     5. 内容为：**java -jar NyxBot.jar**
-    6. 如果您需要更细致化的操作可以查看 [Java启动参数](https://kingprimes.top/archives/java-start-parameters) 这篇文章进行启动设置
+    6. 如果您要使用代理请添加以下启动参数例如：
+        ``` bash
+        java -DsocksProxyHost=127.0.0.1 -DsocksProxyPort=1080 -jar NyxBot.jar
+       ```
 
 ## NyxBot Linux 部署方式
 
 1. **此处系统为 Ubuntu 20.04**
 2. 从 [OneBot客户端](#OneBot客户端) 中任选其一，根据其文档进行部署
     1. 此处以 [NapCat](https://github.com/NapNeko/NapCatQQ) 为例
-    2. 进入 [NapCat的文档](https://napneko.github.io/guide/boot/Shell#napcat-installer-linux%E4%B8%80%E9%94%AE%E4%BD%BF%E7%94%A8%E8%84%9A%E6%9C%AC-%E6%94%AF%E6%8C%81ubuntu-20-debian-10-centos9) 可以看到有意见使用脚本
+    2.
+    进入 [NapCat的文档](https://napneko.github.io/guide/boot/Shell#napcat-installer-linux%E4%B8%80%E9%94%AE%E4%BD%BF%E7%94%A8%E8%84%9A%E6%9C%AC-%E6%94%AF%E6%8C%81ubuntu-20-debian-10-centos9)
+    可以看到有意见使用脚本
     3. ```bash
          curl -o napcat.sh https://nclatest.znin.net/NapNeko/NapCat-Installer/main/script/install.sh && sudo bash napcat.sh
         ```
     4. 命令选项(高级用法)
         1. --tui: 使用tui可视化交互安装
         2. --docker [y/n]: --docker y为使用docker安装反之为shell安装
-        3. 具体的命令选项可以去查看 [NapCat的文档](https://napneko.github.io/guide/boot/Shell#napcat-installer-linux%E4%B8%80%E9%94%AE%E4%BD%BF%E7%94%A8%E8%84%9A%E6%9C%AC-%E6%94%AF%E6%8C%81ubuntu-20-debian-10-centos9)
-    5. 安装完成之后  进入 **/opt/QQ/resources/app/app_launcher/napcat/config** 目录下
+        3.
+        具体的命令选项可以去查看 [NapCat的文档](https://napneko.github.io/guide/boot/Shell#napcat-installer-linux%E4%B8%80%E9%94%AE%E4%BD%BF%E7%94%A8%E8%84%9A%E6%9C%AC-%E6%94%AF%E6%8C%81ubuntu-20-debian-10-centos9)
+    5. 安装完成之后 进入 **/opt/QQ/resources/app/app_launcher/napcat/config** 目录下
     6. 更改 **webui.json**
     7. ```json
          {
@@ -164,11 +171,14 @@ reward: false
        ```bash
        nohup java -jar NyxBot.jar > /dev/null 2>&1 &
        ```
-    4. 查看程序是否在后台运行
+    4. 如果您要使用代理请添加以下启动参数例如：
+         ``` bash
+        nohup java -DsocksProxyHost=127.0.0.1 -DsocksProxyPort=1080 -jar NyxBot.jar > /dev/null 2>&1 &
+       ```
+    5. 查看程序是否在后台运行
        ```bash
        ps -ef | grep NyxBot
        ```
-    5. 如果您需要更细致化的操作可以查看 [Java启动参数](https://kingprimes.top/archives/java-start-parameters) 这篇文章进行启动设置
 
 ## NyxBot 安卓部署方式
 
