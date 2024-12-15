@@ -107,7 +107,7 @@ reward: false
     5. 内容为：**java -jar NyxBot.jar**
     6. 如果您要使用代理请添加以下启动参数例如：
         ``` bash
-        java -DsocksProxyHost=127.0.0.1 -DsocksProxyPort=1080 -jar NyxBot.jar
+        java -Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=1080 -jar NyxBot.jar
        ```
 
 ## NyxBot Linux 部署方式
@@ -173,7 +173,7 @@ reward: false
        ```
     4. 如果您要使用代理请添加以下启动参数例如：
          ``` bash
-        nohup java -DsocksProxyHost=127.0.0.1 -DsocksProxyPort=1080 -jar NyxBot.jar > /dev/null 2>&1 &
+        nohup java -Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=1080 -jar NyxBot.jar > /dev/null 2>&1 &
        ```
     5. 查看程序是否在后台运行
        ```bash
