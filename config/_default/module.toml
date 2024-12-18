@@ -3,24 +3,22 @@
 # See: https://gohugo.io/hugo-modules/configuration/#module-config-imports
 # -------------------------------------------------------------------------------------
 [[imports]]
+    # 主题
     path = "github.com/hugo-fixit/FixIt"
 [[imports]]
+    # Json输出格式
     path = "github.com/hugo-fixit/hugo-json-feed"
 [[imports]]
+    # 赞助列表
     path = "github.com/hugo-fixit/shortcode-rewards"
 [[imports]]
-    path = "github.com/hugo-fixit/shortcode-mmt-netease"
-[[imports]]
-    path = "github.com/hugo-fixit/fixit-bundle"
-[[imports]]
+    # 在 FixIt 主题中展示你的 GitHub 项目并根据 README 自动生成博客文章。
     path = "github.com/hugo-fixit/component-projects"
-[[imports]]
-    path = "github.com/hugo-fixit/cmpt-flyfish"
 [[imports]]
     path = "github.com/hugo-fixit/cmpt-mdevtools"
 [[imports]]
+    # 自动翻译功能。
     path = "github.com/hugo-fixit/cmpt-translate"
 [[imports]]
-    path = "github.com/hugo-fixit/shortcode-caniuse"
-[[imports]]
+    # 嵌入文档书签
     path = "github.com/hugo-fixit/shortcode-docs-bookmark"
