@@ -1,3 +1,8 @@
 public/
 hugo.exe
 .idea
+.gitmodules
+.hugo_build.lock
+go.sum
+hugo.work
+themes
