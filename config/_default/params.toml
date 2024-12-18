@@ -199,14 +199,16 @@ disableThemeInject = false
 # FixIt 0.3.0 | NEW Archives page config (all pages of posts type)
 [archives]
     # special amount of posts in archives page
-    pagination.pagerSize = 20
+    [[pagination]]
+        pagerSize = 20
     # date format (month and day)
     dateFormat = "01-02"
 
 # Section page config (all pages in section)
 [section]
     # special amount of pages in each section page
-    pagination.pagerSize = 20
+    [[pagination]]
+        pagerSize = 20
     # date format (month and day)
     dateFormat = "01-02"
 # FixIt 0.3.10 | NEW Section feed config for RSS, Atom and JSON feed.
@@ -219,7 +221,8 @@ disableThemeInject = false
 # Term list (category or tag) page config
 [list]
     # special amount of posts in each list page
-    pagination.pagerSize = 20
+    [[pagination]]
+        pagerSize = 20
     # date format (month and day)
     dateFormat = "01-02"
     # FixIt 0.3.10 | NEW Term list feed config for RSS, Atom and JSON feed.
@@ -274,7 +277,8 @@ disableThemeInject = false
     [home.posts]
         enable = true
         # special amount of posts in each home posts page
-        pagination.pagerSize = 6
+        [[pagination]]
+            pagerSize = 6
 
 # FixIt 0.2.16 | CHANGED Social config about the author
 [social]
