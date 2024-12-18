@@ -1,0 +1,9 @@
+{
+  "builds": [
+    {
+      "src": "hugo --gc --minify",
+      "use": "@vercel/build",
+      "config": { "installCommand": "apk add --no-cache go" }
+    }
+  ]
+}
