@@ -24,6 +24,3 @@
     path = "github.com/hugo-fixit/shortcode-caniuse"
 [[imports]]
     path = "github.com/hugo-fixit/shortcode-docs-bookmark"
-[hugoVersion]
-    extended = true
-    min = "0.134.1"
