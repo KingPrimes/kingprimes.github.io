@@ -1,3 +1,13 @@
 <script src='{{ "js/jquery-3.7.1.min.js" | relURL }}'></script>
 <script src='{{ "js/live2d/oh-my-live2d.min.js" | relURL }}'></script>
 <script src='{{ "js/live2d/om_live2d.js" | relURL }}'></script>
+<script>
+    window.onload = function () {
+        document.getElementById('oml2d-stage').addEventListener('click', () => {
+            oml2d.models.model?.internalModel.motionManager.expressionManager?.setRandomExpression();
+        })
+        setInterval(() => {
+            oml2d.models.model?.internalModel.motionManager.expressionManager?.setRandomExpression();
+        }, 1000 * 30 * 2);
+    }
+</script>

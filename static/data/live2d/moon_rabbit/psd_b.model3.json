@@ -3,8 +3,8 @@
 	"FileReferences": {
 		"Moc": "PSD_B.moc3",
 		"Textures": [
-			"PSD_B.4096/texture_00.png",
-			"PSD_B.4096/texture_01.png"
+			"PSD_B.4096/texture_00.webp",
+			"PSD_B.4096/texture_01.webp"
 		],
 		"Physics": "PSD_B.physics3.json",
 		"DisplayInfo": "PSD_B.cdi3.json",
