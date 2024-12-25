@@ -48,8 +48,8 @@ hiddenFromFeed: false
 # 文章摘要
 summary: NyxBot指令的使用方法以及注意事项
 # 文章头图片
-featuredImage: https://img.picgo.net/2024/11/20/6640a8aeea4c26810a5e2095cb1bc.jpg
-featuredImagePreview: https://img.picgo.net/2024/11/20/6640a8aeea4c26810a5e2095cb1bc.jpg
+featuredImage: /images/1bb16eb/1bb16eb_featured.webp
+featuredImagePreview: /images/1bb16eb/1bb16eb_featured.webp
 # 是否显示目录
 toc: true
 # 是否启用数学公式渲染

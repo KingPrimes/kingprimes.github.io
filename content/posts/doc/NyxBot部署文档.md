@@ -49,8 +49,8 @@ hiddenFromFeed: false
 # 文章摘要
 summary: NyxBot的部署文档
 # 文章头图片
-featuredImage: https://img.picgo.net/2024/11/20/6640a959e9dec28ba14780b8df556.jpg
-featuredImagePreview: https://img.picgo.net/2024/11/20/6640a959e9dec28ba14780b8df556.jpg
+featuredImage: /images/d99b802/d99b802_featured.webp
+featuredImagePreview: /images/d99b802/d99b802_featured.webp
 # 是否显示目录
 toc: true
 # 是否启用数学公式渲染
@@ -148,7 +148,7 @@ reward: false
     16. 若您的NyxBot与OneBot客户端不在同一台机器上部署则根据您的IP地址自行更改链接地址
     17. 例如：**ws://ip地址:端口号/ws/shiro**
     18. 完整示例
-    19. ![NapcatWebConfig.png](/images/NapcatWebConfig.png)
+    19. ![NapcatWebConfig.webp](/images/d99b802/NapcatWebConfig.webp)
 3. 安装Java
     1. 执行 **sudo apt update** 命令 更新包管理器
     2. 执行 **sudo apt install openjdk-17-jdk 命令**
@@ -195,3 +195,14 @@ reward: false
     3. 进入会话：**screen -r 12654**
 5. 进入Ubuntu系统之后部署方式与 **Linux 部署方式** 相同
 
+## NyxBot 自己打包jar
+
+1. 需要你有一个[Github账号](https://github.com/)
+2. 跳转到[NyxBot仓库](https://github.com/KingPrimes/NyxBot)
+3. 在你登录GitHub账号的情况下点击界面中的 Fork按钮 根据提示复刻到你自己的账号下
+4. 等待复刻完成之后如下图操作
+    ![d99b802_1.webp](/images/d99b802/d99b802_1.webp)
+    ![d99b802_2.webp](/images/d99b802/d99b802_2.webp)
+    ![d99b802_3.webp](/images/d99b802/d99b802_3.webp)
+    ![d99b802_4.webp](/images/d99b802/d99b802_4.webp)
+    ![d99b802_5.webp](/images/d99b802/d99b802_5.webp)
