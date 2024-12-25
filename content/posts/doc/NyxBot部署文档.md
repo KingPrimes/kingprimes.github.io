@@ -115,17 +115,14 @@ reward: false
 1. **此处系统为 Ubuntu 20.04**
 2. 从 [OneBot客户端](#OneBot客户端) 中任选其一，根据其文档进行部署
     1. 此处以 [NapCat](https://github.com/NapNeko/NapCatQQ) 为例
-    2.
-    进入 [NapCat的文档](https://napneko.github.io/guide/boot/Shell#napcat-installer-linux%E4%B8%80%E9%94%AE%E4%BD%BF%E7%94%A8%E8%84%9A%E6%9C%AC-%E6%94%AF%E6%8C%81ubuntu-20-debian-10-centos9)
-    可以看到有意见使用脚本
+    2.    进入 [NapCat的文档](https://napneko.github.io/guide/boot/Shell#napcat-installer-linux%E4%B8%80%E9%94%AE%E4%BD%BF%E7%94%A8%E8%84%9A%E6%9C%AC-%E6%94%AF%E6%8C%81ubuntu-20-debian-10-centos9) 可以看到有一键使用脚本
     3. ```bash
          curl -o napcat.sh https://nclatest.znin.net/NapNeko/NapCat-Installer/main/script/install.sh && sudo bash napcat.sh
         ```
     4. 命令选项(高级用法)
         1. --tui: 使用tui可视化交互安装
         2. --docker [y/n]: --docker y为使用docker安装反之为shell安装
-        3.
-        具体的命令选项可以去查看 [NapCat的文档](https://napneko.github.io/guide/boot/Shell#napcat-installer-linux%E4%B8%80%E9%94%AE%E4%BD%BF%E7%94%A8%E8%84%9A%E6%9C%AC-%E6%94%AF%E6%8C%81ubuntu-20-debian-10-centos9)
+        3. 具体的命令选项可以去查看 [NapCat的文档](https://napneko.github.io/guide/boot/Shell#napcat-installer-linux%E4%B8%80%E9%94%AE%E4%BD%BF%E7%94%A8%E8%84%9A%E6%9C%AC-%E6%94%AF%E6%8C%81ubuntu-20-debian-10-centos9)
     5. 安装完成之后 进入 **/opt/QQ/resources/app/app_launcher/napcat/config** 目录下
     6. 更改 **webui.json**
     7. ```json
