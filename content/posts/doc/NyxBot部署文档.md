@@ -23,7 +23,9 @@ author:
 description: NyxBot的部署文档
 # 文章关键字
 keywords:
-  - NyxBot部署文档,Warframe机器人
+  - NyxBot部署文档
+  - Warframe机器人
+  - Warframe Bot
 # 文章许可证
 license:
 # 是否开启评论
@@ -47,7 +49,7 @@ hiddenFromRelated: false
 # 是否从RSS/Atom订阅源中隐藏文章 false不隐藏
 hiddenFromFeed: false
 # 文章摘要
-summary: NyxBot的部署文档
+summary: NyxBot的部署文档,NyxBot是用于查询Warframe信息的QQ机器人。
 # 文章头图片
 featuredImage: /images/d99b802/d99b802_featured.webp
 featuredImagePreview: /images/d99b802/d99b802_featured.webp
