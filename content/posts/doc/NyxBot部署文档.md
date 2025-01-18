@@ -162,7 +162,7 @@ reward: false
 4. 创建一个文件夹并下载 NyxBot.jar
     1. ```bash
        mkdir nyxbot
-       cs ./nyxbot
+       cd ./nyxbot
        wget https://github.com/KingPrimes/NyxBot/releases/download/v0.1.1/NyxBot.jar -O NyxBot.jar
        ```
     2. v0.1.1为版本号，最新版本请到 [Github](https://github.com/KingPrimes/NyxBot/releases) 查看
