@@ -143,7 +143,7 @@ reward: false
     12. 输入您设置的Token登录到后台
     13. 点击网络设置，添加网络配置为 **WebSocket客户端**
     14. **启用，并配置URL**
-    15. 默认链接地址：**ws;//localhost:8080/ws/shiro**
+    15. 默认链接地址：**ws://localhost:8080/ws/shiro**
     16. 若您的NyxBot与OneBot客户端不在同一台机器上部署则根据您的IP地址自行更改链接地址
     17. 例如：**ws://ip地址:端口号/ws/shiro**
     18. 完整示例
