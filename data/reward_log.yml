@@ -115,3 +115,9 @@ logs:
     money: 25
     origin: 微信
     remark: "6"
+
+  - date: 2025-1-25
+    sponsor: "**晨"
+    money: 25
+    origin: 支付宝
+    remark: ""
