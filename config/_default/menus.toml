@@ -71,13 +71,23 @@
     # icon = "fa-solid fa-code-branch"
         icon = "fa-solid fa-lightbulb fa-shake"
 [[main]]
+    identifier = "links"
+    pre = ""
+    post = ""
+    name = "友链"
+    url = "/friends/"
+    title = ""
+    weight = 6
+    [main.params]
+        icon = "fa-solid fa-link"
+[[main]]
     identifier = "reward"
     pre = ""
     post = ""
     name = "赞赏"
     url = "/reward/"
     title = ""
-    weight = 6
+    weight = 7
     [main.params]
         icon = "fa-solid fa-hand-holding-dollar"
 [[main]]
@@ -87,7 +97,7 @@
     name = "关于"
     url = "/about/"
     title = ""
-    weight = 7
+    weight = 8
     [main.params]
     icon = "fa-solid fa-quote-left"
 [[main]]
@@ -98,6 +108,6 @@
     name = ""
     url = "https://github.com/KingPrimes"
     title = ""
-    weight = 8
+    weight = 9
     [main.params]
         icon = "fa-brands fa-github"
