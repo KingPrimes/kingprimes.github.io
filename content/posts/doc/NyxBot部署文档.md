@@ -90,7 +90,7 @@ reward: false
     3. 选择LLOneBot
     4. 配置链接方式为 **反向WebSocket模式**
     5. 填写链接地址
-    6. 默认链接地址：**ws;//localhost:8080/ws/shiro**
+    6. 默认链接地址：**ws://localhost:8080/ws/shiro**
     7. 若您的NyxBot与OneBot客户端不在同一台机器上部署则根据您的IP地址自行更改链接地址
     8. 例如：ws://ip地址:端口号/ws/shiro
 2. 安装完成之后下载安装 [Oracle Java17](https://www.oracle.com/java/technologies/downloads/#java17)
