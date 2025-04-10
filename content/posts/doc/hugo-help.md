@@ -25,7 +25,7 @@ description: Hugo 的简单命令
 keywords: 
  - Hugo
 # 文章许可证
-license:
+license: <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="fa-brands fa-creative-commons"></i>BY-NC-SA</a>
 # 是否开启评论
 comment: true
 # 文章权重

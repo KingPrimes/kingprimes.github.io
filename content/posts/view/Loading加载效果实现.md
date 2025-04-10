@@ -24,7 +24,7 @@ description: 使用Css实现的Loading加载动画效果实现
 # 文章关键字
 keywords: 加载动画
 # 文章许可证
-license:
+license: <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="fa-brands fa-creative-commons"></i>BY-NC-SA</a>
 # 是否开启评论
 comment: true
 # 文章权重
