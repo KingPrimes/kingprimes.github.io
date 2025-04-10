@@ -6,3 +6,4 @@ hugo.exe
 go.sum
 hugo.work
 themes
+/css/*

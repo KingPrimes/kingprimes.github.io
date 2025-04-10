@@ -31,7 +31,7 @@ license:
 # 是否开启评论
 comment: true
 # 文章权重
-weight: 0
+weight: 11
 # 文章标签
 tags:
   - qqbot
