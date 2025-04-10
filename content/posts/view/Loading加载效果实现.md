@@ -45,10 +45,10 @@ hiddenFromRelated: false
 # 是否从RSS/Atom订阅源中隐藏文章 false不隐藏
 hiddenFromFeed: false
 # 文章摘要
-summary:
+summary: 前端小球3D加载动画效果实现
 # 文章头图片
-featuredImage:
-featuredImagePreview:
+featuredImage: /images/c8c1d28/c8c1d28.webp
+featuredImagePreview: /images/c8c1d28/c8c1d28.webp
 # 是否显示目录
 toc: true
 # 是否启用数学公式渲染
