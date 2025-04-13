@@ -93,9 +93,9 @@ reward: false
     6. 默认链接地址：**ws://localhost:8080/ws/shiro**
     7. 若您的NyxBot与OneBot客户端不在同一台机器上部署则根据您的IP地址自行更改链接地址
     8. 例如：ws://ip地址:端口号/ws/shiro
-2. 安装完成之后下载安装 [Oracle Java17](https://www.oracle.com/java/technologies/downloads/#java17)
-   或 [Open jdk 17](https://www.openlogic.com/openjdk-downloads) 按照提示进行安装
-3. 此处以 [Oracle Java17](https://www.oracle.com/java/technologies/downloads/#java17) 为例
+2. 安装完成之后下载安装 [Oracle Java21](https://www.oracle.com/java/technologies/downloads/#java21)
+   或 [Open jdk 21](https://www.openlogic.com/openjdk-downloads) 按照提示进行安装
+3. 此处以 [Oracle Java21](https://www.oracle.com/java/technologies/downloads/#java21) 为例
     1. 进入下载页面，选择**Windows**，下载 **X64 Installer**安装包进行 Java的安装
 4. Java安装完成之后下载 [NyxBot](https://github.com/KingPrimes/NyxBot/releases) 程序
     1. 在下载界面选择带有 **latest** 绿色标签的版本
@@ -150,22 +150,22 @@ reward: false
     19. ![NapcatWebConfig.webp](/images/d99b802/NapcatWebConfig.webp)
 3. 安装Java
     1. 执行 **sudo apt update** 命令 更新包管理器
-    2. 执行 **sudo apt install openjdk-17-jdk 命令**
-    3. 若执行第二个命令时出错则 执行 Java 命令安装命令提示进行Java的安装，Java版本不得小于17
+    2. 执行 **sudo apt install openjdk-21-jdk 命令**
+    3. 若执行第二个命令时出错则 执行 Java 命令安装命令提示进行Java的安装，Java版本不得小于21
     4. 验证安装 执行 **java -version** 你应该看到类似于以下的输出
     5. ```bash
-       openjdk version "17.0.x" 2024-xx-xx
-       OpenJDK Runtime Environment (build 17.0.x+xx)
-       OpenJDK 64-Bit Server VM (build 17.0.x+xx, mixed mode, sharing)
+       openjdk version "21.0.x" 2024-xx-xx
+       OpenJDK Runtime Environment (build 21.0.x+xx)
+       OpenJDK 64-Bit Server VM (build 21.0.x+xx, mixed mode, sharing)
          ````
     6. 若输出不是 **2024** 以上请手动下载安装
 4. 创建一个文件夹并下载 NyxBot.jar
     1. ```bash
        mkdir nyxbot
        cd ./nyxbot
-       wget https://github.com/KingPrimes/NyxBot/releases/download/v0.1.1/NyxBot.jar -O NyxBot.jar
+       wget https://github.com/KingPrimes/NyxBot/releases/download/v0.3.0/NyxBot.jar -O NyxBot.jar
        ```
-    2. v0.1.1为版本号，最新版本请到 [Github](https://github.com/KingPrimes/NyxBot/releases) 查看
+    2. v0.3.0为版本号，最新版本请到 [Github](https://github.com/KingPrimes/NyxBot/releases) 查看
     3. 后台启动NyxBot
        ```bash
        nohup java -jar NyxBot.jar > /dev/null 2>&1 &
