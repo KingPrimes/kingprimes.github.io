@@ -3,7 +3,7 @@ module github.com/KingPrimes/kingprimes.github.io
 go 1.23.4
 
 require (
-	github.com/hugo-fixit/FixIt v0.3.18 // indirect
+	github.com/hugo-fixit/FixIt v0.3.19 // indirect
 	github.com/hugo-fixit/cmpt-mdevtools v1.0.1 // indirect
 	github.com/hugo-fixit/cmpt-translate v1.5.7 // indirect
 	github.com/hugo-fixit/component-projects v1.6.1 // indirect
