@@ -108,8 +108,14 @@ reward: false
     4. 编辑run.bat文件
     5. 内容为：**java -jar NyxBot.jar**
     6. 如果您要使用代理请添加以下启动参数例如：
-        ``` bash
-        java -Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=1080 -jar NyxBot.jar
+        ``` bash http代理
+        java -Dhttp.proxy=http://127.0.0.1:7890 -jar NyxBot.jar
+       ```
+       ``` bash Socks代理
+        java -Dsocks.proxy=socks://127.0.0.1:7890 -jar NyxBot.jar
+       ```
+       ``` bash Socks5代理
+        java -Dsocks.proxy=socks5://127.0.0.1:7890 -jar NyxBot.jar
        ```
 
 ## NyxBot Linux 部署方式
@@ -117,14 +123,17 @@ reward: false
 1. **此处系统为 Ubuntu 20.04**
 2. 从 [OneBot客户端](#OneBot客户端) 中任选其一，根据其文档进行部署
     1. 此处以 [NapCat](https://github.com/NapNeko/NapCatQQ) 为例
-    2.    进入 [NapCat的文档](https://napneko.github.io/guide/boot/Shell#napcat-installer-linux%E4%B8%80%E9%94%AE%E4%BD%BF%E7%94%A8%E8%84%9A%E6%9C%AC-%E6%94%AF%E6%8C%81ubuntu-20-debian-10-centos9) 可以看到有一键使用脚本
+    2.
+   进入 [NapCat的文档](https://napneko.github.io/guide/boot/Shell#napcat-installer-linux%E4%B8%80%E9%94%AE%E4%BD%BF%E7%94%A8%E8%84%9A%E6%9C%AC-%E6%94%AF%E6%8C%81ubuntu-20-debian-10-centos9)
+   可以看到有一键使用脚本
     3. ```bash
          curl -o napcat.sh https://nclatest.znin.net/NapNeko/NapCat-Installer/main/script/install.sh && sudo bash napcat.sh
         ```
     4. 命令选项(高级用法)
         1. --tui: 使用tui可视化交互安装
         2. --docker [y/n]: --docker y为使用docker安装反之为shell安装
-        3. 具体的命令选项可以去查看 [NapCat的文档](https://napneko.github.io/guide/boot/Shell#napcat-installer-linux%E4%B8%80%E9%94%AE%E4%BD%BF%E7%94%A8%E8%84%9A%E6%9C%AC-%E6%94%AF%E6%8C%81ubuntu-20-debian-10-centos9)
+        3.
+       具体的命令选项可以去查看 [NapCat的文档](https://napneko.github.io/guide/boot/Shell#napcat-installer-linux%E4%B8%80%E9%94%AE%E4%BD%BF%E7%94%A8%E8%84%9A%E6%9C%AC-%E6%94%AF%E6%8C%81ubuntu-20-debian-10-centos9)
     5. 安装完成之后 进入 **/opt/QQ/resources/app/app_launcher/napcat/config** 目录下
     6. 更改 **webui.json**
     7. ```json
@@ -172,7 +181,7 @@ reward: false
        ```
     4. 如果您要使用代理请添加以下启动参数例如：
          ``` bash
-        nohup java -Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=1080 -jar NyxBot.jar > /dev/null 2>&1 &
+        nohup java -Dhttp.proxy=http://127.0.0.1:7890 -jar NyxBot.jar > /dev/null 2>&1 &
        ```
     5. 查看程序是否在后台运行
        ```bash
@@ -194,14 +203,35 @@ reward: false
     3. 进入会话：**screen -r 12654**
 5. 进入Ubuntu系统之后部署方式与 **Linux 部署方式** 相同
 
+## NyxBot Docker部署方式
+
+1. 在 docker hub 中搜索 [kingprimes/nyxbot](https://hub.docker.com/r/kingprimes/nyxbot)
+2. 下载镜像文件
+   ``` bash
+    docker pull kingprimes/nyxbot
+   ```
+3. 运行镜像文件
+    ``` bash
+   docker run --name Nyxbot -d -p 8080:8080 kingprimes/nyxbot
+    ```
+4. 如果需要配置代理则添加环境变量
+   ``` bash
+   docker run --name Nyxbot -d -p 8080:8080 -e HTTP_PROXY=http://127.0.0.1:7890 kingprimes/nyxbot
+   ```
+     ``` bash
+   docker run --name Nyxbot -d -p 8080:8080 -e ALL_PROXY=socks://127.0.0.1:7890 kingprimes/nyxbot
+   ```
+5. 访问 NyxBot 后台 IP:8080
+    1. 这里的地址是[本地地址](http://localhost:8080)，如果你部署到服务器上请使用 IP:端口 / 域名:端口 进行访问 NyxBot 的后台
+
 ## NyxBot 自己打包jar
 
 1. 需要你有一个[Github账号](https://github.com/)
 2. 跳转到[NyxBot仓库](https://github.com/KingPrimes/NyxBot)
 3. 在你登录GitHub账号的情况下点击界面中的 Fork按钮 根据提示复刻到你自己的账号下
 4. 等待复刻完成之后如下图操作
-    ![d99b802_1.webp](/images/d99b802/d99b802_1.webp)
-    ![d99b802_2.webp](/images/d99b802/d99b802_2.webp)
-    ![d99b802_3.webp](/images/d99b802/d99b802_3.webp)
-    ![d99b802_4.webp](/images/d99b802/d99b802_4.webp)
-    ![d99b802_5.webp](/images/d99b802/d99b802_5.webp)
+   ![d99b802_1.webp](/images/d99b802/d99b802_1.webp)
+   ![d99b802_2.webp](/images/d99b802/d99b802_2.webp)
+   ![d99b802_3.webp](/images/d99b802/d99b802_3.webp)
+   ![d99b802_4.webp](/images/d99b802/d99b802_4.webp)
+   ![d99b802_5.webp](/images/d99b802/d99b802_5.webp)
