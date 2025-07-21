@@ -9,5 +9,5 @@ require (
 	github.com/hugo-fixit/component-projects v1.8.0 // indirect
 	github.com/hugo-fixit/hugo-json-feed v1.2.0 // indirect
 	github.com/hugo-fixit/shortcode-docs-bookmark v1.1.0 // indirect
-	github.com/hugo-fixit/shortcode-rewards v1.1.0 // indirect
+	github.com/hugo-fixit/shortcode-rewards v1.1.1 // indirect
 )
