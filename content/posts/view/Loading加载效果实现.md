@@ -37,7 +37,7 @@ tags:
 categories:
   - View
 # 是否从主页隐藏 false不隐藏
-hiddenFromHomePage: false
+hiddenFromHomePage: true
 # 是否从搜索中隐藏 false不隐藏
 hiddenFromSearch: false
 # 是否从相关文章中隐藏文章 false不隐藏
