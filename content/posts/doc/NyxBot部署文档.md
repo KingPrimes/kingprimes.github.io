@@ -123,9 +123,8 @@ reward: false
 1. **此处系统为 Ubuntu 20.04**
 2. 从 [OneBot客户端](#OneBot客户端) 中任选其一，根据其文档进行部署
     1. 此处以 [NapCat](https://github.com/NapNeko/NapCatQQ) 为例
-    2.
-   进入 [NapCat的文档](https://napneko.github.io/guide/boot/Shell#napcat-installer-linux%E4%B8%80%E9%94%AE%E4%BD%BF%E7%94%A8%E8%84%9A%E6%9C%AC-%E6%94%AF%E6%8C%81ubuntu-20-debian-10-centos9)
-   可以看到有一键使用脚本
+    2. 进入 [NapCat的文档](https://napneko.github.io/guide/boot/Shell#napcat-installer-linux%E4%B8%80%E9%94%AE%E4%BD%BF%E7%94%A8%E8%84%9A%E6%9C%AC-%E6%94%AF%E6%8C%81ubuntu-20-debian-10-centos9) 可以看到有一键使用脚本
+         
     3. ```bash
          curl -o napcat.sh https://nclatest.znin.net/NapNeko/NapCat-Installer/main/script/install.sh && sudo bash napcat.sh
         ```
@@ -235,3 +234,15 @@ reward: false
    ![d99b802_3.webp](/images/d99b802/d99b802_3.webp)
    ![d99b802_4.webp](/images/d99b802/d99b802_4.webp)
    ![d99b802_5.webp](/images/d99b802/d99b802_5.webp)
+
+## 注意事项
+
+1. 如果出现端口冲突请添加 -Dserver.port=[端口] | --server.port=[端口] 启动参数 选一个即可 注意：***端口号是数字*** 不需要添加引号
+   -  ```bash 修改端口示例
+      java -Dserver.port=端口 -jar NyxBot.jar
+      ```
+   - ```bash 修改端口示例
+      java -jar NyxBot.jar --server.port=端口
+      ```
+   - 端口被占用时会出现以下错误
+   - ![port_error.webp](/images/d99b802/port_error.webp)
