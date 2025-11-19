@@ -137,7 +137,7 @@ logs:
     money: 500
     origin: 微信
     remark: "大佬加油！大佬牛逼！"
-  - data: 2025-11-18
+  - date: 2025-11-18
     sponsor: "**明"
     money: 25
     origin: 支付宝
