@@ -1,0 +1,218 @@
+# Hexo Configuration
+## Docs: https://hexo.io/docs/configuration.html
+## Source: https://github.com/hexojs/hexo/
+
+# Site
+title: 老王的冒险之旅
+subtitle:
+description:
+keywords: 老王的冒险之旅博客,java,nyxbot,warframebot,warframe机器人
+author: KingPrimes
+language: zh-CN
+
+# URL
+## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
+url: https://kingprimes.top
+permalink: :category/:post_title
+permalink_defaults:
+pretty_urls:
+  trailing_index: true # Set to false to remove trailing 'index.html' from permalinks
+  trailing_html: true # Set to false to remove trailing '.html' from permalinks
+
+# Directory
+source_dir: source
+public_dir: public
+tag_dir: tags
+archive_dir: archives
+category_dir: categories
+code_dir: downloads/code
+i18n_dir: :lang
+skip_render:
+  - live2d/**
+
+# Writing
+new_post_name: :title.md # File name of new posts
+default_layout: post
+titlecase: false # Transform title into titlecase
+external_link:
+  enable: true # Open external links in new tab
+  field: post # Apply to the whole site
+  exclude: ""
+filename_case: 1
+render_drafts: false
+post_asset_folder: true
+relative_link: false
+future: true
+syntax_highlighter: highlight.js
+highlight:
+  line_number: true
+  auto_detect: false
+  tab_replace: ""
+  wrap: true
+  hljs: false
+prismjs:
+  preprocess: true
+  line_number: true
+  tab_replace: ""
+
+# Home page setting
+# path: Root path for your blogs index page. (default = '')
+# per_page: Posts displayed per page. (0 = disable pagination)
+# order_by: Posts order. (Order by date descending by default)
+index_generator:
+  path: ""
+  per_page: 10
+  order_by: -date
+
+# Category & Tag
+default_category: uncategorized
+category_map:
+tag_map:
+
+# Metadata elements
+## https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta
+meta_generator: true
+
+# Date / Time format
+## Hexo uses Moment.js to parse and display date
+## You can customize the date format as defined in
+## http://momentjs.com/docs/#/displaying/format/
+date_format: YYYY-MM-DD
+time_format: HH:mm:ss
+## updated_option supports 'mtime', 'date', 'empty'
+updated_option: "mtime"
+
+# Pagination
+## Set per_page to 0 to disable pagination
+per_page: 10
+pagination_dir: page
+
+# Include / Exclude file(s)
+## include:/exclude: options only apply to the 'source/' folder
+include:
+exclude:
+ignore:
+
+# Extensions
+## Plugins: https://hexo.io/plugins/
+## Themes: https://hexo.io/themes/
+theme: butterfly
+
+# Deployment
+## Docs: https://hexo.io/docs/one-command-deployment
+deploy:
+  # type: git
+  # repo: https://github.com/KingPrimes/kingprimes.github.io.git
+  # branch: gh-pages
+
+# 插件
+markdown:
+  plugins:
+    - "@renbaoshuo/markdown-it-katex"
+
+# --------------------------------------
+# Hexo Oh My Live2d
+# --------------------------------------
+OhMyLive2d:
+  enable: true
+  option:
+    source: "localhost"
+    # 主题色 - 与 butterfly 主题一致
+    primaryColor: "#49B1F5"
+    # 位置
+    dockedPosition: "left"
+    # 父元素
+    parentElement: document.div
+    # 移动端是否显示
+    mobileDisplay: false
+    # 打印项目信息
+    sayHello: true
+    # 过渡时间
+    transitionTime: 1000
+
+    # 提示词配置
+    tips:
+      style:
+        width: 230
+        height: 120
+        fontSize: "14px"
+        left: calc(50% - 20px)
+        top: -80px
+
+      # 复制提示
+      copyTips:
+        duration: 3000
+        priority: 3
+        message:
+          - "复制成功！记得注明出处哦~"
+
+      # 闲置提示
+      idleTips:
+        wordTheDay: true
+        duration: 5000
+        interval: 15000
+        priority: 2
+        message:
+          - "好久不见，日子过得好快呢..."
+          - "想我了吗？"
+          - "嘿，别忘了我还在这里哦！"
+
+      # 欢迎提示
+      welcomeTips:
+        duration: 6000
+        priority: 3
+        message:
+          morning: "早上好！开始元气满满的一天吧！"
+          afternoon: "下午好！要不要休息一下？"
+          evening: "晚上好！今天辛苦了！"
+          night: "夜深了，注意休息哦~"
+
+    # 状态栏配置
+    statusBar:
+      disable: false
+      loadingMessage: "模型加载中..."
+      loadSuccessMessage: "加载成功！"
+      loadFailMessage: "加载失败，点击重试"
+      reloadMessage: "点击重新加载"
+      transitionTime: 800
+      style:
+        backgroundColor: "#49B1F5"
+        color: "#fff"
+        fontSize: "12px"
+      mobileStyle:
+        fontSize: "11px"
+        padding: "6px"
+
+    # 菜单配置
+    menus:
+      items:
+        - id: 'rest'
+          icon: 'icon-rest'
+          title: '休息'
+          onClick: "(oml2d)=>{oml2d.stageSlideOut().then(()=>{oml2d.statusBarOpen('点击恢复显示','#FF9800');oml2d.setStatusBarClickEvent(()=>{oml2d.stageSlideIn().then(()=>{oml2d.statusBarClose('',1000);oml2d.statusBarClearEvents();});});});}"
+        - id: 'switch-model'
+          icon: 'icon-switch'
+          title: '换装'
+          onClick: "(oml2d)=>{oml2d.loadNextModel().then(()=>{oml2d.tipsMessage('已切换模型',3000,5);});}"
+        - id: 'About'
+          icon: 'icon-about'
+          title: '关于模型'
+          onClick: "(oml2d)=>{switch(oml2d.modelIndex){case 0:window.open('https://www.bilibili.com/video/BV1cR4y1Y7vw');break;case 1:window.open('https://www.bilibili.com/video/BV1sd6gY2EY9');break;}}"
+
+    # 模型配置
+    models:
+      - path: /live2d/moon_rabbit/psd_b.model3.json
+        name: "月兔"
+        position: [0, 40]
+        scale: 0.08
+        stageStyle:
+          height: 350
+          width: 300
+
+      - path: /live2d/maolili_vts/mailili.model3.json
+        name: "猫莉莉"
+        position: [0, 40]
+        scale: 0.08
+        stageStyle:
+          height: 350
+          width: 300

@@ -1,34 +1,18 @@
 ---
 # 标题
 title: Loading加载效果实现
-# 副标题
-subtitle: Loading加载效果实现
 # 发布日期
 date: 2025-04-10T22:55:56+08:00
 # 文章url别名
-slug: c8c1d28
-# 是否为草稿
-draft: false
-# 作者信息
-author:
-  # 作者名称
-  name: KingPriems
-  # 作者链接
-  link: https://github.com/KingPrimes
-  # 作者邮箱
-  email: Sakitama_q@163.com
-  # 作者头像
-  avatar: https://avatars.githubusercontent.com/u/50130875
+permalink: posts/c8c1d28
 # 文章描述
 description: 使用Css实现的Loading加载动画效果实现
 # 文章关键字
 keywords: 加载动画
-# 文章许可证
-license: <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="fa-brands fa-creative-commons"></i>BY-NC-SA</a>
 # 是否开启评论
 comment: true
-# 文章权重
-weight: 0
+# 文章置顶(数值越大置顶优先级越大)
+sticky: 0
 # 文章标签
 tags:
   - View
@@ -36,37 +20,10 @@ tags:
 # 文章分类
 categories:
   - View
-# 是否从主页隐藏 false不隐藏
-hiddenFromHomePage: true
-# 是否从搜索中隐藏 false不隐藏
-hiddenFromSearch: false
-# 是否从相关文章中隐藏文章 false不隐藏
-hiddenFromRelated: false
-# 是否从RSS/Atom订阅源中隐藏文章 false不隐藏
-hiddenFromFeed: false
 # 文章摘要
 summary: 前端小球3D加载动画效果实现
 # 文章头图片
-featuredImage: /images/c8c1d28/c8c1d28.webp
-featuredImagePreview: /images/c8c1d28/c8c1d28.webp
-# 是否显示目录
-toc: true
-# 是否启用数学公式渲染
-math: false
-# 是否启用图片画廊功能
-lightgallery: false
-# 文章的密码
-password:
-# 文章的密码提示信息
-message:
-# 文章是否转载
-repost:
-  enable: false
-  # 原文链接
-  url:
-# 关闭末尾赞赏按钮
-reward: false
-# See details front matter: https://fixit.lruihao.cn/documentation/content-management/introduction/#front-matter
+cover: /img/38f55ae/38f55ae.webp
 ---
 
 # Loading 圆形小球加载效果实现
