@@ -1,73 +1,30 @@
 ---
 # 标题
 title: NyxBot指令的使用方法
-# 副标题
-subtitle: 指令使用的方法以及注意事项
 # 发布日期
 date: 2024-12-08T22:40:08+08:00
-# 文章url别名
-slug: 1bb16eb
-# 是否为草稿
-draft: false
-# 作者信息
-author:
-  # 作者名称
-  name: KingPriems
-  # 作者链接
-  link: https://github.com/KingPrimes
-  # 作者邮箱
-  email: Sakitama_q@163.com
-  # 作者头像
-  avatar: https://avatars.githubusercontent.com/u/50130875
+# 永久链接
+permalink: posts/1bb16eb
 # 文章描述
 description: NyxBot指令的使用方法以及注意事项
 # 文章关键字
 keywords:
   - NyxBot的使用方法
   - NyxBot的指令
-# 文章许可证
-license: <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="fa-brands fa-creative-commons"></i>BY-NC-SA</a>
 # 是否开启评论
 comment: true
-# 文章权重
-weight: 10
+# 文章置顶(数值越大置顶优先级越大)
+sticky: 0
 # 文章标签
 tags:
   - NyxBot
 # 文章分类
 categories:
   - Bots
-# 是否从主页隐藏 false不隐藏
-hiddenFromHomePage: false
-# 是否从搜索中隐藏 false不隐藏
-hiddenFromSearch: false
-# 是否从相关文章中隐藏文章 false不隐藏
-hiddenFromRelated: false
-# 是否从RSS/Atom订阅源中隐藏文章 false不隐藏
-hiddenFromFeed: false
 # 文章摘要
 summary: NyxBot指令的使用方法以及注意事项
-# 文章头图片
-featuredImage: /images/1bb16eb/1bb16eb_featured.webp
-featuredImagePreview: /images/1bb16eb/1bb16eb_featured.webp
-# 是否显示目录
-toc: true
-# 是否启用数学公式渲染
-math: false
-# 是否启用图片画廊功能
-lightgallery: false
-# 文章的密码
-password:
-# 文章的密码提示信息
-message:
-# 文章是否转载
-repost:
-  enable: false
-  # 原文链接
-  url:
-reward: false
-
-# See details front matter: https://fixit.lruihao.cn/documentation/content-management/introduction/#front-matter
+# 封面
+cover: /img/1bb16eb/1bb16eb_featured.webp
 ---
 
 ## 常规指令列表

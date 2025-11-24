@@ -1,37 +1,23 @@
 ---
 # 标题
 title: NyxBot部署文档
-# 副标题
-subtitle: NyxBot的部署文档
+# 描述
+description: NyxBot的部署文档
 # 发布日期
 date: 2024-12-08T22:41:08+08:00
-# 文章url别名
-slug: d99b802
+# 永久链接
+permalink: posts/d99b802
 # 是否为草稿
 draft: false
-# 作者信息
-author:
-  # 作者名称
-  name: KingPriems
-  # 作者链接
-  link: https://github.com/KingPrimes
-  # 作者邮箱
-  email: Sakitama_q@163.com
-  # 作者头像
-  avatar: https://avatars.githubusercontent.com/u/50130875
-# 文章描述
-description: NyxBot的部署文档
 # 文章关键字
 keywords:
   - NyxBot部署文档
   - Warframe机器人
   - Warframe Bot
-# 文章许可证
-license: <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><i class="fa-brands fa-creative-commons"></i>BY-NC-SA</a>
 # 是否开启评论
 comment: true
-# 文章权重
-weight: 11
+# 文章置顶(数值越大置顶优先级越大)
+sticky: 10
 # 文章标签
 tags:
   - qqbot
@@ -40,36 +26,10 @@ tags:
 # 文章分类
 categories:
   - Bots
-# 是否从主页隐藏 false不隐藏
-hiddenFromHomePage: false
-# 是否从搜索中隐藏 false不隐藏
-hiddenFromSearch: false
-# 是否从相关文章中隐藏文章 false不隐藏
-hiddenFromRelated: false
-# 是否从RSS/Atom订阅源中隐藏文章 false不隐藏
-hiddenFromFeed: false
 # 文章摘要
 summary: NyxBot的部署文档,NyxBot是用于查询Warframe信息的QQ机器人。
-# 文章头图片
-featuredImage: /images/d99b802/d99b802_featured.webp
-featuredImagePreview: /images/d99b802/d99b802_featured.webp
-# 是否显示目录
-toc: true
-# 是否启用数学公式渲染
-math: false
-# 是否启用图片画廊功能
-lightgallery: false
-# 文章的密码
-password:
-# 文章的密码提示信息
-message:
-# 文章的重发布设置。当前启用了重发布功能，但URL为空。
-repost:
-  enable: false
-  url:
-reward: false
-
-# See details front matter: https://fixit.lruihao.cn/documentation/content-management/introduction/#front-matter
+# 封面
+cover: /img/d99b802/d99b802_featured.webp
 ---
 
 ## OneBot客户端
@@ -155,7 +115,7 @@ reward: false
     16. 若您的NyxBot与OneBot客户端不在同一台机器上部署则根据您的IP地址自行更改链接地址
     17. 例如：**ws://ip地址:端口号/ws/shiro**
     18. 完整示例
-    19. ![NapcatWebConfig.webp](/images/d99b802/NapcatWebConfig.webp)
+    19. ![NapcatWebConfig.webp](/img/d99b802/NapcatWebConfig.webp)
 3. 安装Java
     1. 执行 **sudo apt update** 命令 更新包管理器
     2. 执行 **sudo apt install openjdk-21-jdk 命令**
@@ -229,20 +189,21 @@ reward: false
 2. 跳转到[NyxBot仓库](https://github.com/KingPrimes/NyxBot)
 3. 在你登录GitHub账号的情况下点击界面中的 Fork按钮 根据提示复刻到你自己的账号下
 4. 等待复刻完成之后如下图操作
-   ![d99b802_1.webp](/images/d99b802/d99b802_1.webp)
-   ![d99b802_2.webp](/images/d99b802/d99b802_2.webp)
-   ![d99b802_3.webp](/images/d99b802/d99b802_3.webp)
-   ![d99b802_4.webp](/images/d99b802/d99b802_4.webp)
-   ![d99b802_5.webp](/images/d99b802/d99b802_5.webp)
+   ![d99b802_1.webp](/img/d99b802/d99b802_1.webp)
+   ![d99b802_2.webp](/img/d99b802/d99b802_2.webp)
+   ![d99b802_3.webp](/img/d99b802/d99b802_3.webp)
+   ![d99b802_4.webp](/img/d99b802/d99b802_4.webp)
+   ![d99b802_5.webp](/img/d99b802/d99b802_5.webp)
 
 ## 注意事项
 
 1. 如果出现端口冲突请添加 -Dserver.port=[端口] | --server.port=[端口] 启动参数 选一个即可 注意：***端口号是数字*** 不需要添加引号
-   -  ```bash 修改端口示例
+```bash 修改端口示例
       java -Dserver.port=端口 -jar NyxBot.jar
-      ```
-   - ```bash 修改端口示例
+```
+
+```bash 修改端口示例
       java -jar NyxBot.jar --server.port=端口
-      ```
+```
    - 端口被占用时会出现以下错误
-   - ![port_error.webp](/images/d99b802/port_error.webp)
+   - ![port_error.webp](/img/d99b802/port_error.webp)
