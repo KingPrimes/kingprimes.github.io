@@ -1,0 +1,7 @@
+- class_name: KC
+  class_desc: 普通的程序员
+  link_list:
+    - name: KC
+      link: https://kcme.space/
+      avatar: https://kcme.space/usr/themes/handsome/assets/img/avatar.png
+      desc: KC的博客

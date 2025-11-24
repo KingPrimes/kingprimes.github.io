@@ -1,0 +1,321 @@
+/* 赞助页面自定义样式 */
+
+/* 统计卡片容器 */
+.reward-stats-container {
+  margin: 2rem 0;
+  padding: 0;
+}
+
+/* 统计卡片 */
+.reward-stats-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  margin-bottom: 2rem;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 深色模式适配 */
+[data-theme="dark"] .reward-stats-card {
+  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.reward-stats-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* 统计卡片标题 */
+.reward-stats-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reward-stats-title i {
+  font-size: 1.8rem;
+}
+
+/* 统计项目网格布局 */
+.reward-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* 单个统计项 */
+.stats-item {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stats-item:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.stats-item i {
+  font-size: 2rem;
+  opacity: 0.9;
+}
+
+.stats-content {
+  flex: 1;
+}
+
+.stats-label {
+  font-size: 0.875rem;
+  opacity: 0.9;
+  margin-bottom: 0.25rem;
+}
+
+.stats-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  font-family: 'Consolas', 'Monaco', monospace;
+}
+
+/* 分类统计分隔线 */
+.stats-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 1rem 0;
+}
+
+/* 支付方式统计行 */
+.stats-payment-row {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.stats-payment-item {
+  flex: 1;
+  min-width: 150px;
+  text-align: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.stats-payment-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.stats-payment-item .payment-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.stats-payment-item .payment-name {
+  font-size: 0.875rem;
+  opacity: 0.9;
+  margin-bottom: 0.5rem;
+}
+
+.stats-payment-item .payment-amount {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.stats-payment-item .payment-count {
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+/* 赞助按钮样式优化 */
+.post-reward {
+  margin: 2rem 0;
+}
+
+/* 二维码横向展示样式 */
+.reward-qr-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3rem;
+  margin: 2rem 0;
+  padding: 2rem;
+  flex-wrap: wrap;
+}
+
+.reward-qr-display .reward-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s ease;
+}
+
+.reward-qr-display .reward-item:hover {
+  transform: translateY(-10px);
+}
+
+.reward-qr-display .post-qr-code-img {
+  width: 200px;
+  height: 200px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  border: 3px solid var(--card-bg);
+}
+
+.reward-qr-display .post-qr-code-img:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  transform: scale(1.05);
+}
+
+.reward-qr-display .post-qr-code-desc {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--font-color);
+  text-align: center;
+}
+
+/* 深色模式适配 */
+[data-theme="dark"] .reward-qr-display .post-qr-code-img {
+  border-color: var(--card-bg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .reward-qr-display .post-qr-code-img:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+/* 响应式设计 */
+@media screen and (max-width: 768px) {
+  .reward-stats-card {
+    padding: 1.5rem;
+  }
+  
+  .reward-stats-title {
+    font-size: 1.25rem;
+  }
+  
+  .reward-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .stats-item {
+    padding: 1rem;
+  }
+  
+  .stats-value {
+    font-size: 1.25rem;
+  }
+  
+  .stats-payment-row {
+    flex-direction: column;
+  }
+  
+  .stats-payment-item {
+    min-width: 100%;
+  }
+  
+  /* 二维码展示响应式 */
+  .reward-qr-display {
+    gap: 2rem;
+    padding: 1rem;
+  }
+  
+  .reward-qr-display .post-qr-code-img {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .reward-qr-display .post-qr-code-desc {
+    font-size: 1rem;
+  }
+}
+
+/* 数字动画效果 */
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stats-value.animate {
+  animation: countUp 0.6s ease-out;
+}
+
+/* 赞助表格样式优化 */
+.reward-table-wrapper {
+  margin: 2rem 0;
+}
+
+.reward-table-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card-bg);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reward-table-wrapper th {
+  background: var(--btn-bg);
+  color: var(--btn-color);
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+.reward-table-wrapper td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--hr-border);
+}
+
+.reward-table-wrapper tr:last-child td {
+  border-bottom: none;
+}
+
+.reward-table-wrapper tr:hover {
+  background: var(--cardHover);
+}
+
+/* Tabs 标签页样式优化 */
+.tabs {
+  margin: 2rem 0;
+}
+
+.tabs .nav-tabs {
+  border-bottom: 2px solid var(--tab-border-color);
+  margin-bottom: 1.5rem;
+}
+
+.tabs .tab-content {
+  padding: 1rem 0;
+}

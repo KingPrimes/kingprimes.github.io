@@ -1,0 +1,144 @@
+symbol: ¥
+animation: true
+logs:
+  - date: 2022-07-14
+    sponsor: "*晨"
+    money: 50
+    origin: 支付宝
+    remark: ""
+
+  - date: 2022-08-24
+    sponsor: "**谦"
+    money: 50
+    origin: 支付宝
+    remark: ""
+
+  - date: 2022-09-03
+    sponsor: "**谦"
+    money: 100
+    origin: 支付宝
+    remark: ""
+
+  - date: 2022-09-12
+    sponsor: "*健"
+    money: 20
+    origin: 支付宝
+    remark: ""
+
+  - date: 2022-09-15
+    sponsor: "**谦"
+    money: 100
+    origin: 支付宝
+    remark: ""
+
+  - date: 2022-09-16
+    sponsor: "A*i"
+    money: 10
+    origin: 微信
+    remark: ""
+
+  - date: 2022-09-22
+    sponsor: "**谦"
+    money: 30
+    origin: 支付宝
+    remark: ""
+
+  - date: 2022-10-11
+    sponsor: "C*F"
+    money: 20
+    origin: 微信
+    remark: ""
+
+  - date: 2022-10-11
+    sponsor: "**谦"
+    money: 50
+    origin: 支付宝
+    remark: ""
+  - date: 2022-10-17
+    sponsor: "**平"
+    money: 10
+    origin: 支付宝
+    remark: ""
+
+  - date: 2023-02-10
+    sponsor: "**顺"
+    money: 66
+    origin: 支付宝
+    remark: ""
+
+  - date: 2023-03-07
+    sponsor: "**元"
+    money: 50
+    origin: 支付宝
+    remark: ""
+
+  - date: 2023-03-22
+    sponsor: "**谦"
+    money: 50
+    origin: 支付宝
+    remark: ""
+
+  - date: 2023-04-14
+    sponsor: "R*D"
+    money: 10
+    origin: 微信
+    remark: ""
+
+  - date: 2023-04-22
+    sponsor: "*木"
+    money: 20
+    origin: 微信
+    remark: ""
+
+  - date: 2023-08-01
+    sponsor: "*在"
+    money: 50
+    origin: 微信
+    remark: ""
+
+  - date: 2023-08-21
+    sponsor: "*灯"
+    money: 50
+    origin: 微信
+    remark: ""
+
+  - date: 2024-12-13
+    sponsor: "即*"
+    money: 30
+    origin: 微信
+    remark: ""
+
+  - date: 2025-01-25
+    sponsor: "*吗"
+    money: 25
+    origin: 微信
+    remark: "6"
+
+  - date: 2025-01-25
+    sponsor: "**辰"
+    money: 25
+    origin: 支付宝
+    remark: ""
+    
+  - date: 2025-03-10
+    sponsor: "R*a"
+    money: 25
+    origin: 微信
+    remark: ""
+
+  - date: 2025-06-26
+    sponsor: "伤心大土豆"
+    money: 25
+    origin: 微信
+    remark: ""
+    
+  - date: 2025-09-17
+    sponsor: "baofeng12920"
+    money: 500
+    origin: 微信
+    remark: "大佬加油！大佬牛逼！"
+  - date: 2025-11-18
+    sponsor: "**明"
+    money: 25
+    origin: 支付宝
+    remark: ""
