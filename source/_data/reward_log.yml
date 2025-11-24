@@ -1,3 +1,5 @@
+symbol: ¥
+animation: true
 logs:
   - date: '2022-07-14'
     sponsor: "*晨"
