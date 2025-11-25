@@ -116,7 +116,7 @@ markdown:
 OhMyLive2d:
   enable: true
   option:
-    source: "localhost"
+    source: "kingprimes.top"
     # 主题色 - 与 butterfly 主题一致
     primaryColor: "#49B1F5"
     # 位置
