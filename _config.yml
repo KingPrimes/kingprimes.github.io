@@ -12,7 +12,7 @@ language: zh-CN
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: https://kingprimes.top
+url: https://kingprimes.github.io
 permalink: :category/:post_title
 permalink_defaults:
 pretty_urls:
@@ -89,6 +89,7 @@ pagination_dir: page
 # Include / Exclude file(s)
 ## include:/exclude: options only apply to the 'source/' folder
 include:
+  - live2d/
 exclude:
 ignore:
 
@@ -115,7 +116,7 @@ markdown:
 OhMyLive2d:
   enable: true
   option:
-    source: 'kingprimes.github.io'
+    #source: 'kingprimes.github.io'
     # 主题色 - 与 butterfly 主题一致
     primaryColor: "#49B1F5"
     # 位置
@@ -200,7 +201,7 @@ OhMyLive2d:
 
     # 模型配置
     models:
-      - path: /live2d/moon_rabbit/psd_b.model3.json
+      - path: live2d/moon_rabbit/psd_b.model3.json
         name: "月兔"
         position: [0, 40]
         scale: 0.08
@@ -208,7 +209,7 @@ OhMyLive2d:
           height: 350
           width: 300
 
-      - path: /live2d/maolili_vts/mailili.model3.json
+      - path: live2d/maolili_vts/mailili.model3.json
         name: "猫莉莉"
         position: [0, 40]
         scale: 0.08
