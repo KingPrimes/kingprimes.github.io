@@ -28,7 +28,6 @@ category_dir: categories
 code_dir: downloads/code
 i18n_dir: :lang
 skip_render:
-  - live2d/**
 
 # Writing
 new_post_name: :title.md # File name of new posts
