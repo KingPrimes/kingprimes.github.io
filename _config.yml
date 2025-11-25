@@ -201,7 +201,7 @@ OhMyLive2d:
 
     # 模型配置
     models:
-      - path: /live2d/moon_rabbit/psd_b.model3.json
+      - path: static/live2d/moon_rabbit/psd_b.model3.json
         name: "月兔"
         position: [0, 40]
         scale: 0.08
@@ -209,7 +209,7 @@ OhMyLive2d:
           height: 350
           width: 300
 
-      - path: /live2d/maolili_vts/mailili.model3.json
+      - path: static/live2d/maolili_vts/mailili.model3.json
         name: "猫莉莉"
         position: [0, 40]
         scale: 0.08
