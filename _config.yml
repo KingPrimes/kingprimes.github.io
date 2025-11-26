@@ -148,7 +148,7 @@ OhMyLive2d:
 
       # 闲置提示
       idleTips:
-        wordTheDay: true
+        wordTheDay: false
         duration: 5000
         interval: 15000
         priority: 2
