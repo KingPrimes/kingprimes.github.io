@@ -5,14 +5,6 @@
 # English: https://butterfly.js.org/en/
 # --------------------------------------
 
-# Site
-title: 老王的冒险之旅
-description: 老王的冒险之旅博客
-keywords: 老王的冒险之旅博客,java,nyxbot,warframebot,warframe机器人
-author: KingPrimes
-language: zh-CN
-timezone: "Asia/Shanghai"
-
 # --------------------------------------
 # 导航栏设置
 # --------------------------------------
@@ -458,7 +450,7 @@ aside:
     # Time difference between publish date and now
     # Formal: Month/Day/Year Time or Year/Month/Day Time
     # Leave it empty if you don't enable this feature
-    runtime_date:
+    runtime_date: 2023/12/18 00:00:00
 
 # --------------------------------------
 # Bottom right button
@@ -647,16 +639,16 @@ comments:
   # Leave it empty if you don't need comments
   # Choose: Disqus/Disqusjs/Livere/Gitalk/Valine/Waline/Utterances/Facebook Comments/Twikoo/Giscus/Remark42/Artalk
   # Format of two comments system : Disqus,Waline
-  use:
+  use: Waline
   # Display the comment name next to the button
   text: true
   # Lazyload: The comment system will be load when comment element enters the browser's viewport.
   # If you set it to true, the comment count will be invalid
-  lazyload: false
+  lazyload: true
   # Display comment count in post's top_img
-  count: false
+  count: true
   # Display comment count in Home Page
-  card_post_count: false
+  card_post_count: true
 
 # Disqus
 # https://disqus.com/
@@ -703,11 +695,14 @@ valine:
 # Waline - A simple comment system with backend support fork from Valine
 # https://waline.js.org/
 waline:
-  serverURL:
+  serverURL: https://waline.kingprimes.top/
   bg:
   # Use Waline pageview count as the page view count
-  pageview: false
+  pageview: true
   option:
+    wordLimit: 1000
+    pageSize: 10
+    imageUploader: false
 
 # Utterances
 # https://utteranc.es/
@@ -744,12 +739,12 @@ twikoo:
 # Giscus
 # https://giscus.app/
 giscus:
-  repo: KingPrimes/kingprimes.github.io
-  repo_id: R_kgDONYW3oA
-  category_id: DIC_kwDONYW3oM4Ck275
-  light_theme: light
-  dark_theme: dark
-  js: https://giscus.app/client.js
+  repo:
+  repo_id:
+  category_id:
+  light_theme:
+  dark_theme:
+  js:
   option:
 
 # Remark42
@@ -1023,7 +1018,7 @@ clickShowText:
 # https://github.com/francoischalifour/medium-zoom
 # https://fancyapps.com/fancybox/
 # Leave it empty if you don't need lightbox
-lightbox:
+lightbox: fancybox
 
 # --------------------------------------
 # Tag Plugins settings
