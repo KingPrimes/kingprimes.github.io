@@ -24,7 +24,7 @@ categories:
 # 文章摘要
 summary: NyxBot指令的使用方法以及注意事项
 # 封面
-cover: /img/1bb16eb/1bb16eb_featured.webp
+cover: https://origin.picgo.net/2024/11/20/6640a8aeea4c26810a5e2095cb1bc.jpg
 ---
 
 ## 常规指令列表

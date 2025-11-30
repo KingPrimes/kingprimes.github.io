@@ -17,7 +17,7 @@ keywords:
 # 是否开启评论
 comment: true
 # 文章置顶(数值越大置顶优先级越大)
-sticky: 10
+sticky: 0
 # 文章标签
 tags:
   - qqbot
@@ -29,7 +29,7 @@ categories:
 # 文章摘要
 summary: NyxBot的部署文档,NyxBot是用于查询Warframe信息的QQ机器人。
 # 封面
-cover: /img/d99b802/d99b802_featured.webp
+cover: https://origin.picgo.net/2024/11/20/6640a959e9dec28ba14780b8df556.jpg
 ---
 
 ## OneBot客户端
