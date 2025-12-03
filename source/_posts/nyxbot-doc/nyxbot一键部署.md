@@ -622,10 +622,6 @@ OneBot 是一个聊天机器人应用接口标准，NyxBot 通过 OneBot 协议�
    - 设置 HTTP/WebSocket 服务端口（默认 3000）
    - 启用 OneBot 服务
 
-5. **配置 NyxBot**
-   - 在 NyxBot 配置文件中填写相同端口
-   - 确保 IP 地址为 `127.0.0.1` 或 `localhost`
-
 ---
 
 #### 2. NapCatQQ（推荐 - 独立客户端）
@@ -733,18 +729,6 @@ OneBot 是一个聊天机器人应用接口标准，NyxBot 通过 OneBot 协议�
     "port": 3001
   }
 }
-```
-
-#### NyxBot 配置
-
-在 NyxBot 的配置文件中（通常是 `application.yml` 或 `config.yml`）：
-
-```yaml
-onebot:
-  http:
-    url: http://127.0.0.1:3000
-  websocket:
-    url: ws://127.0.0.1:3001
 ```
 
 ---
@@ -914,23 +898,21 @@ cat nyxbot_data/install.log
 ### 诊断步骤
 
 1. **检查 Java 环境**
+
    ```bash
    java -version
    # 应显示: openjdk version
    ```
 
-"21.
-
-````
-
 2. **检查网络连接**
-```bash
-# 测试 GitHub 连接
-curl -I https://api.github.com
 
-# 测试代理（如使用）
-curl -I https://ghfast.top/https://api.github.com
-````
+   ```bash
+   # 测试 GitHub 连接
+   curl -I https://api.github.com
+
+   # 测试代理（如使用）
+   curl -I https://ghfast.top/https://api.github.com
+   ```
 
 3. **检查 OneBot 状态**
 
@@ -1285,7 +1267,7 @@ java \
 
 ### 社区支持
 
-- QQ 群: [QQ群](https://jq.qq.com/?_wv=1027&k=RgqgJLij)
+- QQ 群: [QQ 群](https://jq.qq.com/?_wv=1027&k=RgqgJLij)
 - Discord: [待添加]
 - 文档: https://github.com/KingPrimes/NyxBot/wiki
 
