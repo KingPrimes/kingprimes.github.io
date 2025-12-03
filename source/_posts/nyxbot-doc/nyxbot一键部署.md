@@ -135,10 +135,10 @@ NyxBot 一键部署脚本是一套跨平台自动化部署工具，支持 **Linu
 
 ```bash
 # 方法一：使用 curl
-curl -O https://raw.githubusercontent.com/KingPrimes/NyxBot/main/nyxbot-linux.sh
+curl -O https://kingprimes.top/script/nyxbot-linux.sh
 
 # 方法二：使用 wget
-wget https://raw.githubusercontent.com/KingPrimes/NyxBot/main/nyxbot-linux.sh
+wget https://kingprimes.top/script/nyxbot-linux.sh
 ```
 
 #### 2. 添加执行权限
@@ -183,7 +183,7 @@ bash nyxbot-linux.sh
 
 ```bash
 # 使用 curl 下载
-curl -O https://raw.githubusercontent.com/KingPrimes/NyxBot/main/nyxbot-macos.sh
+curl -O https://kingprimes.top/script/nyxbot-macos.sh
 ```
 
 #### 2. 添加执行权限
@@ -212,13 +212,13 @@ chmod +x nyxbot-macos.sh
 
 **方法一：使用浏览器**
 
-- 访问: `https://raw.githubusercontent.com/KingPrimes/NyxBot/main/nyxbot-windows.ps1`
+- 访问: `https://kingprimes.top/script/nyxbot-windows.ps1`
 - 右键 > 另存为 `nyxbot-windows.ps1`
 
 **方法二：使用 PowerShell**
 
 ```powershell
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/KingPrimes/NyxBot/main/nyxbot-windows.ps1" -OutFile "nyxbot-windows.ps1"
+Invoke-WebRequest -Uri "https://kingprimes.top/script/nyxbot-windows.ps1" -OutFile "nyxbot-windows.ps1"
 ```
 
 #### 2. 设置执行策略（首次运行）
@@ -368,7 +368,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 cat > deploy.sh << 'EOF'
 #!/bin/bash
 # 下载脚本
-curl -sO https://raw.githubusercontent.com/KingPrimes/NyxBot/main/nyxbot-linux.sh
+curl -sO https://kingprimes.top/script/nyxbot-linux.sh
 chmod +x nyxbot-linux.sh
 
 # 自动安装（假设已有JDK和OneBot）
