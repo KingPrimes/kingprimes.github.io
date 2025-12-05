@@ -117,14 +117,14 @@ show_help() {
 EOF
 }
 
-# 检查Java版本，如果没有安装JDK 21则自动安装
-check_and_install_jdk21() {
+# 检查Java版本，如果没有安装JRE 21则自动安装
+check_and_install_jre21() {
     if [ "$SKIP_JAVA_INSTALL" = true ]; then
         log_warning "跳过Java环境检查"
         return 0
     fi
 
-    log_info "检查JDK 21环境..."
+    log_info "检查JRE 21环境..."
 
     if command -v java &> /dev/null; then
         local java_version_output
@@ -132,7 +132,7 @@ check_and_install_jdk21() {
         
         # 更精确的版本匹配
         if echo "$java_version_output" | grep -qE '(openjdk|java) version "21\.|openjdk 21\.'; then
-            log_success "JDK 21已安装"
+            log_success "JRE 21已安装"
             java -version 2>&1 | head -1 | tee -a "$LOG_FILE"
             return 0
         else
@@ -141,8 +141,8 @@ check_and_install_jdk21() {
         fi
     fi
 
-    # 未安装JDK 21，尝试自动安装
-    log_info "未检测到JDK 21，尝试自动安装..."
+    # 未安装JRE 21，尝试自动安装
+    log_info "未检测到JRE 21，尝试自动安装..."
 
     # 检查是否安装了Homebrew
     if ! command -v brew &> /dev/null; then
@@ -168,10 +168,10 @@ check_and_install_jdk21() {
         fi
     fi
 
-    # 使用Homebrew安装OpenJDK 21
-    log_info "使用Homebrew安装OpenJDK 21..."
-    brew install openjdk@21 || {
-        log_error "Homebrew安装OpenJDK 21失败"
+    # 使用Homebrew安装OpenJRE 21
+    log_info "使用Homebrew安装OpenJRE 21..."
+    brew install openjre@21 || {
+        log_error "Homebrew安装OpenJRE 21失败"
         exit 1
     }
 
@@ -179,12 +179,12 @@ check_and_install_jdk21() {
     if [ "$(uname -m)" = "arm64" ]; then
         # Apple Silicon Mac
         log_info "设置Apple Silicon Mac的Java环境..."
-        local java_path="/opt/homebrew/opt/openjdk@21"
+        local java_path="/opt/homebrew/opt/openjre@21"
         
         # 添加到shell配置文件
         {
             echo ''
-            echo '# OpenJDK 21'
+            echo '# OpenJRE 21'
             echo "export PATH=\"$java_path/bin:\$PATH\""
             echo "export CPPFLAGS=\"-I$java_path/include\""
             echo "export LDFLAGS=\"-L$java_path/lib\""
@@ -194,18 +194,18 @@ check_and_install_jdk21() {
         export CPPFLAGS="-I$java_path/include"
         export LDFLAGS="-L$java_path/lib"
 
-        # 创建系统Java目录链接
+        # 创建系统Java目录链接（JRE目录结构与JDK不同）
         sudo mkdir -p /Library/Java/JavaVirtualMachines
-        sudo ln -sfn "$java_path/libexec/openjdk.jdk" /Library/Java/JavaVirtualMachines/openjdk-21.jdk
+        sudo ln -sfn "$java_path/libexec/openjdk.jre" /Library/Java/JavaVirtualMachines/openjre-21.jre
     else
         # Intel Mac
         log_info "设置Intel Mac的Java环境..."
-        local java_path="/usr/local/opt/openjdk@21"
+        local java_path="/usr/local/opt/openjre@21"
         
         # 添加到shell配置文件
         {
             echo ''
-            echo '# OpenJDK 21'
+            echo '# OpenJRE 21'
             echo "export PATH=\"$java_path/bin:\$PATH\""
             echo "export CPPFLAGS=\"-I$java_path/include\""
             echo "export LDFLAGS=\"-L$java_path/lib\""
@@ -215,209 +215,18 @@ check_and_install_jdk21() {
         export CPPFLAGS="-I$java_path/include"
         export LDFLAGS="-L$java_path/lib"
 
-        # 创建系统Java目录链接
+        # 创建系统Java目录链接（JRE目录结构与JDK不同）
         sudo mkdir -p /Library/Java/JavaVirtualMachines
-        sudo ln -sfn "$java_path/libexec/openjdk.jdk" /Library/Java/JavaVirtualMachines/openjdk-21.jdk
+        sudo ln -sfn "$java_path/libexec/openjdk.jre" /Library/Java/JavaVirtualMachines/openjre-21.jre
     fi
 
     # 验证安装
     if command -v java &> /dev/null && java -version 2>&1 | grep -qE '(openjdk|java) version "21\.|openjdk 21\.'; then
-        log_success "OpenJDK 21安装成功"
+        log_success "OpenJRE 21安装成功"
         java -version 2>&1 | head -1 | tee -a "$LOG_FILE"
     else
-        log_error "OpenJDK 21安装失败"
+        log_error "OpenJRE 21安装失败"
         exit 1
-    fi
-}
-
-# 检测 OneBot 实现是否安装
-check_onebot_implementation() {
-    log_info "检查 OneBot 协议实现..."
-    
-    echo ""
-    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${YELLOW}                  重要提示 - OneBot 协议实现                     ${NC}"
-    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo ""
-    echo -e "${CYAN}NyxBot 需要 OneBot 协议实现才能连接 QQ${NC}"
-    echo "支持的实现："
-    echo "  • LLOneBot  - QQ 官方客户端插件"
-    echo "  • NapCatQQ  - 独立 QQ 客户端"
-    echo ""
-    
-    read -p "您是否已安装并配置 LLOneBot 或 NapCatQQ？(y/n): " -n 1 -r
-    echo ""
-    
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        log_success "OneBot 实现已确认安装"
-        return 0
-    fi
-    
-    # 未安装，显示安装菜单
-    show_onebot_install_menu
-}
-
-# 显示 OneBot 安装菜单
-show_onebot_install_menu() {
-    echo ""
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${CYAN}               OneBot 协议实现安装引导                            ${NC}"
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo ""
-    echo "请选择要安装的实现："
-    echo ""
-    echo -e "${GREEN}  1)${NC} LLOneBot ${YELLOW}(推荐 - 适合已有 QQ 的用户)${NC}"
-    echo "     ├─ 作为 QQ 插件运行"
-    echo "     ├─ 无需额外客户端"
-    echo "     ├─ 使用已有 QQ 账号"
-    echo "     └─ 文档：${CYAN}https://llonebot.com/guide/getting-started${NC}"
-    echo ""
-    echo -e "${GREEN}  2)${NC} NapCatQQ ${YELLOW}(推荐 - 独立运行)${NC}"
-    echo "     ├─ 独立的 QQ 客户端"
-    echo "     ├─ 适合服务器部署"
-    echo "     ├─ 支持 Docker"
-    echo "     └─ 文档：${CYAN}https://napneko.github.io/guide/boot/Shell${NC}"
-    echo ""
-    echo -e "${GREEN}  3)${NC} 我已安装，跳过此步骤"
-    echo ""
-    echo -e "${GREEN}  4)${NC} 退出脚本"
-    echo ""
-    
-    read -p "请选择 [1-4]: " choice
-    
-    case $choice in
-        1)
-            show_llonebot_guide
-            ;;
-        2)
-            show_napcat_guide
-            ;;
-        3)
-            log_info "跳过 OneBot 检测"
-            return 0
-            ;;
-        4)
-            log_info "退出脚本"
-            exit 0
-            ;;
-        *)
-            log_error "无效选择，请重新选择"
-            show_onebot_install_menu
-            ;;
-    esac
-}
-
-# LLOneBot 安装指引
-show_llonebot_guide() {
-    echo ""
-    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${GREEN}                   LLOneBot 安装指引                              ${NC}"
-    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo ""
-    echo "LLOneBot 是 QQ 的插件，安装步骤："
-    echo ""
-    echo -e "${CYAN}步骤 1:${NC} 下载并安装 QQ 官方客户端（如果未安装）"
-    echo "   macOS: https://im.qq.com/macqq"
-    echo ""
-    echo -e "${CYAN}步骤 2:${NC} 访问 LLOneBot 官网获取最新版本"
-    echo "   ${CYAN}https://llonebot.com/guide/getting-started${NC}"
-    echo ""
-    echo -e "${CYAN}步骤 3:${NC} 按照文档说明安装 LLOneBot 插件"
-    echo "   • 下载 macOS 版本的 LLOneBot 插件"
-    echo "   • 将插件放入 QQ 的插件目录"
-    echo "   • 重启 QQ 客户端"
-    echo ""
-    echo -e "${CYAN}步骤 4:${NC} 配置 OneBot 连接信息"
-    echo "   • 打开 QQ 设置中的 LLOneBot 配置"
-    echo "   • 设置 HTTP/WebSocket 服务端口（默认 3000）"
-    echo "   • 确保与 NyxBot 配置匹配"
-    echo ""
-    echo -e "${YELLOW}⚠️  重要提示:${NC}"
-    echo "   • 确保 LLOneBot 服务已启动"
-    echo "   • 记录配置的端口号"
-    echo "   • 在 NyxBot 配置中填写相同端口"
-    echo ""
-    
-    # macOS 使用 open 命令打开浏览器
-    read -p "是否在浏览器中打开文档？(y/n): " -n 1 -r
-    echo ""
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        open "https://llonebot.com/guide/getting-started" 2>/dev/null || log_warning "无法自动打开浏览器，请手动访问上述链接"
-    fi
-    
-    wait_for_installation_complete
-}
-
-# NapCatQQ 安装指引
-show_napcat_guide() {
-    echo ""
-    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${GREEN}                   NapCatQQ 安装指引                              ${NC}"
-    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo ""
-    echo "NapCatQQ 是独立的 QQ 客户端，安装步骤："
-    echo ""
-    echo -e "${CYAN}步骤 1:${NC} 访问 NapCatQQ 官网"
-    echo "   ${CYAN}https://napneko.github.io/guide/boot/Shell${NC}"
-    echo ""
-    echo -e "${CYAN}步骤 2:${NC} 下载适合 macOS 的版本"
-    echo "   • macOS: Shell 脚本"
-    echo ""
-    echo -e "${CYAN}步骤 3:${NC} 安装方法（Shell 脚本）"
-    echo "   ${YELLOW}# 下载安装脚本${NC}"
-    echo "   curl -o napcat.sh https://nclatest.znin.net/NapCat/NapCat-Installer/main/script/install.sh"
-    echo ""
-    echo "   ${YELLOW}# 添加执行权限${NC}"
-    echo "   chmod +x napcat.sh"
-    echo ""
-    echo "   ${YELLOW}# 运行安装脚本${NC}"
-    echo "   sudo ./napcat.sh"
-    echo ""
-    echo -e "${CYAN}步骤 4:${NC} 配置 NapCatQQ"
-    echo "   • 编辑配置文件 napcat.json"
-    echo "   • 设置 HTTP/WebSocket 端口（默认 3000）"
-    echo "   • 配置 QQ 账号信息"
-    echo ""
-    echo -e "${CYAN}步骤 5:${NC} 启动 NapCatQQ"
-    echo "   ${YELLOW}# 启动服务${NC}"
-    echo "   napcat start"
-    echo ""
-    echo "   ${YELLOW}# 扫码登录 QQ${NC}"
-    echo ""
-    echo -e "${YELLOW}⚠️  重要提示:${NC}"
-    echo "   • 首次启动需要扫码登录"
-    echo "   • 记录配置的端口号"
-    echo "   • 确保 NapCat 服务持续运行"
-    echo ""
-    
-    # macOS 使用 open 命令打开浏览器
-    read -p "是否在浏览器中打开文档？(y/n): " -n 1 -r
-    echo ""
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        open "https://napneko.github.io/guide/boot/Shell" 2>/dev/null || log_warning "无法自动打开浏览器，请手动访问上述链接"
-    fi
-    
-    wait_for_installation_complete
-}
-
-# 等待用户完成安装
-wait_for_installation_complete() {
-    echo ""
-    log_info "请按照上述步骤完成安装"
-    echo ""
-    read -p "完成安装后按任意键继续..." -n 1 -r
-    echo ""
-    echo ""
-    
-    # 再次确认
-    read -p "确认已完成 OneBot 实现的安装和配置？(y/n): " -n 1 -r
-    echo ""
-    
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        log_warning "未完成安装，返回菜单"
-        show_onebot_install_menu
-    else
-        log_success "OneBot 实现配置完成，继续启动 NyxBot"
     fi
 }
 
@@ -653,10 +462,7 @@ download_sha256() {
 main() {
     parse_arguments "$@"
     
-    check_and_install_jdk21
-    
-    # 检查 OneBot 实现
-    check_onebot_implementation
+    check_and_install_jre21
     
     # 测试网络和选择代理
     test_github_proxy

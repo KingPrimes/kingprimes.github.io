@@ -106,14 +106,14 @@ Set-Content -Path $LOG_FILE -Value $logHeader
 
 Write-Host "=== NyxBot启动脚本(Windows) v$SCRIPT_VERSION ===" -ForegroundColor Cyan
 
-# 检查Java版本，如果没有安装JDK 21则尝试安装
-function Check-AndInstallJDK21 {
+# 检查Java版本，如果没有安装JRE 21则尝试安装
+function CheckAndInstallJRE21 {
     if ($SkipJava) {
         Write-Log "跳过Java环境检查" "WARNING"
         return
     }
 
-    Write-Log "检查JDK 21环境..." "INFO"
+    Write-Log "检查JRE 21环境..." "INFO"
 
     try {
         $javaVersionOutput = & java -version 2>&1
@@ -121,7 +121,7 @@ function Check-AndInstallJDK21 {
         Write-Log "检测到Java: $javaVersionLine" "INFO"
 
         if ($javaVersionLine -match '"21\.|openjdk 21\.') {
-            Write-Log "JDK 21已安装" "SUCCESS"
+            Write-Log "JRE 21已安装" "SUCCESS"
             return
         } else {
             Write-Log "检测到Java，但不是版本21" "WARNING"
@@ -130,38 +130,38 @@ function Check-AndInstallJDK21 {
         Write-Log "未检测到Java安装" "WARNING"
     }
 
-    Write-Log "未检测到JDK 21，尝试自动安装..." "INFO"
+    Write-Log "未检测到JRE 21，尝试自动安装..." "INFO"
 
     # 检查是否安装了winget
     $wingetAvailable = $null -ne (Get-Command winget -ErrorAction SilentlyContinue)
 
     if ($wingetAvailable) {
-        Write-Log "检测到Windows Package Manager (winget)，使用它安装OpenJDK 21..." "INFO"
+        Write-Log "检测到Windows Package Manager (winget)，使用它安装OpenJRE 21..." "INFO"
 
-        # 尝试安装Microsoft Build of OpenJDK 21
+        # 尝试安装Microsoft Build of OpenJRE 21
         try {
-            Write-Log "尝试安装 Microsoft Build of OpenJDK 21..." "INFO"
-            winget install --id Microsoft.OpenJDK.21 -e --accept-source-agreements --accept-package-agreements --silent
-            Write-Log "Microsoft OpenJDK 21安装成功" "SUCCESS"
+            Write-Log "尝试安装 Microsoft Build of OpenJRE 21..." "INFO"
+            winget install --id Microsoft.OpenJDK.21.JRE -e --accept-source-agreements --accept-package-agreements --silent
+            Write-Log "Microsoft OpenJRE 21安装成功" "SUCCESS"
             
             # 刷新环境变量
             $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
             return
         } catch {
-            Write-Log "Microsoft OpenJDK安装失败: $($_.Exception.Message)" "WARNING"
+            Write-Log "Microsoft OpenJRE安装失败: $($_.Exception.Message)" "WARNING"
         }
 
-        # 尝试安装Adoptium Temurin OpenJDK 21
+        # 尝试安装Adoptium Temurin OpenJRE 21
         try {
-            Write-Log "尝试安装 Eclipse Temurin OpenJDK 21..." "INFO"
-            winget install --id EclipseAdoptium.Temurin.21.JDK -e --accept-source-agreements --accept-package-agreements --silent
-            Write-Log "Eclipse Temurin OpenJDK 21安装成功" "SUCCESS"
+            Write-Log "尝试安装 Eclipse Temurin OpenJRE 21..." "INFO"
+            winget install --id EclipseAdoptium.Temurin.21.JRE -e --accept-source-agreements --accept-package-agreements --silent
+            Write-Log "Eclipse Temurin OpenJRE 21安装成功" "SUCCESS"
             
             # 刷新环境变量
             $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
             return
         } catch {
-            Write-Log "Eclipse Temurin OpenJDK安装失败: $($_.Exception.Message)" "WARNING"
+            Write-Log "Eclipse Temurin OpenJRE安装失败: $($_.Exception.Message)" "WARNING"
         }
     }
 
@@ -169,61 +169,35 @@ function Check-AndInstallJDK21 {
     $chocoInstalled = $null -ne (Get-Command choco -ErrorAction SilentlyContinue)
 
     if ($chocoInstalled) {
-        Write-Log "检测到Chocolatey，使用它安装OpenJDK 21..." "INFO"
+        Write-Log "检测到Chocolatey，使用它安装OpenJRE 21..." "INFO"
         try {
-            choco install -y openjdk --version=21
-            Write-Log "OpenJDK 21安装成功" "SUCCESS"
+            choco install -y openjre --version=21
+            Write-Log "OpenJRE 21安装成功" "SUCCESS"
             
             # 刷新环境变量
             $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
             return
         } catch {
-            Write-Log "Chocolatey安装OpenJDK失败: $($_.Exception.Message)" "ERROR"
+            Write-Log "Chocolatey安装OpenJRE失败: $($_.Exception.Message)" "ERROR"
         }
     }
 
     # 无法自动安装，提供手动安装指导
-    Write-Log "无法自动安装OpenJDK 21。请手动安装：" "ERROR"
-    Write-Host "1. 访问 https://learn.microsoft.com/java/openjdk/download 下载Microsoft Build of OpenJDK 21" -ForegroundColor Yellow
-    Write-Host "2. 或访问 https://adoptium.net/ 下载Eclipse Temurin OpenJDK 21" -ForegroundColor Yellow
+    Write-Log "无法自动安装OpenJRE 21。请手动安装：" "ERROR"
+    Write-Host "1. 访问 https://learn.microsoft.com/java/openjdk/download 下载Microsoft Build of OpenJRE 21" -ForegroundColor Yellow
+    Write-Host "2. 或访问 https://adoptium.net/ 下载Eclipse Temurin OpenJRE 21" -ForegroundColor Yellow
 
     if ($wingetAvailable) {
-        Write-Host "3. 或使用winget安装: winget install --id Microsoft.OpenJDK.21 -e" -ForegroundColor Yellow
+        Write-Host "3. 或使用winget安装: winget install --id Microsoft.OpenJDK.21.JRE -e" -ForegroundColor Yellow
     }
 
     if ($chocoInstalled) {
-        Write-Host "4. 或使用Chocolatey安装: choco install -y openjdk --version=21" -ForegroundColor Yellow
+        Write-Host "4. 或使用Chocolatey安装: choco install -y openjre --version=21" -ForegroundColor Yellow
     }
 
     pause
     exit 1
 }
-
-# 检测 OneBot 实现
-function Test-OneBotImplementation {
-    Write-Log "检查 OneBot 协议实现..." "INFO"
-    
-    Write-Host ""
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Yellow
-    Write-Host "                  重要提示 - OneBot 协议实现                     " -ForegroundColor Yellow
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Yellow
-    Write-Host ""
-    Write-Host "NyxBot 需要 OneBot 协议实现才能连接 QQ" -ForegroundColor Cyan
-    Write-Host "支持的实现："
-    Write-Host "  • LLOneBot  - QQ 官方客户端插件"
-    Write-Host "  • NapCatQQ  - 独立 QQ 客户端"
-    Write-Host ""
-    
-    $response = Read-Host "您是否已安装并配置 LLOneBot 或 NapCatQQ？(y/n)"
-    
-    if ($response -match '^[Yy]') {
-        Write-Log "OneBot 实现已确认安装" "SUCCESS"
-        return
-    }
-    
-    Show-OneBotInstallMenu
-}
-
 # 显示安装菜单
 function Show-OneBotInstallMenu {
     Write-Host ""
@@ -277,125 +251,6 @@ function Show-OneBotInstallMenu {
         }
     }
 }
-
-# LLOneBot 指引
-function Show-LLOneBotGuide {
-    Write-Host ""
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Green
-    Write-Host "                   LLOneBot 安装指引                              " -ForegroundColor Green
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Green
-    Write-Host ""
-    Write-Host "LLOneBot 是 QQ 的插件，安装步骤："
-    Write-Host ""
-    Write-Host "步骤 1: " -NoNewline -ForegroundColor Cyan
-    Write-Host "下载并安装 QQ 官方客户端（如果未安装）"
-    Write-Host "   https://im.qq.com/pcqq"
-    Write-Host ""
-    Write-Host "步骤 2: " -NoNewline -ForegroundColor Cyan
-    Write-Host "访问 LLOneBot 官网获取最新版本"
-    Write-Host "   https://llonebot.com/guide/getting-started" -ForegroundColor Cyan
-    Write-Host ""
-    Write-Host "步骤 3: " -NoNewline -ForegroundColor Cyan
-    Write-Host "按照文档说明安装 LLOneBot 插件"
-    Write-Host "   • 下载 Windows 版本的 LLOneBot 插件"
-    Write-Host "   • 将插件放入 QQ 的插件目录"
-    Write-Host "   • 重启 QQ 客户端"
-    Write-Host ""
-    Write-Host "步骤 4: " -NoNewline -ForegroundColor Cyan
-    Write-Host "配置 OneBot 连接信息"
-    Write-Host "   • 打开 QQ 设置中的 LLOneBot 配置"
-    Write-Host "   • 设置 HTTP/WebSocket 服务端口（默认 3000）"
-    Write-Host "   • 确保与 NyxBot 配置匹配"
-    Write-Host ""
-    Write-Host "⚠️  重要提示:" -ForegroundColor Yellow
-    Write-Host "   • 确保 LLOneBot 服务已启动"
-    Write-Host "   • 记录配置的端口号"
-    Write-Host "   • 在 NyxBot 配置中填写相同端口"
-    Write-Host ""
-    
-    $openBrowser = Read-Host "是否在浏览器中打开文档？(y/n)"
-    if ($openBrowser -match '^[Yy]') {
-        try {
-            Start-Process "https://llonebot.com/guide/getting-started"
-        } catch {
-            Write-Log "无法自动打开浏览器，请手动访问上述链接" "WARNING"
-        }
-    }
-    
-    Wait-ForInstallationComplete
-}
-
-# NapCatQQ 指引
-function Show-NapCatGuide {
-    Write-Host ""
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Green
-    Write-Host "                   NapCatQQ 安装指引                              " -ForegroundColor Green
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Green
-    Write-Host ""
-    Write-Host "NapCatQQ 是独立的 QQ 客户端，安装步骤："
-    Write-Host ""
-    Write-Host "步骤 1: " -NoNewline -ForegroundColor Cyan
-    Write-Host "访问 NapCatQQ 官网"
-    Write-Host "   https://napneko.github.io/guide/boot/Shell" -ForegroundColor Cyan
-    Write-Host ""
-    Write-Host "步骤 2: " -NoNewline -ForegroundColor Cyan
-    Write-Host "下载 Windows 安装包"
-    Write-Host "   • 选择适合 Windows 的版本"
-    Write-Host "   • 推荐使用安装包方式"
-    Write-Host ""
-    Write-Host "步骤 3: " -NoNewline -ForegroundColor Cyan
-    Write-Host "安装 NapCatQQ"
-    Write-Host "   • 运行下载的安装程序"
-    Write-Host "   • 按照安装向导完成安装"
-    Write-Host ""
-    Write-Host "步骤 4: " -NoNewline -ForegroundColor Cyan
-    Write-Host "配置 NapCatQQ"
-    Write-Host "   • 编辑配置文件 napcat.json"
-    Write-Host "   • 设置 HTTP/WebSocket 端口（默认 3000）"
-    Write-Host "   • 配置 QQ 账号信息"
-    Write-Host ""
-    Write-Host "步骤 5: " -NoNewline -ForegroundColor Cyan
-    Write-Host "启动 NapCatQQ"
-    Write-Host "   • 从开始菜单启动 NapCatQQ"
-    Write-Host "   • 扫码登录 QQ"
-    Write-Host ""
-    Write-Host "⚠️  重要提示:" -ForegroundColor Yellow
-    Write-Host "   • 首次启动需要扫码登录"
-    Write-Host "   • 记录配置的端口号"
-    Write-Host "   • 确保 NapCat 服务持续运行"
-    Write-Host ""
-    
-    $openBrowser = Read-Host "是否在浏览器中打开文档？(y/n)"
-    if ($openBrowser -match '^[Yy]') {
-        try {
-            Start-Process "https://napneko.github.io/guide/boot/Shell"
-        } catch {
-            Write-Log "无法自动打开浏览器，请手动访问上述链接" "WARNING"
-        }
-    }
-    
-    Wait-ForInstallationComplete
-}
-
-# 等待安装完成
-function Wait-ForInstallationComplete {
-    Write-Host ""
-    Write-Log "请按照上述步骤完成安装" "INFO"
-    Write-Host ""
-    Read-Host "完成安装后按 Enter 键继续"
-    Write-Host ""
-    
-    # 再次确认
-    $confirm = Read-Host "确认已完成 OneBot 实现的安装和配置？(y/n)"
-    
-    if ($confirm -notmatch '^[Yy]') {
-        Write-Log "未完成安装，返回菜单" "WARNING"
-        Show-OneBotInstallMenu
-    } else {
-        Write-Log "OneBot 实现配置完成，继续启动 NyxBot" "SUCCESS"
-    }
-}
-
 # 网络测试和代理选择函数
 function Test-GitHubProxy {
     $proxyArr = @(
@@ -491,7 +346,7 @@ function Test-GitHubProxy {
 }
 
 # 下载文件函数（带重试和校验）
-function Download-File {
+function DownloadFile {
     param(
         [string]$Url,
         [string]$Destination,
@@ -516,7 +371,7 @@ function Download-File {
         
         # 验证SHA256（如果提供）
         if ($ExpectedSHA256) {
-            if (-not (Verify-SHA256 -File $Destination -ExpectedSHA256 $ExpectedSHA256 -Description $Description)) {
+            if (-not (VerifySHA256 -File $Destination -ExpectedSHA256 $ExpectedSHA256 -Description $Description)) {
                 return $false
             }
         }
@@ -528,7 +383,7 @@ function Download-File {
 }
 
 # SHA256校验函数
-function Verify-SHA256 {
+function VerifySHA256 {
     param(
         [string]$File,
         [string]$ExpectedSHA256,
@@ -631,7 +486,7 @@ function Get-SHA256File {
 
     $sha256File = "$DOWNLOAD_DIR\NyxBot.jar.sha256"
     
-    if (Download-File -Url $SHA256_URL -Destination $sha256File -Description "SHA256校验文件") {
+    if (DownloadFile -Url $SHA256_URL -Destination $sha256File -Description "SHA256校验文件") {
         # 读取SHA256值
         $content = Get-Content $sha256File
         $script:EXPECTED_SHA256 = ($content -split '\s+')[0]
@@ -645,10 +500,7 @@ function Get-SHA256File {
 
 # 主流程
 function Main {
-    Check-AndInstallJDK21
-    
-    # 检查 OneBot 实现
-    Test-OneBotImplementation
+    CheckAndInstallJRE21
     
     # 测试网络和选择代理
     Test-GitHubProxy
@@ -671,7 +523,7 @@ function Main {
         }
         
         # 下载NyxBot.jar
-        if (-not (Download-File -Url $DOWNLOAD_URL -Destination $NYXBOT_JAR -Description "NyxBot.jar" -ExpectedSHA256 $EXPECTED_SHA256)) {
+        if (-not (DownloadFile -Url $DOWNLOAD_URL -Destination $NYXBOT_JAR -Description "NyxBot.jar" -ExpectedSHA256 $EXPECTED_SHA256)) {
             Write-Log "下载失败" "ERROR"
             
             # 如果有备份，恢复备份

@@ -71,28 +71,28 @@ parse_arguments() {
             --force-update)
                 FORCE_UPDATE=true
                 shift
-                ;;
+            ;;
             --skip-java)
                 SKIP_JAVA_INSTALL=true
                 shift
-                ;;
+            ;;
             --proxy)
                 PROXY_NUM="$2"
                 shift 2
-                ;;
+            ;;
             --version)
                 echo "NyxBot启动脚本版本: $SCRIPT_VERSION"
                 exit 0
-                ;;
+            ;;
             --help)
                 show_help
                 exit 0
-                ;;
+            ;;
             *)
                 log_error "未知参数: $1"
                 show_help
                 exit 1
-                ;;
+            ;;
         esac
     done
 }
@@ -117,22 +117,22 @@ show_help() {
 EOF
 }
 
-# 检查Java版本，如果没有安装JDK 21则自动安装
-check_and_install_jdk21() {
+# 检查Java版本，如果没有安装JRE 21则自动安装
+check_and_install_jre21() {
     if [ "$SKIP_JAVA_INSTALL" = true ]; then
         log_warning "跳过Java环境检查"
         return 0
     fi
 
-    log_info "检查JDK 21环境..."
+    log_info "检查JRE 21环境..."
 
     if command -v java &> /dev/null; then
         local java_version_output
         java_version_output=$(java -version 2>&1)
         
-        # 更精确的版本匹配
+        # 检查是否为Java 21
         if echo "$java_version_output" | grep -qE '(openjdk|java) version "21\.|openjdk 21\.'; then
-            log_success "JDK 21已安装"
+            log_success "JRE 21已安装"
             java -version 2>&1 | head -1 | tee -a "$LOG_FILE"
             return 0
         else
@@ -141,261 +141,126 @@ check_and_install_jdk21() {
         fi
     fi
 
-    # 未安装JDK 21，尝试自动安装
-    log_info "未检测到JDK 21，尝试自动安装..."
+    # 未安装JRE 21，尝试自动安装
+    log_info "未检测到JRE 21，尝试自动安装..."
+
+    # 检查网络连接
+    if command -v apt &> /dev/null && ! ping -c 2 archive.ubuntu.com &> /dev/null; then
+        log_warning "无法连接到官方Ubuntu源，尝试更换为国内镜像源..."
+        
+        # 检测是否为中国大陆用户
+        if (timedatectl 2>/dev/null | grep -qi "asia/shanghai\|asia/beijing") || 
+           (curl -s https://ipinfo.io/country 2>/dev/null | grep -q "CN"); then
+            log_info "检测到可能位于中国大陆，配置国内镜像源"
+            
+            # 备份原有源列表
+            sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
+            
+            # 获取Ubuntu版本代号
+            UBUNTU_CODENAME=$(lsb_release -cs 2>/dev/null || echo "noble")
+            
+            # 根据版本选择合适镜像
+            if grep -q "22.04" /etc/os-release 2>/dev/null; then
+                UBUNTU_CODENAME="jammy"
+            elif grep -q "20.04" /etc/os-release 2>/dev/null; then
+                UBUNTU_CODENAME="focal"
+            fi
+            
+            # 使用清华源
+            cat <<EOF | sudo tee /etc/apt/sources.list
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ $UBUNTU_CODENAME main restricted universe multiverse
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ $UBUNTU_CODENAME-updates main restricted universe multiverse
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ $UBUNTU_CODENAME-backports main restricted universe multiverse
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ $UBUNTU_CODENAME-security main restricted universe multiverse
+EOF
+            
+            log_info "已切换到清华镜像源，更新软件包列表..."
+            sudo apt-get clean
+        fi
+    fi
 
     # 检查是否有sudo权限
     if ! sudo -n true 2>/dev/null; then
-        log_warning "需要sudo权限来安装JDK 21，可能会要求输入密码"
+        log_warning "需要sudo权限来安装JRE 21，可能会要求输入密码"
     fi
 
     if [ -f /etc/debian_version ]; then
         # Debian/Ubuntu系统
-        log_info "检测到Debian/Ubuntu系统，使用apt安装OpenJDK 21..."
-        sudo apt update || log_warning "apt update失败，继续尝试安装"
-        sudo apt install -y openjdk-21-jdk
+        log_info "检测到Debian/Ubuntu系统，使用apt安装OpenJRE 21..."
+        
+        # 带错误重试的apt update
+        attempt=0
+        max_attempts=3
+        while [ $attempt -lt $max_attempts ]; do
+            if sudo apt update; then
+                break
+            else
+                attempt=$((attempt+1))
+                log_warning "apt update 失败 (尝试 $attempt/$max_attempts)"
+                if [ $attempt -eq $max_attempts ]; then
+                    log_error "无法更新软件包列表，检查网络连接或尝试手动配置镜像源"
+                    log_info "手动配置国内源命令示例:"
+                    log_info "  sudo sed -i 's|archive.ubuntu.com|mirrors.aliyun.com|g' /etc/apt/sources.list"
+                    log_info "  sudo sed -i 's|security.ubuntu.com|mirrors.aliyun.com|g' /etc/apt/sources.list"
+                    exit 1
+                fi
+                sleep 5
+            fi
+        done
+        
+        # 安装OpenJRE 21而非JDK
+        sudo apt install -y openjdk-21-jre-headless || {
+            log_warning "安装openjdk-21-jre-headless失败，尝试安装完整版openjdk-21-jre"
+            sudo apt install -y openjdk-21-jre
+        }
+        
     elif [ -f /etc/redhat-release ]; then
         # RHEL/CentOS/Fedora系统
-        log_info "检测到RHEL/CentOS/Fedora系统，使用dnf/yum安装OpenJDK 21..."
+        log_info "检测到RHEL/CentOS/Fedora系统，使用dnf/yum安装OpenJRE 21..."
         if command -v dnf &> /dev/null; then
-            sudo dnf install -y java-21-openjdk-devel
+            sudo dnf install -y java-21-openjdk-headless || {
+                log_warning "安装java-21-openjdk-headless失败，尝试安装完整版"
+                sudo dnf install -y java-21-openjdk
+            }
         else
-            sudo yum install -y java-21-openjdk-devel
+            sudo yum install -y java-21-openjdk-headless || {
+                log_warning "安装java-21-openjdk-headless失败，尝试安装完整版"
+                sudo yum install -y java-21-openjdk
+            }
         fi
     elif [ -f /etc/arch-release ]; then
         # Arch Linux
-        log_info "检测到Arch Linux，使用pacman安装OpenJDK 21..."
-        sudo pacman -Syu --noconfirm jre-openjdk jdk-openjdk
+        log_info "检测到Arch Linux，使用pacman安装OpenJRE 21..."
+        sudo pacman -Syu --noconfirm jre-openjdk
     elif [ -f /etc/alpine-release ]; then
         # Alpine Linux
-        log_info "检测到Alpine Linux，使用apk安装OpenJDK 21..."
-        sudo apk add openjdk21
+        log_info "检测到Alpine Linux，使用apk安装OpenJRE 21..."
+        sudo apk add openjdk21-jre
     else
-        log_error "无法确定Linux发行版，无法自动安装JDK 21"
-        log_info "请手动安装OpenJDK 21，或参考以下命令："
-        echo "  Ubuntu/Debian: sudo apt install openjdk-21-jdk"
-        echo "  CentOS/RHEL: sudo yum install java-21-openjdk-devel"
-        echo "  Fedora: sudo dnf install java-21-openjdk-devel"
+        log_error "无法确定Linux发行版，无法自动安装JRE 21"
+        log_info "请手动安装OpenJRE 21，或参考以下命令："
+        echo "  Ubuntu/Debian: sudo apt install openjdk-21-jre-headless"
+        echo "  CentOS/RHEL: sudo yum install java-21-openjdk-headless"
+        echo "  Fedora: sudo dnf install java-21-openjdk-headless"
         exit 1
     fi
 
     # 验证安装
     if command -v java &> /dev/null && java -version 2>&1 | grep -qE '(openjdk|java) version "21\.|openjdk 21\.'; then
-        log_success "OpenJDK 21安装成功"
+        log_success "OpenJRE 21安装成功"
         java -version 2>&1 | head -1 | tee -a "$LOG_FILE"
     else
-        log_error "OpenJDK 21安装失败，请手动安装"
+        log_error "OpenJRE 21安装失败，请手动安装"
+        log_info "手动安装选项:"
+        echo "1. 配置国内镜像源后重试"
+        echo "   Ubuntu: sudo sed -i 's|archive.ubuntu.com|mirrors.aliyun.com|g' /etc/apt/sources.list"
+        echo "   然后: sudo apt update && sudo apt install openjdk-21-jre-headless"
+        echo ""
+        echo "2. 下载预编译JRE包:"
+        echo "   wget https://github.com/adoptium/temurin21-binaries/releases/latest/download/OpenJDK21U-jre_x64_linux_hotspot_*.tar.gz"
+        echo "   tar xzf OpenJDK21U-jre*.tar.gz"
+        echo "   export PATH=\$PWD/jdk-21.0.*/bin:\$PATH"
         exit 1
-    fi
-}
-
-# 检测 OneBot 实现是否安装
-check_onebot_implementation() {
-    log_info "检查 OneBot 协议实现..."
-    
-    echo ""
-    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${YELLOW}                  重要提示 - OneBot 协议实现                     ${NC}"
-    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo ""
-    echo -e "${CYAN}NyxBot 需要 OneBot 协议实现才能连接 QQ${NC}"
-    echo "支持的实现："
-    echo "  • LLOneBot  - QQ 官方客户端插件"
-    echo "  • NapCatQQ  - 独立 QQ 客户端"
-    echo ""
-    
-    read -p "您是否已安装并配置 LLOneBot 或 NapCatQQ？(y/n): " -n 1 -r
-    echo ""
-    
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        log_success "OneBot 实现已确认安装"
-        return 0
-    fi
-    
-    # 未安装，显示安装菜单
-    show_onebot_install_menu
-}
-
-# 显示 OneBot 安装菜单
-show_onebot_install_menu() {
-    echo ""
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${CYAN}               OneBot 协议实现安装引导                            ${NC}"
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo ""
-    echo "请选择要安装的实现："
-    echo ""
-    echo -e "${GREEN}  1)${NC} LLOneBot ${YELLOW}(推荐 - 适合已有 QQ 的用户)${NC}"
-    echo "     ├─ 作为 QQ 插件运行"
-    echo "     ├─ 无需额外客户端"
-    echo "     ├─ 使用已有 QQ 账号"
-    echo "     └─ 文档：${CYAN}https://llonebot.com/guide/getting-started${NC}"
-    echo ""
-    echo -e "${GREEN}  2)${NC} NapCatQQ ${YELLOW}(推荐 - 独立运行)${NC}"
-    echo "     ├─ 独立的 QQ 客户端"
-    echo "     ├─ 适合服务器部署"
-    echo "     ├─ 支持 Docker"
-    echo "     └─ 文档：${CYAN}https://napneko.github.io/guide/boot/Shell${NC}"
-    echo ""
-    echo -e "${GREEN}  3)${NC} 我已安装，跳过此步骤"
-    echo ""
-    echo -e "${GREEN}  4)${NC} 退出脚本"
-    echo ""
-    
-    read -p "请选择 [1-4]: " choice
-    
-    case $choice in
-        1)
-            show_llonebot_guide
-            ;;
-        2)
-            show_napcat_guide
-            ;;
-        3)
-            log_info "跳过 OneBot 检测"
-            return 0
-            ;;
-        4)
-            log_info "退出脚本"
-            exit 0
-            ;;
-        *)
-            log_error "无效选择，请重新选择"
-            show_onebot_install_menu
-            ;;
-    esac
-}
-
-# LLOneBot 安装指引
-show_llonebot_guide() {
-    echo ""
-    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${GREEN}                   LLOneBot 安装指引                              ${NC}"
-    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo ""
-    echo "LLOneBot 是 QQ 的插件，安装步骤："
-    echo ""
-    echo -e "${CYAN}步骤 1:${NC} 下载并安装 QQ 官方客户端（如果未安装）"
-    echo "   Windows: https://im.qq.com/pcqq"
-    echo "   Linux:   https://im.qq.com/linuxqq"
-    echo ""
-    echo -e "${CYAN}步骤 2:${NC} 访问 LLOneBot 官网获取最新版本"
-    echo "   ${CYAN}https://llonebot.com/guide/getting-started${NC}"
-    echo ""
-    echo -e "${CYAN}步骤 3:${NC} 按照文档说明安装 LLOneBot 插件"
-    echo "   • 下载对应平台的 LLOneBot 插件"
-    echo "   • 将插件放入 QQ 的插件目录"
-    echo "   • 重启 QQ 客户端"
-    echo ""
-    echo -e "${CYAN}步骤 4:${NC} 配置 OneBot 连接信息"
-    echo "   • 打开 QQ 设置中的 LLOneBot 配置"
-    echo "   • 设置 HTTP/WebSocket 服务端口（默认 3000）"
-    echo "   • 确保与 NyxBot 配置匹配"
-    echo ""
-    echo -e "${YELLOW}⚠️  重要提示:${NC}"
-    echo "   • 确保 LLOneBot 服务已启动"
-    echo "   • 记录配置的端口号"
-    echo "   • 在 NyxBot 配置中填写相同端口"
-    echo ""
-    
-    # 尝试打开浏览器
-    if command -v xdg-open &> /dev/null; then
-        read -p "是否在浏览器中打开文档？(y/n): " -n 1 -r
-        echo ""
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            xdg-open "https://llonebot.com/guide/getting-started" 2>/dev/null || log_warning "无法自动打开浏览器，请手动访问上述链接"
-        fi
-    elif command -v gnome-open &> /dev/null; then
-        read -p "是否在浏览器中打开文档？(y/n): " -n 1 -r
-        echo ""
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            gnome-open "https://llonebot.com/guide/getting-started" 2>/dev/null || log_warning "无法自动打开浏览器，请手动访问上述链接"
-        fi
-    fi
-    
-    wait_for_installation_complete
-}
-
-# NapCatQQ 安装指引
-show_napcat_guide() {
-    echo ""
-    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${GREEN}                   NapCatQQ 安装指引                              ${NC}"
-    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo ""
-    echo "NapCatQQ 是独立的 QQ 客户端，安装步骤："
-    echo ""
-    echo -e "${CYAN}步骤 1:${NC} 访问 NapCatQQ 官网"
-    echo "   ${CYAN}https://napneko.github.io/guide/boot/Shell${NC}"
-    echo ""
-    echo -e "${CYAN}步骤 2:${NC} 下载适合您系统的版本"
-    echo "   • Linux:   Shell 脚本 / Docker"
-    echo "   • macOS:   Shell 脚本"
-    echo "   • Windows: 安装包 / Shell 脚本"
-    echo ""
-    echo -e "${CYAN}步骤 3:${NC} 安装方法（以 Linux Shell 为例）"
-    echo "   ${YELLOW}# 下载安装脚本${NC}"
-    echo "   curl -o napcat.sh https://nclatest.znin.net/NapCat/NapCat-Installer/main/script/install.sh"
-    echo ""
-    echo "   ${YELLOW}# 添加执行权限${NC}"
-    echo "   chmod +x napcat.sh"
-    echo ""
-    echo "   ${YELLOW}# 运行安装脚本${NC}"
-    echo "   sudo ./napcat.sh"
-    echo ""
-    echo -e "${CYAN}步骤 4:${NC} 配置 NapCatQQ"
-    echo "   • 编辑配置文件 napcat.json"
-    echo "   • 设置 HTTP/WebSocket 端口（默认 3000）"
-    echo "   • 配置 QQ 账号信息"
-    echo ""
-    echo -e "${CYAN}步骤 5:${NC} 启动 NapCatQQ"
-    echo "   ${YELLOW}# 启动服务${NC}"
-    echo "   napcat start"
-    echo ""
-    echo "   ${YELLOW}# 扫码登录 QQ${NC}"
-    echo ""
-    echo -e "${YELLOW}⚠️  重要提示:${NC}"
-    echo "   • 首次启动需要扫码登录"
-    echo "   • 记录配置的端口号"
-    echo "   • 确保 NapCat 服务持续运行"
-    echo ""
-    
-    # 尝试打开浏览器
-    if command -v xdg-open &> /dev/null; then
-        read -p "是否在浏览器中打开文档？(y/n): " -n 1 -r
-        echo ""
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            xdg-open "https://napneko.github.io/guide/boot/Shell" 2>/dev/null || log_warning "无法自动打开浏览器，请手动访问上述链接"
-        fi
-    elif command -v gnome-open &> /dev/null; then
-        read -p "是否在浏览器中打开文档？(y/n): " -n 1 -r
-        echo ""
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            gnome-open "https://napneko.github.io/guide/boot/Shell" 2>/dev/null || log_warning "无法自动打开浏览器，请手动访问上述链接"
-        fi
-    fi
-    
-    wait_for_installation_complete
-}
-
-# 等待用户完成安装
-wait_for_installation_complete() {
-    echo ""
-    log_info "请按照上述步骤完成安装"
-    echo ""
-    read -p "完成安装后按任意键继续..." -n 1 -r
-    echo ""
-    echo ""
-    
-    # 再次确认
-    read -p "确认已完成 OneBot 实现的安装和配置？(y/n): " -n 1 -r
-    echo ""
-    
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        log_warning "未完成安装，返回菜单"
-        show_onebot_install_menu
-    else
-        log_success "OneBot 实现配置完成，继续启动 NyxBot"
     fi
 }
 
@@ -413,7 +278,7 @@ test_github_proxy() {
             log_info "已指定不使用代理（直连）"
             GITHUB_PROXY=""
             return 0
-        elif [[ "$PROXY_NUM" =~ ^[0-9]+$ ]] && [ "$PROXY_NUM" -ge 1 ] && [ "$PROXY_NUM" -le ${#proxy_arr[@]} ]; then
+            elif [[ "$PROXY_NUM" =~ ^[0-9]+$ ]] && [ "$PROXY_NUM" -ge 1 ] && [ "$PROXY_NUM" -le ${#proxy_arr[@]} ]; then
             GITHUB_PROXY="${proxy_arr[$((PROXY_NUM - 1))]}"
             log_info "已指定使用代理: $GITHUB_PROXY"
             return 0
@@ -483,7 +348,7 @@ download_file() {
     local destination=$2
     local description=$3
     local expected_sha256=$4  # 可选参数
-
+    
     log_info "下载 $description..."
     
     # 构建下载URL
@@ -513,7 +378,7 @@ verify_sha256() {
     local file=$1
     local expected_sha256=$2
     local description=$3
-
+    
     log_info "验证 $description 的SHA256校验和..."
     
     if command -v sha256sum &> /dev/null; then
@@ -549,13 +414,13 @@ get_latest_release() {
     
     local api_response
     api_response=$(curl -s -H "User-Agent: Mozilla/5.0" -H "Accept: application/vnd.github.v3+json" "$api_url" --connect-timeout 10 --retry 3 2>> "$LOG_FILE")
-
+    
     if [ -z "$api_response" ] || [[ "$api_response" == *"Not Found"* ]]; then
         log_error "无法获取最新release信息"
         echo "$api_response" >> "$LOG_FILE"
         exit 1
     fi
-
+    
     # 解析JSON获取信息
     if command -v jq &> /dev/null; then
         DOWNLOAD_URL=$(echo "$api_response" | jq -r '.assets[] | select(.name | endswith(".jar")) | .browser_download_url' | head -1)
@@ -571,13 +436,13 @@ get_latest_release() {
         RELEASE_TAG=$(echo "$api_response" | grep -o '"tag_name":\s*"[^"]*"' | head -1 | sed -E 's/.*"([^"]+)".*/\1/')
         SHA256_URL=$(echo "$api_response" | grep -o '"browser_download_url":\s*"[^"]*\.jar\.sha256"' | head -1 | sed -E 's/.*"([^"]+\.jar\.sha256)".*/\1/')
     fi
-
+    
     if [ -z "$DOWNLOAD_URL" ] || [ "$DOWNLOAD_URL" = "null" ]; then
         log_error "无法解析下载URL"
         echo "$api_response" >> "$LOG_FILE"
         exit 1
     fi
-
+    
     log_success "找到最新构建: $ASSET_NAME (版本: $RELEASE_TAG)"
     echo "下载URL: $DOWNLOAD_URL" >> "$LOG_FILE"
 }
@@ -588,12 +453,12 @@ check_version() {
         log_info "强制更新模式，将重新下载"
         return 1  # 需要更新
     fi
-
+    
     if [ ! -f "$VERSION_FILE" ]; then
         log_info "未找到版本信息，将下载最新版本"
         return 1  # 需要更新
     fi
-
+    
     local current_version
     current_version=$(cat "$VERSION_FILE" 2>/dev/null || echo "unknown")
     
@@ -612,7 +477,7 @@ download_sha256() {
         log_warning "Release中未提供SHA256文件，跳过校验"
         return 1
     fi
-
+    
     local sha256_file="$DOWNLOAD_DIR/NyxBot.jar.sha256"
     
     if download_file "$SHA256_URL" "$sha256_file" "SHA256校验文件" ""; then
@@ -630,10 +495,7 @@ download_sha256() {
 main() {
     parse_arguments "$@"
     
-    check_and_install_jdk21
-    
-    # 检查 OneBot 实现
-    check_onebot_implementation
+    check_and_install_jre21
     
     # 测试网络和选择代理
     test_github_proxy
