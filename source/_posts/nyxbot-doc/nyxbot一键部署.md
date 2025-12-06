@@ -22,7 +22,7 @@ cover: https://origin.picgo.net/2025/11/30/c8c1d2874b419efa149f64b.webp
 
 # NyxBot 一键部署脚本使用文档
 
-**版本**: 2.0.0  
+**版本**: 3.0.0  
 **更新日期**: 2025-12-03
 
 ---
@@ -49,13 +49,14 @@ NyxBot 一键部署脚本是一套跨平台自动化部署工具，支持 **Linu
    - 自动检测并安装 JRE 21（OpenJRE）
    - 支持多种包管理器（apt、yum、dnf、pacman、apk、Homebrew、winget、Chocolatey）
    - 智能识别操作系统和架构（x86_64、ARM64）
+   - 安装失败时提供详细的手动安装指导
 
 2. **智能网络优化**
 
-   - 内置 10+ 个 GitHub 代理服务器
+   - 内置 11+ 个 GitHub 代理服务器
    - 自动测速并选择最快的代理
-   - 支持手动指定代理或直连
    - 下载失败自动重试机制
+   - 网络连接检测与镜像源自动切换
 
 3. **安全可靠**
 
@@ -71,11 +72,24 @@ NyxBot 一键部署脚本是一套跨平台自动化部署工具，支持 **Linu
    - 支持强制更新模式
    - 版本信息持久化保存
 
+5. **配置管理**
+
+   - 自动生成和更新配置文件
+   - 支持交互式配置设置
+   - 配置项可视化展示
+
 6. **完善的日志系统**
+
    - 彩色终端输出
    - 详细的操作日志记录
    - 错误追踪与诊断
    - 时间戳标记
+
+7. **增强的错误处理**
+   - 友好的错误提示信息
+   - 详细的故障排除指南
+   - 自动重试机制
+   - 脚本执行状态实时反馈
 
 ---
 
@@ -97,7 +111,7 @@ NyxBot 一键部署脚本是一套跨平台自动化部署工具，支持 **Linu
 
 ### Windows
 
-- **版本**: Windows 10 1809+ 或 Windows 11
+- **版本**: Windows 10 1809+ 或 Windows 11 或 WindowsServer 2019 以上
 - **架构**: x86_64、ARM64
 - **PowerShell**: 5.1 或更高
 - **可选**: winget 或 Chocolatey（用于自动安装 JDK）
@@ -246,23 +260,21 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 ### Linux / macOS 参数
 
-| 参数             | 说明                              | 示例                               |
-| ---------------- | --------------------------------- | ---------------------------------- |
-| `--force-update` | 强制重新下载最新版本              | `./nyxbot-linux.sh --force-update` |
-| `--skip-java`    | 跳过 Java 环境检查和安装          | `./nyxbot-linux.sh --skip-java`    |
-| `--proxy <num>`  | 指定代理序号（0=直连，1-10=代理） | `./nyxbot-linux.sh --proxy 1`      |
-| `--version`      | 显示脚本版本                      | `./nyxbot-linux.sh --version`      |
-| `--help`         | 显示帮助信息                      | `./nyxbot-linux.sh --help`         |
+| 参数             | 说明                     | 示例                               |
+| ---------------- | ------------------------ | ---------------------------------- |
+| `--force-update` | 强制重新下载最新版本     | `./nyxbot-linux.sh --force-update` |
+| `--skip-java`    | 跳过 Java 环境检查和安装 | `./nyxbot-linux.sh --skip-java`    |
+| `--version`      | 显示脚本版本             | `./nyxbot-linux.sh --version`      |
+| `--help`         | 显示帮助信息             | `./nyxbot-linux.sh --help`         |
 
 ### Windows 参数
 
-| 参数           | 说明                              | 示例                                |
-| -------------- | --------------------------------- | ----------------------------------- |
-| `-ForceUpdate` | 强制重新下载最新版本              | `.\nyxbot-windows.ps1 -ForceUpdate` |
-| `-SkipJava`    | 跳过 Java 环境检查和安装          | `.\nyxbot-windows.ps1 -SkipJava`    |
-| `-Proxy <num>` | 指定代理序号（0=直连，1-10=代理） | `.\nyxbot-windows.ps1 -Proxy 1`     |
-| `-Version`     | 显示脚本版本                      | `.\nyxbot-windows.ps1 -Version`     |
-| `-Help`        | 显示帮助信息                      | `.\nyxbot-windows.ps1 -Help`        |
+| 参数             | 说明                     | 示例                                  |
+| ---------------- | ------------------------ | ------------------------------------- |
+| `--force-update` | 强制重新下载最新版本     | `./nyxbot-windows.ps1 --force-update` |
+| `--skip-java`    | 跳过 Java 环境检查和安装 | `./nyxbot-windows.ps1 --skip-java`    |
+| `--version`      | 显示脚本版本             | `./nyxbot-windows.ps1 --version`      |
+| `--help`         | 显示帮助信息             | `./nyxbot-windows.ps1 --help`         |
 
 ---
 
@@ -273,6 +285,8 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```bash
 # Linux / macOS
 ./nyxbot-linux.sh
+
+./nyxbot-macos.sh
 
 # Windows
 .\nyxbot-windows.ps1
@@ -324,18 +338,6 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 ### 场景 4: 网络受限环境
 
-```bash
-# 方法一：自动选择最快代理（推荐）
-./nyxbot-linux.sh
-
-# 方法二：使用直连（国外服务器）
-./nyxbot-linux.sh --proxy 0
-
-# 方法三：指定代理服务器
-./nyxbot-linux.sh --proxy 1  # 使用第1个代理
-./nyxbot-linux.sh --proxy 2  # 使用第2个代理
-```
-
 **内置代理列表**:
 
 1. `https://ghfast.top`
@@ -346,93 +348,9 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 6. `https://j.1win.ggff.net`
 7. `https://ghm.078465.xyz`
 8. `https://gitproxy.127731.xyz`
-9. `https://jiashu.1win.eu.org`
-10. `https://github.tbedu.top`
-
----
-
-### 场景 5: 服务器自动化部署
-
-```bash
-# 创建无人值守部署脚本
-cat > deploy.sh << 'EOF'
-#!/bin/bash
-# 下载脚本
-curl -sO https://kingprimes.top/script/nyxbot-linux.sh
-chmod +x nyxbot-linux.sh
-
-# 自动安装（假设已有JDK和OneBot）
-./nyxbot-linux.sh --skip-java
-EOF
-
-chmod +x deploy.sh
-./deploy.sh
-```
-
----
-
-## 详细功能说明
-
-### JDK 21 自动安装
-
-#### Linux 平台
-
-脚本会自动识别以下发行版并使用相应的包管理器：
-
-| 发行版        | 包管理器 | 安装命令                                   |
-| ------------- | -------- | ------------------------------------------ |
-| Ubuntu/Debian | apt      | `sudo apt install openjdk-21-jdk`          |
-| CentOS/RHEL   | yum      | `sudo yum install java-21-openjdk-devel`   |
-| Fedora        | dnf      | `sudo dnf install java-21-openjdk-devel`   |
-| Arch Linux    | pacman   | `sudo pacman -Syu jre-openjdk jdk-openjdk` |
-| Alpine Linux  | apk      | `sudo apk add openjdk21`                   |
-
-#### macOS 平台
-
-1. **自动安装 Homebrew**（如未安装）
-
-   - 国内环境：使用 Gitee 镜像
-   - 国外环境：使用官方源
-
-2. **安装 OpenJDK 21**
-
-   ```bash
-   brew install openjdk@21
-   ```
-
-3. **配置环境变量**
-
-   - Intel Mac: `/usr/local/opt/openjdk@21`
-   - Apple Silicon: `/opt/homebrew/opt/openjdk@21`
-   - 自动添加到 `~/.zprofile`
-
-4. **创建系统链接**
-   ```bash
-   sudo ln -sfn /opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk \
-     /Library/Java/JavaVirtualMachines/openjdk-21.jdk
-   ```
-
-#### Windows 平台
-
-脚本会按优先级尝试以下方法：
-
-1. **winget (推荐)**
-
-   ```powershell
-   winget install --id Microsoft.OpenJDK.21 -e
-   # 或
-   winget install --id EclipseAdoptium.Temurin.21.JDK -e
-   ```
-
-2. **Chocolatey**
-
-   ```powershell
-   choco install -y openjdk --version=21
-   ```
-
-3. **手动安装**
-   - Microsoft Build of OpenJDK: https://learn.microsoft.com/java/openjdk/download
-   - Eclipse Temurin: https://adoptium.net/
+9. `https://ghproxy.vip`
+10. `https://gh-proxy.org`
+11. `https://edgeone.gh-proxy.org`
 
 ---
 
@@ -457,19 +375,6 @@ chmod +x deploy.sh
 - **代理**: `https://ghfast.top/https://github.com/xxx/file.jar`
 
 代理服务器会转发请求到 GitHub，解决国内访问慢的问题。
-
-#### 手动指定代理
-
-```bash
-# 不使用代理（适合国外服务器）
-./nyxbot-linux.sh --proxy 0
-
-# 使用第1个代理
-./nyxbot-linux.sh --proxy 1
-
-# 使用第5个代理
-./nyxbot-linux.sh --proxy 5
-```
 
 ---
 
@@ -634,16 +539,6 @@ brew install openjdk@21
 
 ### Q3: 无法访问 GitHub
 
-**使用代理**:
-
-```bash
-# 自动选择最快代理
-./nyxbot-linux.sh
-
-# 手动指定代理
-./nyxbot-linux.sh --proxy 1
-```
-
 **配置系统代理**:
 
 ```bash
@@ -658,14 +553,7 @@ $env:HTTPS_PROXY="http://127.0.0.1:7890"
 
 ### Q4: 下载速度很慢
 
-1. **尝试不同的代理**:
-
-   ```bash
-   ./nyxbot-linux.sh --proxy 2
-   ./nyxbot-linux.sh --proxy 3
-   ```
-
-2. **手动下载**:
+1. **手动下载**:
    - 访问 GitHub Release 页面
    - 下载 `NyxBot.jar` 文件
    - 放到 `nyxbot_data/` 目录
@@ -687,11 +575,9 @@ $env:HTTPS_PROXY="http://127.0.0.1:7890"
 # 删除缓存
 rm -rf nyxbot_data/NyxBot.jar*
 
-# 尝试直连
-./nyxbot-linux.sh --proxy 0 --force-update
+# 重新尝试
+./nyxbot-linux.sh --force-update
 
-# 或更换代理
-./nyxbot-linux.sh --proxy 2 --force-update
 ```
 
 ---
@@ -706,6 +592,7 @@ cat nyxbot_data/install.log
 
 # 查看 NyxBot 运行日志
 # 日志位置通常在 logs/ 目录
+# 或通过web界面查看实时日志
 ```
 
 **常见原因**:
@@ -733,9 +620,6 @@ cat nyxbot_data/install.log
    ```bash
    # 测试 GitHub 连接
    curl -I https://api.github.com
-
-   # 测试代理（如使用）
-   curl -I https://ghfast.top/https://api.github.com
    ```
 
 3. **检查日志文件**
@@ -817,7 +701,7 @@ grep WARNING nyxbot_data/install.log
 
 ### 环境变量
 
-可以通过环境变量自定义脚本行为：
+可以通过环境变量自定义脚本行为：不一定管用。
 
 ```bash
 # 设置 HTTP 代理
@@ -849,6 +733,7 @@ $DOWNLOAD_DIR = "C:\NyxBot"
 
 ### Systemd 服务（Linux）
 
+脚本会自动创建服务，无需手动创建。
 创建 `/etc/systemd/system/nyxbot.service`:
 
 ```ini
@@ -927,45 +812,43 @@ sudo firewall-cmd --permanent --add-port=3001/tcp
 sudo firewall-cmd --reload
 ```
 
-### 4. 定期备份
+---
 
-```bash
-# 备份配置和数据
-tar -czf nyxbot-backup-$(date +%Y%m%d).tar.gz \
-  nyxbot_data/ \
-  config/ \
-  data/
 
-# 上传到远程服务器
-scp nyxbot-backup-*.tar.gz user@backup-server:/backups/
-```
+## 第三方脚本支持
+
+除了官方提供的部署脚本外，我们还支持由社区维护的第三方部署脚本。
+
+### nyxbot-linux-D_R.run
+
+**来源**: [FreeStar007/NyxGo](https://github.com/FreeStar007/NyxGo)
+
+**功能特性**:
+
+- ✅ 基于 Python 实现，提供更友好的交互界面
+- ✅ 自动检测系统环境并安装依赖
+- ✅ 支持多种 OneBot 实现的自动安装
+- ✅ 内置 Python 虚拟环境，不影响系统 Python 环境
+- ✅ 包含可视化的部署进度和状态显示
+
+**适用系统**:
+
+- Linux (支持主流发行版: Debian/Ubuntu, RHEL/CentOS, Arch Linux 等)
+
+**使用教程视频**:
+
+<div style="position:relative; padding-bottom:75%; width:100%; height:0">
+    <iframe src="//player.bilibili.com/player.html?bvid=BV1Z527BfEB5&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute; height: 100%; width: 100%;"></iframe>
+</div>
+
+**问题反馈**:
+
+如果在使用第三方脚本过程中遇到问题，请直接向原作者反馈:
+
+- GitHub Issues: https://github.com/FreeStar007/NyxGo/issues
 
 ---
 
-## 性能优化
-
-### JVM 参数调优
-
-编辑启动命令，添加 JVM 参数：
-
-```bash
-# 增加堆内存
-java -Xms512M -Xmx2G -jar nyxbot_data/NyxBot.jar
-
-# 启用 G1 垃圾回收器
-java -XX:+UseG1GC -jar nyxbot_data/NyxBot.jar
-
-# 完整优化示例
-java \
-  -Xms512M \
-  -Xmx2G \
-  -XX:+UseG1GC \
-  -XX:MaxGCPauseMillis=200 \
-  -XX:+UseStringDeduplication \
-  -jar nyxbot_data/NyxBot.jar
-```
-
----
 
 ## 贡献与反馈
 
@@ -986,9 +869,6 @@ java \
 ### 社区支持
 
 - QQ 群: [QQ 群](https://jq.qq.com/?_wv=1027&k=RgqgJLij)
-- Discord: [待添加]
-- 文档: https://github.com/KingPrimes/NyxBot/wiki
-
 ---
 
 ## 许可证
@@ -1001,10 +881,7 @@ java \
 
 感谢以下项目和服务：
 
-- **OpenJDK**: 提供免费的 Java 运行环境
 - **GitHub**: 代码托管和 Release 服务
-- **LLOneBot**: OneBot 协议实现
-- **NapCatQQ**: OneBot 协议实现
 - **GitHub 代理服务**: 加速国内访问
 
 ---
@@ -1028,9 +905,6 @@ nyxbot_data/            # 数据目录
 
 - **NyxBot 项目**: https://github.com/KingPrimes/NyxBot
 - **OneBot 标准**: https://onebot.dev/
-- **LLOneBot**: https://llonebot.com/
-- **NapCatQQ**: https://napneko.github.io/
-- **OpenJDK**: https://openjdk.org/
 
 ### C. 常用命令速查
 
@@ -1039,7 +913,6 @@ nyxbot_data/            # 数据目录
 ./nyxbot-linux.sh                    # 标准安装
 ./nyxbot-linux.sh --force-update     # 强制更新
 ./nyxbot-linux.sh --skip-java        # 跳过 Java 检测
-./nyxbot-linux.sh --proxy 1          # 使用代理
 
 # 查看信息
 ./nyxbot-linux.sh --version          # 查看脚本版本
@@ -1055,7 +928,7 @@ lsof -i :3000                        # 检查端口占用
 
 ---
 
-**文档版本**: v2.0.0  
+**文档版本**: v3.0.0  
 **最后更新**: 2025-12-03  
 **维护者**: KingPrimes
 

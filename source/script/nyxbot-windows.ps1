@@ -11,7 +11,7 @@ $PSDefaultParameterValues['*:Encoding'] = 'utf8'
 [Console]::InputEncoding = [System.Text.Encoding]::UTF8
 
 # 设置变量
-$SCRIPT_VERSION = "2.0.0"
+$SCRIPT_VERSION = "3.0.0"
 $API_URL = "https://api.github.com/repos/KingPrimes/NyxBot/releases/latest"
 $DOWNLOAD_DIR = "$PSScriptRoot\nyxbot_data"
 $NYXBOT_JAR = "$DOWNLOAD_DIR\NyxBot.jar"
