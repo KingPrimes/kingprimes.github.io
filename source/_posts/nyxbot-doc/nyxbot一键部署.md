@@ -837,9 +837,12 @@ sudo firewall-cmd --reload
 
 **使用教程视频**:
 
-<div style="position:relative; padding-bottom:75%; width:100%; height:0">
-    <iframe src="//player.bilibili.com/player.html?bvid=BV1Z527BfEB5&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute; height: 100%; width: 100%;"></iframe>
-</div>
+<details>
+  <summary>点击展开/收起视频</summary>
+  <div style="position:relative; padding-bottom:75%; width:100%; height:0">
+      <iframe src="//player.bilibili.com/player.html?bvid=BV1Z527BfEB5&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position:absolute; height: 100%; width: 100%;"></iframe>
+  </div>
+</details>
 
 **问题反馈**:
 
