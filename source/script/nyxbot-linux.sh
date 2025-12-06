@@ -10,7 +10,7 @@
 # set -euo pipefail  # 严格模式：遇到错误立即退出
 
 # 设置变量
-readonly SCRIPT_VERSION="2.0.0"
+readonly SCRIPT_VERSION="3.0.0"
 readonly API_URL="https://api.github.com/repos/KingPrimes/NyxBot/releases/latest"
 readonly DOWNLOAD_DIR="./nyxbot_data"
 readonly NYXBOT_JAR="$DOWNLOAD_DIR/NyxBot.jar"
