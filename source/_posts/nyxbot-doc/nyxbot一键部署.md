@@ -46,7 +46,7 @@ NyxBot 一键部署脚本是一套跨平台自动化部署工具，支持 **Linu
 
 1. **自动环境检测与安装**
 
-   - 自动检测并安装 JDK 21（OpenJDK）
+   - 自动检测并安装 JRE 21（OpenJRE）
    - 支持多种包管理器（apt、yum、dnf、pacman、apk、Homebrew、winget、Chocolatey）
    - 智能识别操作系统和架构（x86_64、ARM64）
 
@@ -70,13 +70,6 @@ NyxBot 一键部署脚本是一套跨平台自动化部署工具，支持 **Linu
    - 仅在有新版本时下载
    - 支持强制更新模式
    - 版本信息持久化保存
-
-5. **OneBot 协议引导**
-
-   - 交互式安装向导
-   - 支持 LLOneBot 和 NapCatQQ
-   - 详细的安装步骤说明
-   - 自动打开官方文档
 
 6. **完善的日志系统**
    - 彩色终端输出
@@ -117,7 +110,7 @@ NyxBot 一键部署脚本是一套跨平台自动化部署工具，支持 **Linu
 
 1. **网络连接**: 需要能够访问 GitHub API 和下载资源
 2. **存储空间**: 至少 500 MB 可用空间
-3. **OneBot 实现**: 需要事先安装 LLOneBot 或 NapCatQQ（脚本会引导安装）
+3. **OneBot 实现**: 需要事先安装 OneBot 实现
 
 ### 可选条件
 
@@ -163,7 +156,6 @@ bash nyxbot-linux.sh
 === NyxBot启动脚本(Linux) v2.0.0 ===
 [INFO] 检查JDK 21环境...
 [SUCCESS] JDK 21已安装
-[INFO] 检查 OneBot 协议实现...
 [INFO] 开始 GitHub 代理网络测试...
 [INFO] 测速: 直连 - 2 MB/s
 [SUCCESS] 将使用最快的代理: https://ghfast.top
@@ -174,8 +166,6 @@ bash nyxbot-linux.sh
 [SUCCESS] SHA256校验通过
 [INFO] 启动 NyxBot...
 ```
-
----
 
 ### macOS 系统
 
@@ -587,150 +577,6 @@ v1.2.3
 
 OneBot 是一个聊天机器人应用接口标准，NyxBot 通过 OneBot 协议与 QQ 进行通信。
 
-### 支持的实现
-
-#### 1. LLOneBot（推荐 - QQ 插件方式）
-
-**特点**:
-
-- ✅ 作为 QQ 官方客户端的插件运行
-- ✅ 无需额外的 QQ 客户端
-- ✅ 使用现有 QQ 账号
-- ✅ 轻量级，资源占用少
-
-**安装步骤**:
-
-1. **安装 QQ 客户端**
-
-   - Windows: https://im.qq.com/pcqq
-   - Linux: https://im.qq.com/linuxqq
-   - macOS: https://im.qq.com/macqq
-
-2. **下载 LLOneBot 插件**
-
-   - 官网: https://llonebot.com/guide/getting-started
-   - 选择对应平台的版本
-
-3. **安装插件**
-
-   - 将插件文件放入 QQ 的插件目录
-   - 重启 QQ 客户端
-
-4. **配置 OneBot**
-
-   - 打开 QQ 设置中的 LLOneBot 配置
-   - 设置 HTTP/WebSocket 服务端口（默认 3000）
-   - 启用 OneBot 服务
-
----
-
-#### 2. NapCatQQ（推荐 - 独立客户端）
-
-**特点**:
-
-- ✅ 独立的 QQ 客户端
-- ✅ 适合服务器部署
-- ✅ 支持 Docker 容器化
-- ✅ 功能完整，稳定性高
-
-**安装步骤**:
-
-1. **下载 NapCatQQ**
-
-   - 官网: https://napneko.github.io/guide/boot/Shell
-   - 选择适合您系统的版本
-
-2. **安装方法**
-
-   **Linux/macOS (Shell 脚本)**:
-
-   ```bash
-   # 下载安装脚本
-   curl -o napcat.sh https://nclatest.znin.net/NapCat/NapCat-Installer/main/script/install.sh
-
-   # 添加执行权限
-   chmod +x napcat.sh
-
-   # 运行安装
-   sudo ./napcat.sh
-   ```
-
-   **Windows (安装包)**:
-
-   - 下载 `.exe` 安装程序
-   - 运行安装向导
-
-   **Docker (推荐服务器部署)**:
-
-   ```bash
-   docker run -d \
-     --name napcat \
-     -p 3000:3000 \
-     -v $(pwd)/napcat:/app/napcat \
-     napneko/napcat:latest
-   ```
-
-3. **配置 NapCatQQ**
-
-   - 编辑 `napcat.json` 配置文件
-   - 设置 HTTP/WebSocket 端口（默认 3000）
-   - 配置 QQ 账号信息（可选）
-
-4. **启动 NapCatQQ**
-
-   ```bash
-   napcat start
-   ```
-
-5. **扫码登录**
-   - 首次启动会显示二维码
-   - 使用手机 QQ 扫码登录
-
----
-
-### OneBot 配置示例
-
-#### LLOneBot 配置
-
-在 QQ 设置中配置：
-
-```json
-{
-  "http": {
-    "enable": true,
-    "host": "127.0.0.1",
-    "port": 3000
-  },
-  "ws": {
-    "enable": true,
-    "host": "127.0.0.1",
-    "port": 3001
-  }
-}
-```
-
-#### NapCatQQ 配置
-
-编辑 `napcat.json`:
-
-```json
-{
-  "http": {
-    "enable": true,
-    "host": "0.0.0.0",
-    "port": 3000,
-    "secret": "",
-    "enableHeart": true,
-    "enablePost": false
-  },
-  "ws": {
-    "enable": true,
-    "host": "0.0.0.0",
-    "port": 3001
-  }
-}
-```
-
 ---
 
 ## 常见问题
@@ -850,29 +696,7 @@ rm -rf nyxbot_data/NyxBot.jar*
 
 ---
 
-### Q6: OneBot 连接失败
-
-**检查清单**:
-
-1. ✅ OneBot 实现（LLOneBot/NapCatQQ）已启动
-2. ✅ QQ 已登录
-3. ✅ 端口配置正确（默认 3000）
-4. ✅ 防火墙未阻止连接
-5. ✅ NyxBot 配置文件正确
-
-**测试连接**:
-
-```bash
-# 测试 HTTP 接口
-curl http://127.0.0.1:3000/get_login_info
-
-# 测试 WebSocket（使用 wscat）
-wscat -c ws://127.0.0.1:3001
-```
-
----
-
-### Q7: NyxBot 启动失败
+### Q6: NyxBot 启动失败
 
 **查看日志**:
 
@@ -886,7 +710,7 @@ cat nyxbot_data/install.log
 
 **常见原因**:
 
-- Java 版本不正确（需要 JDK 21）
+- Java 版本不正确（需要 JDK/JRE 21）
 - 配置文件错误
 - 端口被占用
 - OneBot 未连接
@@ -914,19 +738,7 @@ cat nyxbot_data/install.log
    curl -I https://ghfast.top/https://api.github.com
    ```
 
-3. **检查 OneBot 状态**
-
-   ```bash
-   # 检查端口占用
-   # Linux/macOS
-   lsof -i :3000
-   netstat -an | grep 3000
-
-   # Windows
-   netstat -ano | findstr 3000
-   ```
-
-4. **检查日志文件**
+3. **检查日志文件**
 
    ```bash
    # 安装日志
@@ -1031,100 +843,6 @@ readonly DOWNLOAD_DIR="/opt/nyxbot"
 
 # Windows
 $DOWNLOAD_DIR = "C:\NyxBot"
-```
-
----
-
-### 定时任务
-
-#### Linux (cron)
-
-```bash
-# 编辑 crontab
-crontab -e
-
-# 每天凌晨 2 点检查更新并重启
-0 2 * * * /path/to/nyxbot-linux.sh --force-update
-```
-
-#### macOS (launchd)
-
-创建 `~/Library/LaunchAgents/com.nyxbot.update.plist`:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>com.nyxbot.update</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>/path/to/nyxbot-macos.sh</string>
-        <string>--force-update</string>
-    </array>
-    <key>StartCalendarInterval</key>
-    <dict>
-        <key>Hour</key>
-        <integer>2</integer>
-        <key>Minute</key>
-        <integer>0</integer>
-    </dict>
-</dict>
-</plist>
-```
-
-加载任务：
-
-```bash
-launchctl load ~/Library/LaunchAgents/com.nyxbot.update.plist
-```
-
-#### Windows (Task Scheduler)
-
-```powershell
-# 创建计划任务
-$action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-File C:\path\to\nyxbot-windows.ps1 -ForceUpdate"
-$trigger = New-ScheduledTaskTrigger -Daily -At 2am
-Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "NyxBot Update" -Description "自动更新 NyxBot"
-```
-
----
-
-### Docker 部署
-
-创建 `Dockerfile`:
-
-```dockerfile
-FROM ubuntu:22.04
-
-# 安装依赖
-RUN apt-get update && \
-    apt-get install -y openjdk-21-jdk curl && \
-    rm -rf /var/lib/apt/lists/*
-
-# 复制脚本
-COPY nyxbot-linux.sh /app/
-WORKDIR /app
-
-# 下载并启动
-RUN chmod +x nyxbot-linux.sh
-CMD ["./nyxbot-linux.sh", "--skip-java"]
-```
-
-构建和运行：
-
-```bash
-# 构建镜像
-docker build -t nyxbot:latest .
-
-# 运行容器
-docker run -d \
-  --name nyxbot \
-  -v $(pwd)/config:/app/config \
-  -v $(pwd)/data:/app/data \
-  --restart unless-stopped \
-  nyxbot:latest
 ```
 
 ---
