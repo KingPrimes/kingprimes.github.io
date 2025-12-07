@@ -842,18 +842,13 @@ function Format-Speed {
 # 获取最新release信息
 function Get-LatestRelease {
     LogInfo "获取最新release信息..."
-    $api_url = $API_URL
-    if (-not [string]::IsNullOrWhiteSpace($GITHUB_PROXY)) {
-        $api_url = "$GITHUB_PROXY/$($API_URL.Substring(8))"
-        LogInfo "使用代理: $GITHUB_PROXY"
-    }
     try {
         $ProgressPreference = 'SilentlyContinue'
         $headers = @{
             "User-Agent" = "Mozilla/5.0"
             "Accept"     = "application/vnd.github.v3+json"
         }
-        $apiResponse = Invoke-RestMethod -Uri $api_url -Headers $headers -TimeoutSec 10
+        $apiResponse = Invoke-RestMethod -Uri $API_URL -Headers $headers -TimeoutSec 10
         $ProgressPreference = 'Continue'
         # 获取JAR文件信息
         $jarAsset = $apiResponse.assets | Where-Object { $_.name.EndsWith(".jar") } | Select-Object -First 1

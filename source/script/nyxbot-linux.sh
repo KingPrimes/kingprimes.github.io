@@ -543,14 +543,8 @@ function verify_sha256() {
 function get_latest_release() {
     log_info "获取最新release信息..."
     
-    # 构建API URL
-    local api_url="$API_URL"
-    if [ -n "$GITHUB_PROXY" ]; then
-        api_url="${GITHUB_PROXY}/${API_URL#https://}"
-    fi
-    
     local api_response
-    api_response=$(curl -s -H "User-Agent: Mozilla/5.0" -H "Accept: application/vnd.github.v3+json" "$api_url" --connect-timeout 10 --retry 3 2>> "$LOG_FILE")
+    api_response=$(curl -s -H "User-Agent: Mozilla/5.0" -H "Accept: application/vnd.github.v3+json" "$API_URL" --connect-timeout 10 --retry 3 2>> "$LOG_FILE")
     
     if [ -z "$api_response" ] || [[ "$api_response" == *"Not Found"* ]]; then
         log_error "无法获取最新release信息"
