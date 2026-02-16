@@ -29,7 +29,7 @@ categories:
 # 文章摘要
 summary: NyxBot的部署文档,NyxBot是用于查询Warframe信息的QQ机器人。
 # 封面
-cover: https://origin.picgo.net/2024/11/20/6640a959e9dec28ba14780b8df556.jpg
+cover: /img/d99b802/d99b802_featured.webp
 ---
 
 ## OneBot客户端

@@ -10,7 +10,7 @@ keywords:
   - 打赏记录
   - 老王的冒险之旅
   - KingPrimes
-top_img: https://origin.picgo.net/2025/11/30/tag_imgad81a708114fc9f5.webp
+top_img: /img/tag_img.webp
 aplayer: false
 ---
 

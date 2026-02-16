@@ -79,11 +79,11 @@ avatar:
 disable_top_img: false
 
 # 默认的横幅图片
-default_top_img: https://origin.picgo.net/2025/11/30/index_img9a65744049f89abd.webp
+default_top_img: /img/index_img.webp
 
 # 主页横幅图片
 index_img: 
-  - https://origin.picgo.net/2025/11/30/index_img9a65744049f89abd.webp
+  - /img/index_img.webp
 
 # 档案页面的横幅图片
 archive_img:

@@ -17,7 +17,7 @@ keywords:
   - Warframe Bot
 description: NyxBot的一键部署文档
 permalink: posts/0b74998
-cover: https://origin.picgo.net/2025/11/30/c8c1d2874b419efa149f64b.webp
+cover: /img/0b74998/0b74998.webp
 ---
 
 # NyxBot 一键部署脚本使用文档

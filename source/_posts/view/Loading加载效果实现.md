@@ -23,7 +23,7 @@ categories:
 # 文章摘要
 summary: 前端小球3D加载动画效果实现
 # 文章头图片
-cover: https://origin.picgo.net/2024/11/20/6640a9082919bb7937764c7fc3f19.jpg
+cover: /img/38f55ae/38f55ae.webp
 ---
 
 # Loading 圆形小球加载效果实现
