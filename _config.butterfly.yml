@@ -72,7 +72,7 @@ social:
 favicon: /favicon/favicon.ico
 
 avatar:
-  img: https://avatars.githubusercontent.com/u/50130875
+  img: /img/avatar/50130875.jpg
   effect: false
 
 # 禁用所有横幅图片
