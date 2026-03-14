@@ -2,15 +2,15 @@
 
 # ============================================================================
 # NyxBot 启动脚本 (Linux) - 改进版
-# 版本: 3.0.0
+# 版本: 3.1.0
 # 功能: 自动安装JDK 21、下载最新版本NyxBot并启动
-# 改进: SHA256校验、版本检查、增强错误处理
+# 改进: SHA256校验、版本检查、增强错误处理、下载进度条、安装进度显示
 # ============================================================================
 
 # set -euo pipefail  # 严格模式：遇到错误立即退出
 
 # 设置变量
-readonly SCRIPT_VERSION="3.0.0"
+readonly SCRIPT_VERSION="3.1.0"
 readonly API_URL="https://api.github.com/repos/KingPrimes/NyxBot/releases/latest"
 readonly DOWNLOAD_DIR="./nyxbot_data"
 readonly NYXBOT_JAR="$DOWNLOAD_DIR/NyxBot.jar"
@@ -290,7 +290,12 @@ function check_and_install_jre21() {
 EOF
             
             log_info "已切换到清华镜像源，更新软件包列表..."
-            sudo apt-get clean
+            log_info "清理 apt 缓存..."
+            if sudo apt-get clean 2>&1 | tee -a "$LOG_FILE"; then
+                log_success "apt 缓存清理完成"
+            else
+                log_warning "apt 缓存清理失败，但不影响后续操作"
+            fi
         fi
     fi
     
@@ -324,33 +329,68 @@ EOF
         done
         
         # 安装OpenJRE 21而非JDK
-        sudo apt install -y openjdk-21-jre-headless || {
+        log_info "正在安装 OpenJRE 21，请稍候..."
+        if sudo apt install -y openjdk-21-jre-headless 2>&1 | tee -a "$LOG_FILE"; then
+            log_success "OpenJRE 21 安装成功"
+        else
             log_warning "安装openjdk-21-jre-headless失败，尝试安装完整版openjdk-21-jre"
-            sudo apt install -y openjdk-21-jre
-        }
+            if sudo apt install -y openjdk-21-jre 2>&1 | tee -a "$LOG_FILE"; then
+                log_success "OpenJRE 21 安装成功"
+            else
+                log_error "OpenJRE 21 安装失败"
+                exit 1
+            fi
+        fi
         
         elif [ -f /etc/redhat-release ]; then
         # RHEL/CentOS/Fedora系统
         log_info "检测到RHEL/CentOS/Fedora系统，使用dnf/yum安装OpenJRE 21..."
+        log_info "正在安装 OpenJRE 21，请稍候..."
         if command -v dnf &> /dev/null; then
-            sudo dnf install -y java-21-openjdk-headless || {
+            if sudo dnf install -y java-21-openjdk-headless 2>&1 | tee -a "$LOG_FILE"; then
+                log_success "OpenJRE 21 安装成功"
+            else
                 log_warning "安装java-21-openjdk-headless失败，尝试安装完整版"
-                sudo dnf install -y java-21-openjdk
-            }
+                if sudo dnf install -y java-21-openjdk 2>&1 | tee -a "$LOG_FILE"; then
+                    log_success "OpenJRE 21 安装成功"
+                else
+                    log_error "OpenJRE 21 安装失败"
+                    exit 1
+                fi
+            fi
         else
-            sudo yum install -y java-21-openjdk-headless || {
+            if sudo yum install -y java-21-openjdk-headless 2>&1 | tee -a "$LOG_FILE"; then
+                log_success "OpenJRE 21 安装成功"
+            else
                 log_warning "安装java-21-openjdk-headless失败，尝试安装完整版"
-                sudo yum install -y java-21-openjdk
-            }
+                if sudo yum install -y java-21-openjdk 2>&1 | tee -a "$LOG_FILE"; then
+                    log_success "OpenJRE 21 安装成功"
+                else
+                    log_error "OpenJRE 21 安装失败"
+                    exit 1
+                fi
+            fi
         fi
         elif [ -f /etc/arch-release ]; then
         # Arch Linux
         log_info "检测到Arch Linux，使用pacman安装OpenJRE 21..."
-        sudo pacman -Syu --noconfirm jre-openjdk
+        log_info "正在安装 OpenJRE 21，请稍候..."
+        if sudo pacman -Syu --noconfirm jre-openjdk 2>&1 | tee -a "$LOG_FILE"; then
+            log_success "OpenJRE 21 安装成功"
+        else
+            log_error "OpenJRE 21 安装失败"
+            exit 1
+        fi
         elif [ -f /etc/alpine-release ]; then
         # Alpine Linux
         log_info "检测到Alpine Linux，使用apk安装OpenJRE 21..."
-        sudo apk add openjdk21-jre
+        log_info "正在安装 OpenJRE 21，请稍候..."
+        if sudo apk add openjdk21-jre 2>&1 | tee -a "$LOG_FILE"; then
+            log_success "OpenJRE 21 安装成功"
+        else
+            log_error "OpenJRE 21 安装失败"
+            exit 1
+        fi
     else
         log_error "无法确定Linux发行版，无法自动安装JRE 21"
         log_info "请手动安装OpenJRE 21，或参考以下命令："
@@ -414,7 +454,13 @@ function network_test() {
     
     # 遍历并测试所有代理
     if [ -n "${check_url}" ]; then
+        local total_proxies=${#proxy_arr[@]}
+        local current_proxy=0
+        
         for proxy_candidate in "${proxy_arr[@]}"; do
+            current_proxy=$((current_proxy + 1))
+            echo -ne "${CYAN}[INFO]${NC} 测试代理 ($current_proxy/$total_proxies): ${proxy_candidate}...\r"
+            
             local test_target_url
             if [ -n "${check_url}" ]; then
                 test_target_url="${proxy_candidate}/${check_url}"
@@ -441,6 +487,7 @@ function network_test() {
                 fi
             fi
         done
+        echo -ne "\r"  # 清除进度行
     else
         log_warning "警告: 代理测试缺少有效的检查URL, 无法自动选择代理。"
     fi
@@ -495,8 +542,9 @@ function download_file() {
         log_info "使用代理: $GITHUB_PROXY"
     fi
     
-    # 尝试下载
-    if curl -L -o "$destination" "$download_url" --connect-timeout 10 --max-time 300 --retry 3 -H "User-Agent: Mozilla/5.0" 2>> "$LOG_FILE"; then
+    # 尝试下载（带进度条）
+    if curl -L --progress-bar -o "$destination" "$download_url" --connect-timeout 10 --max-time 300 --retry 3 -H "User-Agent: Mozilla/5.0" 2>&1 | tee -a "$LOG_FILE"; then
+        echo ""  # 添加换行，使进度条后的输出更清晰
         log_success "$description 下载完成"
         
         # 验证SHA256（如果提供）
@@ -541,10 +589,12 @@ function verify_sha256() {
 
 # 从API获取最新release信息
 function get_latest_release() {
-    log_info "获取最新release信息..."
+    log_info "正在获取最新release信息..."
+    echo -ne "${CYAN}[INFO]${NC} 正在连接 GitHub API..."
     
     local api_response
     api_response=$(curl -s -H "User-Agent: Mozilla/5.0" -H "Accept: application/vnd.github.v3+json" "$API_URL" --connect-timeout 10 --retry 3 2>> "$LOG_FILE")
+    echo -e "\r${GREEN}[SUCCESS]${NC} 已获取最新release信息"
     
     if [ -z "$api_response" ] || [[ "$api_response" == *"Not Found"* ]]; then
         log_error "无法获取最新release信息"
@@ -611,9 +661,12 @@ function check_version() {
     
     if [ "$current_version" = "$RELEASE_TAG" ]; then
         log_success "本地版本 ($current_version) 已是最新版本"
+        log_info "无需更新"
         return 0  # 不需要更新
     else
-        log_info "发现新版本: $RELEASE_TAG (当前: $current_version)"
+        log_info "发现新版本: $RELEASE_TAG"
+        log_info "当前版本: $current_version"
+        log_info "建议更新到最新版本"
         return 1  # 需要更新
     fi
 }
@@ -830,8 +883,13 @@ function install_nyxbot() {
     # 备份旧版本（如果存在）
     if [ -f "$NYXBOT_JAR" ]; then
         local backup_file="${NYXBOT_JAR}.bak"
-        log_info "备份旧版本到 $backup_file"
-        mv "$NYXBOT_JAR" "$backup_file"
+        log_info "正在备份旧版本到 $backup_file..."
+        if mv "$NYXBOT_JAR" "$backup_file" 2>&1 | tee -a "$LOG_FILE"; then
+            log_success "备份完成"
+        else
+            log_error "备份失败"
+            return 1
+        fi
     fi
     
     # 下载NyxBot.jar
@@ -840,8 +898,12 @@ function install_nyxbot() {
         
         # 如果有备份，恢复备份
         if [ -f "${NYXBOT_JAR}.bak" ]; then
-            log_info "恢复备份版本..."
-            mv "${NYXBOT_JAR}.bak" "$NYXBOT_JAR"
+            log_info "正在恢复备份版本..."
+            if mv "${NYXBOT_JAR}.bak" "$NYXBOT_JAR" 2>&1 | tee -a "$LOG_FILE"; then
+                log_success "恢复完成"
+            else
+                log_error "恢复失败"
+            fi
         fi
         return 1
     fi
@@ -854,8 +916,12 @@ function install_nyxbot() {
             
             # 恢复备份
             if [ -f "${NYXBOT_JAR}.bak" ]; then
-                log_info "恢复备份版本..."
-                mv "${NYXBOT_JAR}.bak" "$NYXBOT_JAR"
+                log_info "正在恢复备份版本..."
+                if mv "${NYXBOT_JAR}.bak" "$NYXBOT_JAR" 2>&1 | tee -a "$LOG_FILE"; then
+                    log_success "恢复完成"
+                else
+                    log_error "恢复失败"
+                fi
             fi
             return 1
         fi
@@ -896,16 +962,25 @@ function update_nyxbot() {
     
     # 备份旧版本
     local backup_file="${NYXBOT_JAR}.bak"
-    log_info "备份旧版本到 $backup_file"
-    mv "$NYXBOT_JAR" "$backup_file"
+    log_info "正在备份旧版本到 $backup_file..."
+    if mv "$NYXBOT_JAR" "$backup_file" 2>&1 | tee -a "$LOG_FILE"; then
+        log_success "备份完成"
+    else
+        log_error "备份失败"
+        return 1
+    fi
     
     # 下载NyxBot.jar
     if ! download_file "$DOWNLOAD_URL" "$NYXBOT_JAR" "NyxBot.jar" "$EXPECTED_SHA256"; then
         log_error "下载失败"
         
         # 恢复备份
-        log_info "恢复备份版本..."
-        mv "${NYXBOT_JAR}.bak" "$NYXBOT_JAR"
+        log_info "正在恢复备份版本..."
+        if mv "${NYXBOT_JAR}.bak" "$NYXBOT_JAR" 2>&1 | tee -a "$LOG_FILE"; then
+            log_success "恢复完成"
+        else
+            log_error "恢复失败"
+        fi
         return 1
     fi
     
@@ -916,8 +991,12 @@ function update_nyxbot() {
             rm -f "$NYXBOT_JAR"
             
             # 恢复备份
-            log_info "恢复备份版本..."
-            mv "${NYXBOT_JAR}.bak" "$NYXBOT_JAR"
+            log_info "正在恢复备份版本..."
+            if mv "${NYXBOT_JAR}.bak" "$NYXBOT_JAR" 2>&1 | tee -a "$LOG_FILE"; then
+                log_success "恢复完成"
+            else
+                log_error "恢复失败"
+            fi
             return 1
         fi
     fi
@@ -1066,22 +1145,39 @@ function start_service() {
                 sudo systemctl daemon-reload
             fi
             
-            sudo systemctl start nyxbot
-            sudo systemctl enable nyxbot  # 设置开机自启
+            log_info "正在启动 NyxBot 服务..."
+            if sudo systemctl start nyxbot 2>&1 | tee -a "$LOG_FILE"; then
+                log_success "NyxBot 服务已启动"
+            else
+                log_error "NyxBot 服务启动失败"
+                return 1
+            fi
+            
+            log_info "正在设置开机自启..."
+            if sudo systemctl enable nyxbot 2>&1 | tee -a "$LOG_FILE"; then
+                log_success "已设置开机自启"
+            else
+                log_warning "设置开机自启失败"
+            fi
             ;;
         "sysvinit")
             log_warning "sysvinit 支持有限，将使用 nohup 后台运行"
+            log_info "正在启动 NyxBot 服务（后台模式）..."
             nohup java $java_args > "$DOWNLOAD_DIR/nyxbot.log" 2>&1 &
-            echo $! > "$DOWNLOAD_DIR/nyxbot.pid"
+            local pid=$!
+            echo $pid > "$DOWNLOAD_DIR/nyxbot.pid"
+            log_success "NyxBot 服务已启动 (PID: $pid)"
+            log_info "日志文件: $DOWNLOAD_DIR/nyxbot.log"
             ;;
         *)
             log_warning "未知的服务管理器，将使用 nohup 后台运行"
+            log_info "正在启动 NyxBot 服务（后台模式）..."
             nohup java $java_args > "$DOWNLOAD_DIR/nyxbot.log" 2>&1 &
-            echo $! > "$DOWNLOAD_DIR/nyxbot.pid"
+            local pid=$!
+            echo $pid > "$DOWNLOAD_DIR/nyxbot.pid"
+            log_success "NyxBot 服务已启动 (PID: $pid)"
+            log_info "日志文件: $DOWNLOAD_DIR/nyxbot.log"
             ;;
-    esac
-    
-    log_success "NyxBot 服务已启动"
     return 0
 }
 
@@ -1089,34 +1185,53 @@ function start_service() {
 function stop_service() {
     local service_manager=$(get_service_manager)
     
+    log_info "正在停止 NyxBot 服务..."
     case "$service_manager" in
         "systemd")
-            sudo systemctl stop nyxbot
+            if sudo systemctl stop nyxbot 2>&1 | tee -a "$LOG_FILE"; then
+                log_success "NyxBot 服务已停止"
+            else
+                log_warning "NyxBot 服务停止失败或未运行"
+            fi
             ;;
         "sysvinit")
             if [ -f "$DOWNLOAD_DIR/nyxbot.pid" ]; then
                 local pid=$(cat "$DOWNLOAD_DIR/nyxbot.pid")
-                kill "$pid" 2>/dev/null || true
+                if kill "$pid" 2>/dev/null; then
+                    log_success "NyxBot 服务已停止 (PID: $pid)"
+                else
+                    log_warning "NyxBot 服务未运行或已停止"
+                fi
                 rm -f "$DOWNLOAD_DIR/nyxbot.pid"
+            else
+                log_warning "未找到 PID 文件，服务可能未运行"
             fi
             ;;
         *)
             if [ -f "$DOWNLOAD_DIR/nyxbot.pid" ]; then
                 local pid=$(cat "$DOWNLOAD_DIR/nyxbot.pid")
-                kill "$pid" 2>/dev/null || true
+                if kill "$pid" 2>/dev/null; then
+                    log_success "NyxBot 服务已停止 (PID: $pid)"
+                else
+                    log_warning "NyxBot 服务未运行或已停止"
+                fi
                 rm -f "$DOWNLOAD_DIR/nyxbot.pid"
+            else
+                log_warning "未找到 PID 文件，服务可能未运行"
             fi
             ;;
     esac
     
-    log_success "NyxBot 服务已停止"
     return 0
 }
 
 # 重启服务
 function restart_service() {
+    log_info "正在停止服务..."
     stop_service
+    log_info "等待2秒后重新启动..."
     sleep 2
+    log_info "正在启动服务..."
     start_service
     return 0
 }
