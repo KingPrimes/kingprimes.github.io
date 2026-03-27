@@ -2,7 +2,7 @@
 
 # ============================================================================
 # NyxBot 启动脚本 (Linux) - 改进版
-# 版本: 3.1.0
+# 版本: 3.1.1
 # 功能: 自动安装JDK 21、下载最新版本NyxBot并启动
 # 改进: SHA256校验、版本检查、增强错误处理、下载进度条、安装进度显示
 # ============================================================================
@@ -10,7 +10,7 @@
 # set -euo pipefail  # 严格模式：遇到错误立即退出
 
 # 设置变量
-readonly SCRIPT_VERSION="3.1.0"
+readonly SCRIPT_VERSION="3.1.1"
 readonly API_URL="https://api.github.com/repos/KingPrimes/NyxBot/releases/latest"
 readonly DOWNLOAD_DIR="./nyxbot_data"
 readonly NYXBOT_JAR="$DOWNLOAD_DIR/NyxBot.jar"
@@ -1178,6 +1178,7 @@ function start_service() {
             log_success "NyxBot 服务已启动 (PID: $pid)"
             log_info "日志文件: $DOWNLOAD_DIR/nyxbot.log"
             ;;
+    esac
     return 0
 }
 
