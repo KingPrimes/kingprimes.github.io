@@ -22,8 +22,8 @@ cover: /img/0b74998/0b74998.webp
 
 # NyxBot 一键部署脚本使用文档
 
-**版本**: 4.1.0  
-**更新日期**: 2026-06-02
+**版本**: 2.0.0  
+**更新日期**: 2026-06-03
 
 > 💡 **只需要一分钟，会复制粘贴就能装好。不需要懂编程。**
 
@@ -31,7 +31,7 @@ cover: /img/0b74998/0b74998.webp
 
 ## 🚀 新版统一部署脚本（推荐）
 
-**v4.1 全新升级！** Windows 图形化窗口、无需管理员权限、自动版本检测与更新提醒、SHA256 完整性校验。
+**v2.0 全新升级！** 管理菜单、实时状态监控、双引擎 TUI、系统命令注册、JAR 完整性校验。
 
 在开始之前，请先装好 **OneBot 客户端**（NapCat 或 LLOneBot），它是让机器人连上 QQ 的软件。
 > 不会装？看这里 → [NyxBot 手把手部署教程](https://kingprimes.top/posts/d99b802)
@@ -142,14 +142,82 @@ chmod +x nyxbot-deploy.sh
 ./nyxbot-deploy.sh
 ```
 
-**常用玩法**：
+#### 首次安装
+
+运行脚本后会自动进入配置流程（支持 dialog/whiptail TUI 表单或文本问答）：
+
+```
+── Basic Config / 基础配置 ──
+  Port / 端口 [8080]:        ← 端口号，不改就回车
+  Token (required / 必填):   ← OneBot Token，必填！
+── Mode / 通讯模式 ──
+  1) Server  2) Client
+── Proxy / 代理 (回车跳过) ──
+── System Command / 系统命令 ──
+  Install 'nyxbot' command? [Y/n]
+── Confirm / 确认 ──
+  Proceed? / 确认安装? [Y/n]
+```
+
+填好后脚本自动：检测环境 → 安装 Java → 测速选线路 → 下载 → SHA256 校验 → 安装 systemd 服务 → 启动。
+
+安装完成后访问 `http://你的IP:8080`。
+
+#### 已安装？再跑一次 = 管理面板
+
+再次运行脚本，会显示**管理菜单**：
+
+```
+── NyxBot Management / NyxBot 管理 ──
+  Status / 状态: Running / 运行中
+
+  1) Update / 更新 (download latest + restart)
+  2) Restart / 重启
+  3) Stop / 停止
+  4) Status / 查看状态
+  5) Reconfigure / 重新配置
+  6) Remove system command / 移除系统命令
+  7) Quit / 退出
+
+  Select / 选择 [1]:
+```
+
+| 选项 | 作用 |
+|------|------|
+| **1) Update** | 检查版本 → 已最新跳过 / 有新版本下载更新 |
+| **2) Restart/Start** | 重启或启动 NyxBot |
+| **3) Stop** | 停止运行中的 NyxBot |
+| **4) Status** | 实时状态监控（自动刷新，Esc 退出） |
+| **5) Reconfigure** | 修改端口/Token/代理等配置 |
+| **6) Remove cmd** | 移除 `nyxbot` 系统命令 |
+| **7) Quit** | 退出脚本 |
+
+> 💡 管理菜单是循环的——选完一个操作后回到菜单，只有选 7 才退出。
+
+#### 安装为系统命令
+
+安装时选 Y 安装 `nyxbot` 命令，之后在任何目录都能管理：
 
 ```bash
-./nyxbot-deploy.sh                          # 交互式部署
+nyxbot              # 打开管理菜单
+nyxbot --tui        # TUI 配置界面
+nyxbot --help       # 查看帮助
+nyxbot --unc        # 移除命令
+```
+
+#### 常用参数
+
+```bash
+./nyxbot-deploy.sh                          # 交互式部署（自动检测 TUI）
 ./nyxbot-deploy.sh --docker                 # 强制 Docker 容器部署
 ./nyxbot-deploy.sh --local                  # 强制本地 JAR 部署
-./nyxbot-deploy.sh --tui                    # TUI 可视化表单（SSH 友好）
-./nyxbot-deploy.sh --quiet --token=xxx      # 静默部署（不提问）
+./nyxbot-deploy.sh --tui                    # TUI 可视化表单（dialog/whiptail）
+./nyxbot-deploy.sh --text                   # 文本问答模式（SSH 兼容）
+./nyxbot-deploy.sh --quiet --token=xxx      # 静默部署（不提问，CI/CD 用）
+./nyxbot-deploy.sh --inc                    # 安装后注册为系统命令
+./nyxbot-deploy.sh --proxy=http://IP:端口    # 使用 HTTP 代理
+./nyxbot-deploy.sh --port=9090              # 自定义端口
+./nyxbot-deploy.sh --pu=用户名 --pp=密码     # 代理认证
 ```
 
 ---
@@ -159,16 +227,18 @@ chmod +x nyxbot-deploy.sh
 | 特性 | 说明 |
 |------|------|
 | 🖥️ **Windows 图形化窗口** | 可视化表单填写配置，不需要记命令，一看就会 |
-| 🔍 **自动版本检测** | 已安装时自动跳过下载，发现新版本弹窗提醒 |
-| 🔐 **SHA256 完整性校验** | 下载后自动验证文件哈希值，确保文件没损坏 |
-| 🛑 **一键停止** | 图形窗口内直接停止 NyxBot、管理计划任务 |
-| 📝 **配置自动保存** | Token、端口等配置自动记忆，再跑脚本不用重新填 |
+| 🎛️ **管理菜单** | 已安装后再运行自动进入管理面板（更新/重启/停止/状态/重配） |
+| 📺 **实时状态监控** | 自动刷新显示运行状态、systemd 日志，Esc 退出 |
+| 🔍 **自动版本检测** | 已安装时自动跳过下载，发现新版本询问更新 |
+| 🔐 **SHA256 完整性校验** | 下载后自动验证文件哈希值 + 重配时校验已有 JAR 完整性 |
+| 📝 **配置自动保存** | Token、端口等配置自动记忆，再跑脚本一键更新 |
 | 🐳 **Docker 部署** | 自动检测 Docker，优先容器安装，国内镜像源自动切换 |
-| 📊 **TUI 可视化** | 基于 dialog 的表单交互（SSH 终端友好） |
-| 📶 **网络测速** | 9 个 GitHub 代理 + 直连实时并行测速，自动选最快 |
+| 📊 **双引擎 TUI** | dialog（多字段表单）+ whiptail（分步问答），SSH 终端友好 |
+| 📶 **网络测速** | 直连 + 9 个 GitHub 代理测速，自动选最快线路 |
+| 🔧 **系统命令注册** | `nyxbot` 命令全局可用，任意目录管理 NyxBot |
 | 🤖 **静默模式** | `--quiet --token=xxx` 一行部署，适合 CI/CD |
-| 💻 **Linux/macOS 合一** | 一个脚本覆盖两大系统，自动识别 |
-| 🔒 **智能降级** | Docker 不可用自动切换到本地安装，管理员权限缺失自动降级 |
+| 💻 **跨平台** | Linux (systemd/nohup) + macOS 全支持，自动适配 |
+| 🔒 **智能降级** | Docker 不可用→本地安装 / TUI 不可用→文本模式 / dialog→whiptail |
 
 ### 安装后输出示例
 
@@ -212,18 +282,45 @@ chmod +x nyxbot-deploy.sh
 **Linux / macOS**：
 
 ```
-[✔] 系统: Ubuntu 22.04 x86_64
-[✔] Java 21: 已安装
-[✔] Docker: 已安装 (v26.1.0)
-[>] 安装方式: Docker 容器模式
-[>] 数据目录: /home/nyxbot/NyxBot (映射至容器 /app/data)
+  _   _            ____        _   
+ | \ | |_   ___  _| __ )  ___ | |_ 
+ |  \| | | | \ \/ /  _ \ / _ \| __|
+ | |\  | |_| |>  <| |_) | (_) | |_ 
+ |_| \_|\__, /_/\_\____/ \___/ \__|
+        |___/                      
+
+  NyxBot Deploy v2.0.0 / NyxBot 一键部署脚本
+
+[✔] System: ubuntu x86_64 / 系统: ubuntu x86_64
+[ ] Mode: Local install (ubuntu) / 安装方式: 本地安装 (ubuntu)
+[ ] Directory: /home/kingprimes/NyxBot
+
+[✔] Java 21: installed / Java 21: 已安装
+[>] Network speed test / 网络测速...
+  Testing: Direct / 直连... 90.3 KB/s
+  Testing: ghfast.top... 42.3 KB/s
+  ...
+[✔] Best: https://ghm.078465.xyz (88.2 KB/s)
+[>] Fetching latest version... / 获取最新版本...
+[✔] Version: v2.1.5 / 版本: v2.1.5
+[>] Chunked download (4 chunks) / 分块下载 (4 块)...
+  Chunk 1/3 / 分块 1/3... Done / 完成
+  ...
+  Assembling & verifying / 合并并校验... OK
+[✔] Download complete (165.2 MB) / 下载完成 (165.2 MB)
+  Verifying SHA256 / 校验完整性... OK / 通过
+[>] Creating systemd service... / 创建 systemd 服务...
+[✔] systemd service installed and started
 
 ┌──────────────────────────────────────────┐
+│        NyxBot Install Complete!           │
 │        NyxBot 安装完成！                   │
 ├──────────────────────────────────────────┤
-│  管理页面: http://localhost:8080           │
-│  查看日志: docker logs -f nyxbot          │
-│  重启:     docker restart nyxbot          │
+│  Dashboard / 管理页面: http://localhost:8080
+│  Data / 数据目录: /home/kingprimes/NyxBot
+│  Logs / 日志:    tail -f /home/kingprimes/NyxBot/nyxbot.log
+│  Restart / 重启: systemctl restart nyxbot
+│  Status / 状态:  systemctl status nyxbot
 └──────────────────────────────────────────┘
 ```
 
@@ -253,17 +350,38 @@ Unregister-ScheduledTask -TaskName "NyxBot" -Confirm:$false
 
 ### Linux / macOS
 
+**推荐方式：运行 `nyxbot` 命令或重新运行脚本**，进入管理菜单：
+
+```
+── NyxBot Management / NyxBot 管理 ──
+  Status / 状态: Running / 运行中
+
+  1) Update / 更新      4) Status / 查看状态     7) Quit / 退出
+  2) Restart / 重启     5) Reconfigure / 重新配置
+  3) Stop / 停止        6) Remove system command
+```
+
+- 选 **4) Status** 进入实时状态监控，自动刷新显示运行状态和最新日志，按 Esc 退出
+- 选 **5) Reconfigure** 修改端口、Token、代理等配置，保存后手动选 2 重启生效
+- 操作完成后自动回到菜单，选 **7) Quit** 才退出
+
+**手动命令：**
+
 ```bash
+# systemd (Linux)
+systemctl status nyxbot        # 看状态
+systemctl restart nyxbot       # 重启
+systemctl stop nyxbot          # 停止
+
 # Docker 模式
 docker logs -f nyxbot          # 看日志
 docker restart nyxbot          # 重启
+docker stop nyxbot             # 停止
 
-# 本地 systemd (Linux)
-systemctl status nyxbot        # 看状态
-systemctl restart nyxbot       # 重启
-
-# 本地 nohup (macOS / 无 systemd 的 Linux)
-tail -f ./NyxBot/nyxbot.log
+# nohup 模式 (macOS / 无 systemd)
+tail -f ~/NyxBot/nyxbot.log    # 看日志
+cat ~/NyxBot/nyxbot.pid        # 查看 PID
+kill $(cat ~/NyxBot/nyxbot.pid) # 停止
 ```
 
 ---
@@ -368,7 +486,7 @@ docker run --name nyxbot -d -p 9090:8080 kingprimes/nyxbot:latest
 ### 脚本文件
 
 ```
-nyxbot-deploy.sh        # Linux / macOS 统一脚本（推荐）
+nyxbot-deploy.sh        # Linux / macOS 统一脚本 v2.0（推荐）
 nyxbot-deploy.ps1       # Windows PowerShell 脚本（推荐）
 ```
 
@@ -377,8 +495,14 @@ nyxbot-deploy.ps1       # Windows PowerShell 脚本（推荐）
 ### 常用命令
 
 ```bash
-# 交互式部署
+# 交互式部署（自动检测 TUI）
 ./nyxbot-deploy.sh
+
+# TUI 表单（dialog 优先，降级 whiptail，再降级文本）
+./nyxbot-deploy.sh --tui
+
+# 文本问答（SSH 兼容）
+./nyxbot-deploy.sh --text
 
 # Docker 容器
 ./nyxbot-deploy.sh --docker
@@ -386,13 +510,18 @@ nyxbot-deploy.ps1       # Windows PowerShell 脚本（推荐）
 # 本地 JAR
 ./nyxbot-deploy.sh --local
 
-# 静默（不提问）
+# 静默（不提问，CI/CD 用）
 ./nyxbot-deploy.sh --quiet --token=xxx --port=9090
 
-# 管理
-systemctl status nyxbot               # Linux 服务状态
-docker logs -f nyxbot                 # Docker 日志
-tail -f ./NyxBot/nyxbot.log     # 本地日志
+# 使用代理 + 注册系统命令
+./nyxbot-deploy.sh --inc --proxy=http://127.0.0.1:10808
+
+# 安装后管理
+nyxbot                    # 管理菜单
+nyxbot --tui              # TUI 重配
+nyxbot --unc              # 移除系统命令
+systemctl status nyxbot   # Linux 服务状态
+docker logs -f nyxbot     # Docker 日志
 ```
 
 ### 相关链接
@@ -403,6 +532,6 @@ tail -f ./NyxBot/nyxbot.log     # 本地日志
 
 ---
 
-**文档版本**: v4.1.0  
-**最后更新**: 2026-06-02
+**文档版本**: v2.0.0  
+**最后更新**: 2026-06-03
 **维护者**: KingPrimes

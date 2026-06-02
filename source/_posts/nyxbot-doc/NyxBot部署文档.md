@@ -43,7 +43,7 @@ cover: /img/d99b802/d99b802_featured.webp
 curl -fsSL https://kingprimes.top/script/nyxbot-deploy.sh | bash
 ```
 
-> 一键脚本支持 Docker 容器部署（推荐）、本地部署、TUI 可视化表单。**本文是手动部署教程**，适合想了解每一步细节的用户。
+> 一键脚本支持 Docker 容器部署（推荐）、本地部署、TUI 可视化表单（dialog/whiptail）、管理菜单、实时状态监控、系统命令注册。**本文是手动部署教程**，适合想了解每一步细节的用户。
 
 ---
 
