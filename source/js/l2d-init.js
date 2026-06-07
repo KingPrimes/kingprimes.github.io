@@ -81,6 +81,7 @@
     size: { width: 300, height: 350 },
     primaryColor: '#49B1F5',
     transitionDuration: 1000,
+    mouseTracking: { sensitivity: 0.3 },
     menus: {
       style: {
         gap: '8px',
