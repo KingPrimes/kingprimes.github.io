@@ -2,6 +2,16 @@
 	"Version": 3,
 	"FileReferences": {
 		"Moc": "mailili.moc3",
+		"Motions": {
+			"reset": [
+				{"File": "motions/reset.motion3.json"}
+			],
+			"tap_body": [
+				{"File": "motions/hello.motion3.json"},
+				{"File": "motions/nod.motion3.json"},
+				{"File": "motions/tilt.motion3.json"}
+			]
+		},
 		"Textures": [
 			"mailili.8192/texture_00.webp"
 		],

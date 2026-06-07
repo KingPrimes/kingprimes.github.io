@@ -1090,7 +1090,7 @@ note:
 
 # https://github.com/MoOx/pjax
 pjax:
-  enable: false
+  enable: true
   # Exclude the specified pages from pjax, such as '/music/'
   exclude:
   # - /xxxxxx/
@@ -1165,9 +1165,11 @@ css_prefix: true
 inject:
   head:
     - <link rel="stylesheet" href="/css/reward-custom.css">
+    - <style>button[title]{width:40px!important;height:40px!important;font-size:22px!important}</style>
   # - <link rel="stylesheet" href="/xxx.css">
   bottom:
-  # - <script src="xxxx"></script>
+    - <script src="/js/l2d-widget.min.js"></script>
+    - <script src="/js/l2d-init.js"></script>
 
 # CDN Settings
 # Don't modify the following settings unless you know how they work

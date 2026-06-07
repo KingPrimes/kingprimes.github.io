@@ -1,0 +1,18 @@
+{
+  "Version": 3,
+  "Meta": {
+    "Duration": 0.15,
+    "Fps": 30,
+    "Loop": false,
+    "CurveCount": 3,
+    "TotalSegmentCount": 3,
+    "TotalPointCount": 3,
+    "UserDataCount": 0,
+    "TotalUserDataSize": 0
+  },
+  "Curves": [
+    {"Target": "Parameter", "Id": "Param53", "Segments": [0, 0, 0, 0.15, 0]},
+    {"Target": "Parameter", "Id": "Param54", "Segments": [0, 0, 0, 0.15, 0]},
+    {"Target": "Parameter", "Id": "Param67", "Segments": [0, 0, 0, 0.15, 0]}
+  ]
+}

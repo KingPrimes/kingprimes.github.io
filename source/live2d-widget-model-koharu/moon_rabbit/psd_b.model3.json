@@ -2,6 +2,25 @@
 	"Version": 3,
 	"FileReferences": {
 		"Moc": "PSD_B.moc3",
+		"Motions": {
+			"reset": [
+				{"File": "motions/reset.motion3.json"}
+			],
+			"creset": [
+				{"File": "motions/costume_reset.motion3.json"}
+			],
+			"effect": [
+				{"File": "motions/costume0.motion3.json"},
+				{"File": "motions/costume1.motion3.json"},
+				{"File": "motions/costume2.motion3.json"}
+			],
+			"tap_body": [
+				{"File": "motions/hello.motion3.json"},
+				{"File": "motions/nod.motion3.json"},
+				{"File": "motions/tilt.motion3.json"},
+				{"File": "motions/DH.motion3.json"}
+			]
+		},
 		"Textures": [
 			"PSD_B.4096/texture_00.webp",
 			"PSD_B.4096/texture_01.webp"
@@ -90,28 +109,24 @@
 				"File": "expressions/Q_guanghuan.exp3.json"
 			},
 			{
-				"Name": "Q_MAOZI",
-				"File": "expressions/Q_MAOZI.exp3.json"
-			},
-			{
 				"Name": "Q_SICHOU",
 				"File": "expressions/Q_SICHOU.exp3.json"
-			},
-			{
-				"Name": "Q_WAITAO",
-				"File": "expressions/Q_WAITAO.exp3.json"
-			},
-			{
-				"Name": "Q_WEIJING",
-				"File": "expressions/Q_WEIJING.exp3.json"
 			},
 			{
 				"Name": "Q_XIUZI",
 				"File": "expressions/Q_XIUZI.exp3.json"
 			},
 			{
-				"Name": "Q_YIFU",
-				"File": "expressions/Q_YIFU.exp3.json"
+				"Name": "costume_default",
+				"File": "expressions/costume_default.exp3.json"
+			},
+			{
+				"Name": "costume_hood",
+				"File": "expressions/costume_hood.exp3.json"
+			},
+			{
+				"Name": "costume_scarf",
+				"File": "expressions/costume_scarf.exp3.json"
 			}
 		]
 	},

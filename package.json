@@ -14,7 +14,7 @@
     "cf:build": "NODE_OPTIONS=--max-old-space-size=4096 npm run build"
   },
   "hexo": {
-    "version": "8.1.1"
+    "version": "8.1.2"
   },
   "dependencies": {
     "@renbaoshuo/markdown-it-katex": "^2.0.2",
@@ -27,7 +27,6 @@
     "hexo-generator-searchdb": "^1.5.0",
     "hexo-generator-sitemap": "^3.0.1",
     "hexo-generator-tag": "^2.0.0",
-    "hexo-oh-my-live2d": "^0.1.4",
     "hexo-renderer-ejs": "^2.0.0",
     "hexo-renderer-markdown-it": "^7.1.1",
     "hexo-renderer-pug": "^3.0.0",
