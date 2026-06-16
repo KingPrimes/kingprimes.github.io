@@ -4,7 +4,7 @@ title: NyxBot指令的使用方法
 # 发布日期
 date: 2024-12-08T22:40:08+08:00
 # 永久链接
-permalink: posts/1bb16eb
+abbrlink: 1bb16eb
 # 文章描述
 description: NyxBot指令的使用方法以及注意事项
 # 文章关键字

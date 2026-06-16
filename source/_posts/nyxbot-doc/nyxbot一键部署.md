@@ -16,7 +16,7 @@ keywords:
   - Warframe机器人
   - Warframe Bot
 description: NyxBot的一键部署文档
-permalink: posts/0b74998
+abbrlink: 0b74998
 cover: /img/0b74998/0b74998.webp
 ---
 

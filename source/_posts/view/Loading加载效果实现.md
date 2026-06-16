@@ -3,8 +3,7 @@
 title: Loading加载效果实现
 # 发布日期
 date: 2025-04-10T22:55:56+08:00
-# 文章url别名
-permalink: posts/c8c1d28
+abbrlink: c8c1d28
 # 文章描述
 description: 使用Css实现的Loading加载动画效果实现
 # 文章关键字

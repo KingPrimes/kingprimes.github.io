@@ -6,7 +6,7 @@ description: NyxBot的部署文档
 # 发布日期
 date: 2024-12-08T22:41:08+08:00
 # 永久链接
-permalink: posts/d99b802
+abbrlink: d99b802
 # 是否为草稿
 draft: false
 # 文章关键字

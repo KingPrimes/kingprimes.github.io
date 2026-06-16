@@ -13,8 +13,6 @@ categories:
 keywords:
 # 描述
 description:
-# 永久链接
-permalink: {{hash}}
 # 封面
 top_img:
 # 允许评论

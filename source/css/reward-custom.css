@@ -97,6 +97,12 @@
   font-family: 'Consolas', 'Monaco', monospace;
 }
 
+.stats-sponsor {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  margin-top: 0.25rem;
+}
+
 /* 分类统计分隔线 */
 .stats-divider {
   height: 1px;

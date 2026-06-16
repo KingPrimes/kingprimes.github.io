@@ -112,9 +112,24 @@ hexo.extend.tag.register('reward_table', function(args) {
   
   const symbol = rewardLog.symbol || '¥';
   
-  // 筛选并排序
+  // 筛选并按日期倒序排序（最新的在前）
   let logs = rewardLog.logs
-    .filter(log => log.origin === origin);
+    .filter(log => log.origin === origin)
+    .sort((a, b) => {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      return dateB - dateA; // 倒序
+    });
+
+  // 如果没有数据，返回提示
+  if (logs.length === 0) {
+    return `
+<div style="text-align: center; padding: 2rem; color: var(--font-color); opacity: 0.6;">
+  <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+  <p>暂无 ${origin} 赞助记录</p>
+</div>
+    `;
+  }
   
   // 生成表格行
   let tableRows = logs.map(log => {
