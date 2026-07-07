@@ -8,7 +8,8 @@ IFS=$'\n\t'
 
 readonly SCRIPT_NAME="nyxbot-deploy.sh"
 readonly SCRIPT_VERSION="3.0.0"
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_PATH="${BASH_SOURCE[0]:-}"
+readonly SCRIPT_DIR="$(cd "$(dirname "${SCRIPT_PATH:-.}")" && pwd)"
 
 # ============================================================================
 # Constants / 常量
@@ -944,7 +945,7 @@ readonly SYSTEM_CMD_PATH="/usr/local/bin/nyxbot"
 
 # 安装为系统命令 (直接复制)
 install_command() {
-    local script_file="${BASH_SOURCE[0]}"
+    local script_file="${BASH_SOURCE[0]:-}"
     if [[ ! -f "$script_file" ]]; then
         log_warn "Cannot install command (script not a file, likely piped from curl)" \
             "无法安装为系统命令 (脚本非文件形式，可能通过 curl 管道执行)"
@@ -1475,7 +1476,7 @@ main() {
     echo ""
 
     # 无参数自动模式 → 显示管理菜单
-    if [[ "$QUIET" != "true" && "$UI_MODE" == "auto" ]] && is_installation_complete; then
+    if [[ "$QUIET" != "true" && "$UI_MODE" == "auto" && -t 0 ]] && is_installation_complete; then
         show_menu
     fi
 
@@ -1504,6 +1505,11 @@ main() {
     fi
 
     # 收集配置 (TOKEN 为空 或 --tui/--text 显式指定)
+    if [[ "$QUIET" != "true" && -z "$TOKEN" && ! -t 0 ]]; then
+        log_error "Non-interactive install requires --quiet --token=xxx" \
+            "非交互安装需要提供 --quiet --token=xxx"
+    fi
+
     if [[ "$QUIET" != "true" && ( -z "$TOKEN" || "$UI_MODE" == "tui" || "$UI_MODE" == "text" ) ]]; then
         # 自动检测最佳 TUI 引擎 (SSH 环境下 whiptail/dialog 可能无法显示)
         local tui_failed=false
