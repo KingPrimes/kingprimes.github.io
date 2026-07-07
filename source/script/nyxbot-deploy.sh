@@ -7,7 +7,7 @@ set -uo pipefail  # -e disabled: don't exit on non-zero return (handled explicit
 IFS=$'\n\t'
 
 readonly SCRIPT_NAME="nyxbot-deploy.sh"
-readonly SCRIPT_VERSION="2.0.0"
+readonly SCRIPT_VERSION="3.0.0"
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ============================================================================
@@ -70,6 +70,37 @@ log_warn()    { log warn    "${1}${2:+ / $2}"; }
 log_error()   { log error   "${1}${2:+ / $2}"; exit 1; }
 log_step()    { log step    "${1}${2:+ / $2}"; }
 
+mask_secret() {
+    local value="${1:-}"
+    if [[ -z "$value" ]]; then
+        echo "Not set / 未设置"
+    elif (( ${#value} <= 8 )); then
+        echo "****"
+    else
+        echo "${value:0:4}****${value: -4}"
+    fi
+}
+
+json_escape() {
+    local value="${1:-}"
+    value=${value//\\/\\\\}
+    value=${value//"/\\"}
+    value=${value//$'\n'/\\n}
+    value=${value//$'\r'/\\r}
+    value=${value//$'\t'/\\t}
+    printf '%s' "$value"
+}
+
+get_json_value() {
+    local key="$1"
+    local file="$2"
+    if command -v jq &>/dev/null; then
+        jq -r ".${key} // empty" "$file" 2>/dev/null || true
+    else
+        grep -o "\"${key}\": *\"[^\"]*\"" "$file" 2>/dev/null | head -1 | sed 's/.*"\([^"]*\)"$/\1/' || true
+    fi
+}
+
 banner() {
     echo -e "${GREEN}"
     echo ".__   __. ____    ____ ___   ___ .______     ______   .___________."
@@ -122,11 +153,14 @@ install_java() {
         linux)
             if command -v apt &>/dev/null; then
                 log_info "This may take a minute..." "可能需要几分钟，请耐心等待..."
-                sudo apt update -qq && sudo apt install -y openjdk-21-jre-headless
+                sudo apt update -qq && sudo apt install -y openjdk-21-jre-headless || \
+                    log_error "Failed to install Java 21" "Java 21 安装失败"
             elif command -v dnf &>/dev/null; then
-                sudo dnf install -y java-21-openjdk-headless
+                sudo dnf install -y java-21-openjdk-headless || \
+                    log_error "Failed to install Java 21" "Java 21 安装失败"
             elif command -v apk &>/dev/null; then
-                sudo apk add openjdk21-jre
+                sudo apk add openjdk21-jre || \
+                    log_error "Failed to install Java 21" "Java 21 安装失败"
             else
                 log_error "Cannot auto-install Java. Please install JDK 21 manually" \
                     "无法自动安装 Java，请手动安装 JDK 21"
@@ -134,7 +168,8 @@ install_java() {
             ;;
         macos)
             if command -v brew &>/dev/null; then
-                brew install openjdk@21
+                brew install openjdk@21 || \
+                    log_error "Failed to install Java 21" "Java 21 安装失败"
             else
                 log_error "Please install Homebrew first: /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"" \
                     "请先安装 Homebrew"
@@ -172,6 +207,38 @@ check_nyxbot_running() {
     return 1
 }
 
+wait_nyxbot_started() {
+    local timeout="${1:-90}"
+    local deadline=$((SECONDS + timeout))
+    log_step "Waiting for NyxBot to become ready..." "等待 NyxBot 启动完成..."
+    while (( SECONDS < deadline )); do
+        if check_nyxbot_running; then
+            echo ""
+            log_success "NyxBot is running" "NyxBot 已运行"
+            return 0
+        fi
+        echo -n "."
+        sleep 2
+    done
+    echo ""
+    log_warn "NyxBot did not become ready within ${timeout}s" "NyxBot 在 ${timeout}s 内未就绪"
+    return 1
+}
+
+is_installation_complete() {
+    if [[ "$INSTALL_MODE" == "docker" ]]; then
+        docker inspect nyxbot &>/dev/null
+        return $?
+    fi
+
+    local jar_file="$DOWNLOAD_DIR/NyxBot.jar"
+    [[ -s "$jar_file" ]] || return 1
+    if [[ "$OS" == "linux" ]] && command -v systemctl &>/dev/null; then
+        systemctl list-unit-files nyxbot.service &>/dev/null && return 0
+    fi
+    [[ -f "$DOWNLOAD_DIR/nyxbot.pid" || -f "$DOWNLOAD_DIR/start-nyxbot.sh" ]]
+}
+
 # 停止运行中的 NyxBot
 stop_nyxbot() {
     log_step "Stopping running NyxBot..." "停止运行中的 NyxBot..."
@@ -183,7 +250,7 @@ stop_nyxbot() {
     fi
 
     local pids
-    pids=$(pgrep -f "NyxBot.jar" 2>/dev/null || true)
+    pids=$(pgrep -f "$DOWNLOAD_DIR/NyxBot.jar" 2>/dev/null || true)
     if [[ -n "$pids" ]]; then
         echo "$pids" | xargs kill 2>/dev/null || true
         sleep 1
@@ -301,39 +368,39 @@ test_network() {
 # ============================================================================
 save_config() {
     mkdir -p "$DOWNLOAD_DIR"
+    touch "$CONFIG_FILE"
+    chmod 600 "$CONFIG_FILE" 2>/dev/null || true
     local config_json
     config_json=$(cat <<CONFEOF
 {
-  "port": "${PORT}",
-  "token": "${TOKEN}",
-  "ws_mode": "${WS_MODE}",
-  "proxy_addr": "${PROXY_ADDR}",
-  "proxy_user": "${PROXY_USER}",
-  "proxy_pass": "${PROXY_PASS}",
-  "debug": "${DEBUG}"
+  "port": "$(json_escape "$PORT")",
+  "token": "$(json_escape "$TOKEN")",
+  "ws_mode": "$(json_escape "$WS_MODE")",
+  "proxy_addr": "$(json_escape "$PROXY_ADDR")",
+  "proxy_user": "$(json_escape "$PROXY_USER")",
+  "proxy_pass": "$(json_escape "$PROXY_PASS")",
+  "debug": "$(json_escape "$DEBUG")",
+  "install_mode": "$(json_escape "$INSTALL_MODE")"
 }
 CONFEOF
 )
     echo "$config_json" > "$CONFIG_FILE"
+    chmod 600 "$CONFIG_FILE" 2>/dev/null || true
     log_info "Config saved to ${CONFIG_FILE}" "配置已保存到 ${CONFIG_FILE}"
 }
 
 load_config() {
     [[ -f "$CONFIG_FILE" ]] || return 0
 
-    if command -v jq &>/dev/null; then
-        [[ "$PORT" == "$DEFAULT_PORT" ]] && PORT=$(jq -r '.port // empty' "$CONFIG_FILE" 2>/dev/null || echo "$DEFAULT_PORT")
-        [[ -z "$TOKEN" ]] && TOKEN=$(jq -r '.token // empty' "$CONFIG_FILE" 2>/dev/null || echo "")
-        [[ "$WS_MODE" == "server" && -z "$WS_MODE_OVERRIDE" ]] && \
-            WS_MODE=$(jq -r '.ws_mode // "server"' "$CONFIG_FILE" 2>/dev/null || echo "server")
-        [[ -z "$PROXY_ADDR" ]] && PROXY_ADDR=$(jq -r '.proxy_addr // empty' "$CONFIG_FILE" 2>/dev/null || echo "")
-        [[ -z "$PROXY_USER" ]] && PROXY_USER=$(jq -r '.proxy_user // empty' "$CONFIG_FILE" 2>/dev/null || echo "")
-        [[ -z "$PROXY_PASS" ]] && PROXY_PASS=$(jq -r '.proxy_pass // empty' "$CONFIG_FILE" 2>/dev/null || echo "")
-    else
-        local val
-        [[ "$PORT" == "$DEFAULT_PORT" ]] && { val=$(grep -o '"port": *"[^"]*"' "$CONFIG_FILE" 2>/dev/null | head -1 | sed 's/.*"\([^"]*\)"$/\1/' || true); [[ -n "$val" ]] && PORT="$val"; }
-        [[ -z "$TOKEN" ]] && { val=$(grep -o '"token": *"[^"]*"' "$CONFIG_FILE" 2>/dev/null | head -1 | sed 's/.*"\([^"]*\)"$/\1/' || true); [[ -n "$val" ]] && TOKEN="$val"; }
-    fi
+    local val
+    [[ "$PORT" == "$DEFAULT_PORT" ]] && { val=$(get_json_value port "$CONFIG_FILE"); [[ -n "$val" ]] && PORT="$val"; }
+    [[ -z "$TOKEN" ]] && { val=$(get_json_value token "$CONFIG_FILE"); [[ -n "$val" ]] && TOKEN="$val"; }
+    [[ "$WS_MODE" == "server" && -z "$WS_MODE_OVERRIDE" ]] && { val=$(get_json_value ws_mode "$CONFIG_FILE"); [[ -n "$val" ]] && WS_MODE="$val"; }
+    [[ -z "$PROXY_ADDR" ]] && { val=$(get_json_value proxy_addr "$CONFIG_FILE"); [[ -n "$val" ]] && PROXY_ADDR="$val"; }
+    [[ -z "$PROXY_USER" ]] && { val=$(get_json_value proxy_user "$CONFIG_FILE"); [[ -n "$val" ]] && PROXY_USER="$val"; }
+    [[ -z "$PROXY_PASS" ]] && { val=$(get_json_value proxy_pass "$CONFIG_FILE"); [[ -n "$val" ]] && PROXY_PASS="$val"; }
+    [[ "$DEBUG" == "false" ]] && { val=$(get_json_value debug "$CONFIG_FILE"); [[ -n "$val" ]] && DEBUG="$val"; }
+    [[ "$INSTALL_MODE" == "auto" ]] && { val=$(get_json_value install_mode "$CONFIG_FILE"); [[ -n "$val" ]] && INSTALL_MODE="$val"; }
 }
 
 # ============================================================================
@@ -387,12 +454,9 @@ verify_sha256() {
         echo -e " ${GREEN}OK / 通过${NC}"
     else
         echo ""
-        log_error "SHA256 mismatch! File may be corrupted." \
-            "SHA256 校验失败！文件可能损坏。"
-        log_error "  Expected / 期望: ${expected}" \
-            "  Expected / 期望: ${expected}"
-        log_error "  Got / 实际:      ${hash}" \
-            "  Got / 实际:      ${hash}"
+        log error "SHA256 mismatch! File may be corrupted. / SHA256 校验失败！文件可能损坏。"
+        log error "  Expected / 期望: ${expected}"
+        log error "  Got / 实际:      ${hash}"
         rm -f "$file"
         log_error "File deleted, please retry." "文件已删除，请重试。"
     fi
@@ -403,17 +467,26 @@ single_download() {
     local url="$1"
     local dest="$2"
     local total_size="$3"
+    local tmp_dest="${dest}.tmp"
 
     if [[ -n "$total_size" && "$total_size" -gt 0 ]]; then
         log_info "File size: $(format_size $total_size)" "文件大小: $(format_size $total_size)"
     fi
 
     log_step "Downloading NyxBot ${RELEASE_TAG}..." "下载 NyxBot ${RELEASE_TAG}..."
-    curl -L -# --connect-timeout 10 --max-time 600 --retry 3 \
+    rm -f "$tmp_dest"
+    if ! curl -L -# --connect-timeout 10 --max-time 3600 --speed-time 30 --speed-limit 1 --retry 3 \
         -H "User-Agent: Mozilla/5.0" \
-        -o "$dest" \
-        "$url"
+        -o "$tmp_dest" \
+        "$url"; then
+        echo ""
+        rm -f "$tmp_dest"
+        log_warn "Download failed" "下载失败"
+        return 1
+    fi
     echo ""
+    [[ -s "$tmp_dest" ]] || { rm -f "$tmp_dest"; log_warn "Downloaded file is empty" "下载文件为空"; return 1; }
+    mv -f "$tmp_dest" "$dest"
     log_success "Download complete ($(du -h "$dest" | cut -f1))" \
         "下载完成 ($(du -h "$dest" | cut -f1))"
 }
@@ -425,25 +498,27 @@ chunked_download() {
     local total_size="$3"
     local num_chunks=4
     local chunk_size=$(( (total_size + num_chunks - 1) / num_chunks ))
+    local tmpdir
     tmpdir=$(mktemp -d /tmp/nyxbot_deploy_chunks.XXXXXX)
 
     log_step "Chunked download (${num_chunks} chunks)" "分块下载 (${num_chunks} 块)..."
 
-    # 测试 Range 支持
-    echo -ne "  Testing Range support with chunk 0 / 测试首块 Range 支持..."
+    # 测试 Range 支持，小探测避免慢代理下看起来卡死
+    echo -ne "  Testing Range support / 测试 Range 支持..."
     local start0=0
-    local end0=$((chunk_size - 1))
+    local end0=$((total_size > 1048576 ? 1048575 : total_size - 1))
     local expected0=$((end0 - start0 + 1))
     local http_code
-    http_code=$(curl -k -L --connect-timeout 10 --max-time 60 \
+    http_code=$(curl -L --connect-timeout 10 --max-time 60 --speed-time 30 --speed-limit 1 \
         -H "User-Agent: Mozilla/5.0" \
         -r "$start0-$end0" \
-        -o "$tmpdir/chunk_0" \
+        -o "$tmpdir/range_probe" \
         -w "%{http_code}" \
         -s "$url" 2>/dev/null || echo "000")
 
     local actual_size=0
-    [[ -f "$tmpdir/chunk_0" ]] && actual_size=$(wc -c < "$tmpdir/chunk_0" | tr -d ' ')
+    [[ -f "$tmpdir/range_probe" ]] && actual_size=$(wc -c < "$tmpdir/range_probe" | tr -d ' ')
+    rm -f "$tmpdir/range_probe"
 
     local chunk0_ok=false
     if [[ "$http_code" == "206" && "$actual_size" -eq "$expected0" ]]; then
@@ -461,18 +536,17 @@ chunked_download() {
     log_success "Range supported, downloading chunks" \
         "Range 支持，逐块下载"
 
-    # 计算实际需要下载的剩余分块数
-    local actual_chunks=1
-    for ((i = 1; i < num_chunks; i++)); do
+    # 计算实际需要下载的分块数
+    local actual_chunks=0
+    for ((i = 0; i < num_chunks; i++)); do
         local start=$((i * chunk_size))
         [[ $start -ge $total_size ]] && break
         ((actual_chunks++))
     done
 
-    # 串行下载剩余分块
-    local total_remaining=$((actual_chunks - 1))
+    # 串行下载分块
     local all_ok=true
-    for ((i = 1; i < num_chunks; i++)); do
+    for ((i = 0; i < num_chunks; i++)); do
         local start=$((i * chunk_size))
         [[ $start -ge $total_size ]] && break
         local end=$(( (i + 1) * chunk_size - 1 ))
@@ -480,9 +554,9 @@ chunked_download() {
         local expected=$((end - start + 1))
 
         local chunk_file="$tmpdir/chunk_${i}"
-        echo -ne "  Chunk ${i}/${total_remaining} / 分块 ${i}/${total_remaining}..."
+        echo -ne "  Chunk $((i + 1))/${actual_chunks} / 分块 $((i + 1))/${actual_chunks}..."
         local code
-        code=$(curl -k -L --connect-timeout 10 --max-time 120 \
+        code=$(curl -L --connect-timeout 10 --max-time 1800 --speed-time 30 --speed-limit 1 \
             -H "User-Agent: Mozilla/5.0" \
             -r "$start-$end" \
             -o "$chunk_file" \
@@ -530,6 +604,28 @@ chunked_download() {
 }
 
 # 下载入口
+download_jar_from_url() {
+    local dl_url="$1"
+    local dest="$2"
+
+    local total_size
+    total_size=$(get_file_size "$dl_url")
+    local use_chunked=false
+    if [[ -n "$total_size" && "$total_size" -gt 10485760 ]]; then
+        use_chunked=true
+    fi
+
+    if [[ "$use_chunked" == "true" ]]; then
+        chunked_download "$dl_url" "$dest" "$total_size" || {
+            log_warn "Chunked download failed, fallback to single-thread" \
+                "分块下载失败，回退单线程"
+            single_download "$dl_url" "$dest" "$total_size" || return 1
+        }
+    else
+        single_download "$dl_url" "$dest" "$total_size" || return 1
+    fi
+}
+
 download_jar() {
     local url="$1"
     mkdir -p "$DOWNLOAD_DIR"
@@ -572,24 +668,28 @@ download_jar() {
     local dl_url="$url"
     [[ -n "$GITHUB_PROXY" ]] && dl_url="${GITHUB_PROXY}/$(echo "$url" | sed 's|^https://||')"
 
-    # 探测文件大小
-    local total_size
-    total_size=$(get_file_size "$dl_url")
-    local use_chunked=false
-    if [[ -n "$total_size" && "$total_size" -gt 10485760 ]]; then
-        use_chunked=true
-    fi
+    local candidates=("$dl_url" "$url")
+    local proxy
+    for proxy in "${PROXY_LIST[@]}"; do
+        candidates+=("${proxy}/$(echo "$url" | sed 's|^https://||')")
+    done
 
-    # 下载
-    if [[ "$use_chunked" == "true" ]]; then
-        chunked_download "$dl_url" "$dest" "$total_size" || {
-            log_warn "Chunked download failed, fallback to single-thread" \
-                "分块下载失败，回退单线程"
-            single_download "$dl_url" "$dest" "$total_size"
-        }
-    else
-        single_download "$dl_url" "$dest" "$total_size"
-    fi
+    local ok=false
+    local candidate
+    local tried=""
+    for candidate in "${candidates[@]}"; do
+        [[ -z "$candidate" ]] && continue
+        [[ "$tried" == *"|$candidate|"* ]] && continue
+        tried+="|$candidate|"
+        log_step "Trying download route: ${candidate}" "尝试下载线路: ${candidate}"
+        if download_jar_from_url "$candidate" "$dest"; then
+            ok=true
+            break
+        fi
+        log_warn "Download route failed, trying next" "当前线路失败，尝试下一条"
+    done
+
+    [[ "$ok" == "true" ]] || log_error "All download routes failed" "所有下载线路均失败"
 
     # SHA256 校验
     if [[ -n "$EXPECTED_DIGEST" && "$EXPECTED_DIGEST" != "null" ]]; then
@@ -667,6 +767,11 @@ install_docker() {
     log_step "Starting container..." "启动容器..."
     docker "${docker_args[@]}" || log_error "Container start failed" "容器启动失败"
 
+    wait_nyxbot_started || {
+        docker logs --tail 80 nyxbot 2>/dev/null || true
+        log_error "NyxBot failed to become ready" "NyxBot 启动后未就绪"
+    }
+
     log_success "NyxBot started (container: nyxbot)" \
         "NyxBot 已启动 (容器: nyxbot)"
     show_post_install "docker"
@@ -717,6 +822,15 @@ install_local() {
         install_nohup
     fi
 
+    wait_nyxbot_started || {
+        if [[ "$OS" == "linux" ]] && command -v journalctl &>/dev/null; then
+            journalctl -u nyxbot -n 80 --no-pager 2>/dev/null || true
+        elif [[ -f "$DOWNLOAD_DIR/nyxbot.log" ]]; then
+            tail -n 80 "$DOWNLOAD_DIR/nyxbot.log" 2>/dev/null || true
+        fi
+        log_error "NyxBot failed to become ready" "NyxBot 启动后未就绪"
+    }
+
     if [[ "$OS" == "linux" ]] && command -v systemctl &>/dev/null; then
         log_success "NyxBot started (systemd)" "NyxBot 已启动 (systemd)"
     else
@@ -728,41 +842,62 @@ install_local() {
 }
 
 build_launch_args() {
-    LAUNCH_ARGS="-jar $DOWNLOAD_DIR/NyxBot.jar -serverPort=${PORT}"
-    [[ "$WS_MODE" == "server" ]] && LAUNCH_ARGS="$LAUNCH_ARGS -wsServerEnable"
-    LAUNCH_ARGS="$LAUNCH_ARGS -shiroToken=${TOKEN}"
-    [[ -n "${PROXY_ADDR:-}" ]] && LAUNCH_ARGS="$LAUNCH_ARGS -httpProxy=${PROXY_ADDR}"
-    [[ -n "${PROXY_USER:-}" ]] && LAUNCH_ARGS="$LAUNCH_ARGS -proxyUser=${PROXY_USER}"
-    [[ -n "${PROXY_PASS:-}" ]] && LAUNCH_ARGS="$LAUNCH_ARGS -proxyPassword=${PROXY_PASS}"
+    LAUNCH_ARGS=("-jar" "$DOWNLOAD_DIR/NyxBot.jar" "-serverPort=${PORT}")
+    [[ "$WS_MODE" == "server" ]] && LAUNCH_ARGS+=("-wsServerEnable")
+    LAUNCH_ARGS+=("-shiroToken=${TOKEN}")
+    [[ -n "${PROXY_ADDR:-}" ]] && LAUNCH_ARGS+=("-httpProxy=${PROXY_ADDR}")
+    [[ -n "${PROXY_USER:-}" ]] && LAUNCH_ARGS+=("-proxyUser=${PROXY_USER}")
+    [[ -n "${PROXY_PASS:-}" ]] && LAUNCH_ARGS+=("-proxyPassword=${PROXY_PASS}")
+}
+
+quote_for_systemd() {
+    local value="$1"
+    value=${value//\\/\\\\}
+    value=${value//\"/\\\"}
+    printf '"%s"' "$value"
+}
+
+write_start_script() {
+    local start_script="$DOWNLOAD_DIR/start-nyxbot.sh"
+    local quoted_args=""
+    printf -v quoted_args '%q ' "${LAUNCH_ARGS[@]}"
+    cat > "$start_script" <<EOF
+#!/usr/bin/env bash
+cd $(printf '%q' "$DOWNLOAD_DIR")
+exec java ${quoted_args}
+EOF
+    chmod 700 "$start_script"
+    START_SCRIPT="$start_script"
 }
 
 install_systemd() {
     log_step "Creating systemd service..." "创建 systemd 服务..."
     local service_file="/etc/systemd/system/nyxbot.service"
+    write_start_script
     sudo tee "$service_file" >/dev/null <<EOF
 [Unit]
 Description=NyxBot Service
-After=network.target
+Wants=network-online.target
+After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/java $LAUNCH_ARGS
-WorkingDirectory=$DOWNLOAD_DIR
+ExecStart=/usr/bin/env bash $(quote_for_systemd "$START_SCRIPT")
 Restart=always
 RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
 EOF
-    sudo systemctl daemon-reload
-    sudo systemctl enable --now nyxbot
+    sudo systemctl daemon-reload || log_error "systemd daemon-reload failed" "systemd 重载失败"
+    sudo systemctl enable --now nyxbot || log_error "systemd service start failed" "systemd 服务启动失败"
     log_success "systemd service installed and started" "systemd 服务已安装并启动"
 }
 
 install_nohup() {
     log_step "Starting with nohup..." "nohup 模式启动..."
     cd "$DOWNLOAD_DIR"
-    nohup java $LAUNCH_ARGS > nyxbot.log 2>&1 &
+    nohup java "${LAUNCH_ARGS[@]}" > nyxbot.log 2>&1 &
     echo $! > nyxbot.pid
 }
 
@@ -784,7 +919,7 @@ show_post_install() {
         echo -e "${GREEN}│${NC}  Stop / 停止:    ${CYAN}docker stop nyxbot${NC}"
     else
         echo -e "${GREEN}│${NC}  Logs / 日志:    ${CYAN}tail -f ${DOWNLOAD_DIR}/nyxbot.log${NC}"
-        if command -v systemctl &>/dev/null; then
+        if [[ "$OS" == "linux" ]] && command -v systemctl &>/dev/null; then
             echo -e "${GREEN}│${NC}  Restart / 重启: ${CYAN}systemctl restart nyxbot${NC}"
             echo -e "${GREEN}│${NC}  Status / 状态:  ${CYAN}systemctl status nyxbot${NC}"
         fi
@@ -836,6 +971,32 @@ uninstall_command() {
     log_success "Command removed: nyxbot" "命令已移除: nyxbot"
 }
 
+follow_logs() {
+    echo ""
+    echo -e "${BOLD}── NyxBot Logs / NyxBot 实时日志 ──${NC}"
+    echo -e "  Dashboard / 管理页面: ${CYAN}http://localhost:${PORT}${NC}"
+    echo -e "  Exit / 退出日志: ${YELLOW}Ctrl+C${NC}"
+    echo ""
+
+    if [[ "$INSTALL_MODE" == "docker" ]]; then
+        docker logs -f --tail 80 nyxbot
+        return
+    fi
+
+    if [[ "$OS" == "linux" ]] && command -v systemctl &>/dev/null \
+        && systemctl list-unit-files nyxbot.service &>/dev/null; then
+        journalctl -u nyxbot -n 80 -f --no-pager
+        return
+    fi
+
+    local log_file="$DOWNLOAD_DIR/nyxbot.log"
+    if [[ ! -f "$log_file" ]]; then
+        log_warn "Log file not found: ${log_file}" "日志文件不存在: ${log_file}"
+        return 1
+    fi
+    tail -n 80 -f "$log_file"
+}
+
 # ============================================================================
 # Management Menu / 管理菜单
 # ============================================================================
@@ -872,36 +1033,8 @@ show_menu() {
                 echo ""; read -r -p "  Press Enter to continue / 按回车继续..."
                 ;;
             4)
-                local key
-                while true; do
-                    clear 2>/dev/null || true
-                    echo -e "${BOLD}┌──────────────────────────────────────────────────────────┐${NC}"
-                    echo -e "${BOLD}│${NC}  ${BOLD}NyxBot Live Status / 实时状态${NC}   ${CYAN}$(date '+%H:%M:%S')${NC}   ${BOLD}Esc=Exit${NC}"
-                    echo -e "${BOLD}├──────────────────────────────────────────────────────────┤${NC}"
-                    if check_nyxbot_running; then
-                        echo -e "${BOLD}│${NC}  Status / 状态: ${GREEN}● Running / 运行中${NC}"
-                        echo -e "${BOLD}│${NC}  Dashboard:      ${CYAN}http://localhost:${PORT}${NC}"
-                        echo -e "${BOLD}│${NC}  JAR:            ${DOWNLOAD_DIR}/NyxBot.jar"
-                        if [[ -f "$DOWNLOAD_DIR/nyxbot.pid" ]]; then
-                            echo -e "${BOLD}│${NC}  PID:            $(cat "$DOWNLOAD_DIR/nyxbot.pid" 2>/dev/null || echo 'n/a')"
-                        fi
-                        echo -e "${BOLD}├──────────────────────────────────────────────────────────┤${NC}"
-                        if command -v systemctl &>/dev/null; then
-                            systemctl status nyxbot --no-pager -l -n 50 2>/dev/null
-                        fi
-                    else
-                        echo -e "${BOLD}│${NC}  Status / 状态: ${YELLOW}● Stopped / 未运行${NC}"
-                        echo -e "${BOLD}│${NC}  Run './nyxbot-deploy' to start / 启动以查看详情"
-                        echo -e "${BOLD}├──────────────────────────────────────────────────────────┤${NC}"
-                    fi
-                    echo -e "${BOLD}└──────────────────────────────────────────────────────────┘${NC}"
-                    echo -e "  ${CYAN}Auto-refresh 2s${NC}"
-                    read -n 1 -s -t 2 key 2>/dev/null || true
-                    if [[ "$key" == $'\033' ]]; then
-                        read -n 2 -s -t 0.01 _ 2>/dev/null || true
-                        break
-                    fi
-                done
+                follow_logs
+                echo ""; read -r -p "  Press Enter to continue / 按回车继续..."
                 ;;
             5)
                 text_config
@@ -919,7 +1052,11 @@ show_menu() {
             1|*)
                 # Update
                 save_config
-                install_local
+                if [[ "$INSTALL_MODE" == "docker" ]]; then
+                    install_docker
+                else
+                    install_local
+                fi
                 echo ""; read -r -p "  Press Enter to continue / 按回车继续..."
                 ;;
         esac
@@ -936,7 +1073,7 @@ start_nyxbot() {
         log_step "Starting NyxBot via nohup..." "通过 nohup 启动..."
         cd "$DOWNLOAD_DIR"
         build_launch_args
-        nohup java $LAUNCH_ARGS > nyxbot.log 2>&1 &
+        nohup java "${LAUNCH_ARGS[@]}" > nyxbot.log 2>&1 &
         echo $! > nyxbot.pid
         log_success "NyxBot started (PID: $(cat nyxbot.pid))" "NyxBot 已启动 (PID: $(cat nyxbot.pid))"
     fi
@@ -949,9 +1086,9 @@ text_config() {
     echo ""
     echo -e "${BOLD}── Basic Config / 基础配置 ──${NC}"
     read -r -t 10 -p "  Port / 端口 [${PORT}]: " input; PORT="${input:-$PORT}"
-    read -r -p "  Token (required / 必填): " TOKEN
+    read -r -s -p "  Token (required / 必填): " TOKEN; echo ""
     while [[ -z "$TOKEN" ]]; do
-        read -r -p "  Token cannot be empty / Token 不能为空: " TOKEN
+        read -r -s -p "  Token cannot be empty / Token 不能为空: " TOKEN; echo ""
     done
 
     echo ""
@@ -966,7 +1103,7 @@ text_config() {
     read -r -p "  Proxy URL / 代理地址 (e.g. http://127.0.0.1:7890): " PROXY_ADDR
     if [[ -n "$PROXY_ADDR" ]]; then
         read -r -p "  Username / 代理用户名: " PROXY_USER
-        read -r -p "  Password / 代理密码: " PROXY_PASS
+        read -r -s -p "  Password / 代理密码: " PROXY_PASS; echo ""
     fi
 
     echo ""
@@ -982,7 +1119,7 @@ text_config() {
 
     echo ""
     echo -e "${BOLD}── Confirm / 确认 ──${NC}"
-    echo -e "  Port / 端口: ${GREEN}${PORT}${NC} | Mode / 模式: ${GREEN}${WS_MODE}${NC} | Token: ${GREEN}${TOKEN}${NC}"
+    echo -e "  Port / 端口: ${GREEN}${PORT}${NC} | Mode / 模式: ${GREEN}${WS_MODE}${NC} | Token: ${GREEN}$(mask_secret "$TOKEN")${NC}"
     echo -e "  Proxy / 代理: ${YELLOW}${PROXY_ADDR:-None / 无}${NC}"
     read -r -t 10 -p "  Proceed? / 确认安装? [Y/n]: " confirm
     [[ "$confirm" =~ ^[Nn]$ ]] && { log_warn "Cancelled" "已取消"; exit 0; }
@@ -996,28 +1133,31 @@ tui_dialog() {
 
     dialog --backtitle "NyxBot Deploy v${SCRIPT_VERSION}" \
         --title "Config / 配置" \
-        --form "Please fill in / 请填写以下配置:" 15 55 0 \
+        --form "Please fill in / 请填写以下配置:" 12 55 0 \
         "Port / 端口:"      1 1 "$PORT"       1 20 20 0 \
-        "Token:"            2 1 "$TOKEN"      2 20 30 0 \
-        "Mode / 模式 (server/client):" 3 1 "$WS_MODE"    3 20 10 0 \
-        "Proxy / 代理:"     4 1 "$PROXY_ADDR"  4 20 30 0 \
-        "Proxy User / 用户名:" 5 1 "$PROXY_USER"  5 20 20 0 \
-        "Proxy Pass / 密码:" 6 1 "$PROXY_PASS"  6 20 20 0 \
+        "Mode / 模式 (server/client):" 2 1 "$WS_MODE"    2 20 10 0 \
+        "Proxy / 代理:"     3 1 "$PROXY_ADDR"  3 20 30 0 \
+        "Proxy User / 用户名:" 4 1 "$PROXY_USER"  4 20 20 0 \
         2>"$tmpfile" || { rm -f "$tmpfile"; return 1; }
 
     local i=0
     while IFS= read -r line; do
         case $i in
             0) PORT="${line:-$DEFAULT_PORT}" ;;
-            1) TOKEN="$line" ;;
-            2) WS_MODE="${line:-server}"; WS_MODE_OVERRIDE="true" ;;
-            3) PROXY_ADDR="$line" ;;
-            4) PROXY_USER="$line" ;;
-            5) PROXY_PASS="$line" ;;
+            1) WS_MODE="${line:-server}"; WS_MODE_OVERRIDE="true" ;;
+            2) PROXY_ADDR="$line" ;;
+            3) PROXY_USER="$line" ;;
         esac
         ((i++))
     done < "$tmpfile"
     rm -f "$tmpfile"
+
+    TOKEN=$(dialog --backtitle "NyxBot Deploy v${SCRIPT_VERSION}" --title "Token" \
+        --passwordbox "Token (required) / Token (必填)" 8 50 3>&1 1>&2 2>&3) || return 1
+    if [[ -n "$PROXY_ADDR" ]]; then
+        PROXY_PASS=$(dialog --backtitle "NyxBot Deploy v${SCRIPT_VERSION}" --title "Proxy Password / 代理密码" \
+            --passwordbox "Proxy Password / 代理密码" 8 50 3>&1 1>&2 2>&3) || return 1
+    fi
 
     # 是否安装系统命令
     if dialog --backtitle "NyxBot Deploy v${SCRIPT_VERSION}" --title "System Command / 系统命令" \
@@ -1028,7 +1168,7 @@ tui_dialog() {
     fi
 
     dialog --backtitle "NyxBot Deploy v${SCRIPT_VERSION}" --title "Confirm / 确认" \
-        --yesno "Port / 端口: $PORT\nToken: ${TOKEN:-Not set / 未设置}\nMode / 模式: $WS_MODE\nProxy / 代理: ${PROXY_ADDR:-None / 无}\n\nProceed? / 确认安装?" 12 50 \
+        --yesno "Port / 端口: $PORT\nToken: $(mask_secret "$TOKEN")\nMode / 模式: $WS_MODE\nProxy / 代理: ${PROXY_ADDR:-None / 无}\n\nProceed? / 确认安装?" 12 50 \
         || { log_warn "Cancelled" "已取消"; exit 0; }
 }
 
@@ -1049,7 +1189,7 @@ tui_whiptail() {
     # 2. Token (required, loop until filled)
     while true; do
         if input=$(whiptail --title "NyxBot Deploy v${SCRIPT_VERSION}" \
-            --inputbox "Token (required) / Token (必填)" 8 50 "$TOKEN" 3>&1 1>&2 2>&3); then
+            --passwordbox "Token (required) / Token (必填)" 8 50 3>&1 1>&2 2>&3); then
             if [[ -n "${input// /}" ]]; then
                 TOKEN="$input"
                 break
@@ -1106,7 +1246,7 @@ tui_whiptail() {
     fi
 
     # 6. Confirm
-    local confirm_text="Port / 端口: $PORT\nToken: $TOKEN\nMode / 模式: $WS_MODE\nProxy / 代理: ${PROXY_ADDR:-None / 无}\nInstall command / 安装命令: $INSTALL_CMD\n\nProceed? / 确认安装?"
+    local confirm_text="Port / 端口: $PORT\nToken: $(mask_secret "$TOKEN")\nMode / 模式: $WS_MODE\nProxy / 代理: ${PROXY_ADDR:-None / 无}\nInstall command / 安装命令: $INSTALL_CMD\n\nProceed? / 确认安装?"
     if ! whiptail --title "NyxBot Deploy v${SCRIPT_VERSION}" \
         --yesno "$confirm_text" 14 50; then
         log_warn "Cancelled" "已取消"
@@ -1311,17 +1451,8 @@ main() {
 
     # 自动选择安装模式
     if [[ "$INSTALL_MODE" == "auto" ]]; then
-        if check_docker; then
-            if check_docker_running; then
-                INSTALL_MODE="docker"
-            else
-                log_warn "Docker installed but not running, fallback to local" \
-                    "Docker 已安装但未运行，降级到本地安装"
-                INSTALL_MODE="local"
-            fi
-        else
-            INSTALL_MODE="local"
-        fi
+        INSTALL_MODE="local"
+        log_info "Using local install by default" "默认使用本地安装"
     fi
 
     # 显示安装方式
@@ -1333,19 +1464,14 @@ main() {
     log_info "Directory: ${DOWNLOAD_DIR}" "目录: ${DOWNLOAD_DIR}"
     echo ""
 
-    # 已安装：
-    local jar_file="$DOWNLOAD_DIR/NyxBot.jar"
-    local jar_exists=false
-    [[ -f "$jar_file" ]] && jar_exists=true
-
     # 无参数自动模式 → 显示管理菜单
-    if [[ "$QUIET" != "true" && "$jar_exists" == "true" && "$UI_MODE" == "auto" ]]; then
+    if [[ "$QUIET" != "true" && "$UI_MODE" == "auto" ]] && is_installation_complete; then
         show_menu
     fi
 
     # --tui/--text + jar 存在 → 仅重新配置，标记跳过完整安装 (--quiet 不触发)
     local reconfigure_only=false
-    if [[ "$QUIET" != "true" && "$jar_exists" == "true" && ( "$UI_MODE" == "tui" || "$UI_MODE" == "text" ) ]]; then
+    if [[ "$QUIET" != "true" && ( "$UI_MODE" == "tui" || "$UI_MODE" == "text" ) ]] && is_installation_complete; then
         reconfigure_only=true
     fi
 
