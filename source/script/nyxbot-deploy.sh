@@ -198,10 +198,13 @@ check_docker_running() {
 
 # 检查 NyxBot 是否正在运行 (HTTP 探活 + 进程检测)
 check_nyxbot_running() {
-    if curl -s --connect-timeout 2 "http://localhost:${PORT}" &>/dev/null; then
+    if command -v systemctl &>/dev/null && systemctl is-active --quiet nyxbot 2>/dev/null; then
         return 0
     fi
-    if pgrep -f "NyxBot.jar" &>/dev/null; then
+    if curl -s --connect-timeout 2 -o /dev/null "http://127.0.0.1:${PORT}/" &>/dev/null; then
+        return 0
+    fi
+    if pgrep -f "java .*NyxBot\.jar" &>/dev/null; then
         return 0
     fi
     return 1
@@ -736,7 +739,7 @@ install_docker() {
     local docker_args=(
         "run" "-d" "--name" "nyxbot"
         "--restart" "unless-stopped"
-        "-p" "${PORT}:8080"
+        "-p" "${PORT}:${PORT}"
         "-e" "SERVER_PORT=${PORT}"
         "-e" "DEBUG=${DEBUG:-false}"
         "-e" "SHIRO_TOKEN=${TOKEN}"
@@ -882,15 +885,22 @@ After=network-online.target
 
 [Service]
 Type=simple
+WorkingDirectory=$(quote_for_systemd "$DOWNLOAD_DIR")
 ExecStart=/usr/bin/env bash $(quote_for_systemd "$START_SCRIPT")
-Restart=always
+Restart=on-failure
 RestartSec=5
+SuccessExitStatus=143
+TimeoutStopSec=45
 
 [Install]
 WantedBy=multi-user.target
 EOF
     sudo systemctl daemon-reload || log_error "systemd daemon-reload failed" "systemd 重载失败"
-    sudo systemctl enable --now nyxbot || log_error "systemd service start failed" "systemd 服务启动失败"
+    sudo systemctl enable nyxbot >/dev/null || log_error "systemd service enable failed" "systemd 服务启用失败"
+    if ! sudo systemctl restart nyxbot; then
+        sudo systemctl status nyxbot -l --no-pager 2>/dev/null || true
+        log_error "systemd service start failed" "systemd 服务启动失败"
+    fi
     log_success "systemd service installed and started" "systemd 服务已安装并启动"
 }
 
