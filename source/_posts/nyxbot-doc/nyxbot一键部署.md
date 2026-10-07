@@ -4,7 +4,7 @@ comments: true
 sticky: 0
 aside: true
 date: 2025-12-03 23:02:17
-updated: 2026-06-02 21:00:00
+updated: 2026-10-08 01:56:00
 tags:
   - NyxBot
   - qqbot
@@ -23,13 +23,40 @@ cover: /img/0b74998/0b74998.webp
 # NyxBot 一键部署脚本使用文档
 
 **版本**: 2.0.0  
-**更新日期**: 2026-06-03
+**更新日期**: 2026-10-08
 
 > 💡 **只需要一分钟，会复制粘贴就能装好。不需要懂编程。**
 
 ---
 
+## 🧭 Java 版与 Go 版的区别
+
+NyxBot 目前有两个后端版本。**Go 版是 Java 版（Spring Boot）迁移到 Go/Gin 的重写实现**，目标是在不改前端的前提下完整兼容，但**迁移仍在进行中、功能尚未与 Java 版完全对齐**（进度见 [NyxBot-Go 仓库](https://github.com/KingPrimes/NyxBot-Go)）——追求功能完整请用 Java 版，想尝鲜 Go 重写版或需要单二进制轻量部署再往下看。
+
+| 对比项 | Java 版（现役） | Go 版（重写中） |
+|--------|----------------|----------------|
+| 运行产物 | `NyxBot.jar`，需要 Java 21（部署脚本会自动装好） | 单个二进制 `NyxBot`，**不需要任何运行时** |
+| 部署脚本 | `nyxbot-deploy.sh`（Linux/macOS）、`nyxbot-deploy.ps1`（Windows） | `nyxbot-go-deploy.sh`（Linux / macOS） |
+| 安装位置 | 用户目录 `~/NyxBot`（注册 systemd 服务时需要 sudo） | 系统级 `/opt/nyxbot` + 专用系统用户（全程需要 sudo） |
+| 服务托管 | systemd / nohup / Windows 计划任务 | systemd（其他环境自动降级 nohup） |
+| 配置文件 | 以启动参数为主，脚本自动记忆 | `/opt/nyxbot/config.yaml`（程序首启自动生成，脚本仅改端口/模式/Token） |
+| Docker 镜像 | `kingprimes/nyxbot` | `kingprimes/nyxbot-go`（另有 GHCR 源） |
+| 系统兼容 | 能装 Java 就能跑（Alpine 也可以） | 依赖 glibc，**Alpine 等 musl 系统只能走 Docker** |
+| 版本状态 | [正式稳定版](https://github.com/KingPrimes/NyxBot/releases) | [预览版](https://github.com/KingPrimes/NyxBot-Go/releases)（下载优先稳定版，无稳定版自动用最新预览版） |
+
+> 💡 **部署 Go 版**（Linux / macOS）：
+>
+> ```bash
+> curl -fsSL https://kingprimes.top/script/nyxbot-go-deploy.sh | bash
+> ```
+>
+> ⚠️ **不建议在同一台机器同时安装两个版本**：服务名（`nyxbot`）与默认端口（8080）相同，会相互冲突。
+
+---
+
 ## 🚀 新版统一部署脚本（推荐）
+
+> 本节为 **Java 版** 部署教程；Go 版部署见上一节。
 
 **v2.0 全新升级！** 管理菜单、实时状态监控、双引擎 TUI、系统命令注册、JAR 完整性校验。
 
@@ -486,11 +513,14 @@ docker run --name nyxbot -d -p 9090:8080 kingprimes/nyxbot:latest
 ### 脚本文件
 
 ```
-nyxbot-deploy.sh        # Linux / macOS 统一脚本 v2.0（推荐）
-nyxbot-deploy.ps1       # Windows PowerShell 脚本（推荐）
+nyxbot-deploy.sh        # Java 版 · Linux / macOS 统一脚本 v2.0（推荐）
+nyxbot-deploy.ps1       # Java 版 · Windows PowerShell 脚本（推荐）
+nyxbot-go-deploy.sh     # Go 版 · NyxBot-Go 部署脚本 v1.0（Linux / macOS）
 ```
 
 > 旧版 `nyxbot-linux.sh` / `nyxbot-macos.sh` / `nyxbot-windows.ps1` 在服务器保留可用，但推荐使用新版。
+>
+> `nyxbot-go-deploy.sh` 用于 Go 重写版后端 [NyxBot-Go](https://github.com/KingPrimes/NyxBot-Go)：单二进制、无需 Java 运行时；安装到 `/opt/nyxbot` 并注册 systemd 服务（无 systemd / macOS 自动降级 nohup），Alpine 等 musl 系统请使用 `--docker` 容器模式。
 
 ### 常用命令
 
@@ -533,5 +563,5 @@ docker logs -f nyxbot     # Docker 日志
 ---
 
 **文档版本**: v2.0.0  
-**最后更新**: 2026-06-03
+**最后更新**: 2026-10-08
 **维护者**: KingPrimes
