@@ -44,11 +44,37 @@ NyxBot 目前有两个后端版本。**Go 版是 Java 版（Spring Boot）迁移
 | 系统兼容 | 能装 Java 就能跑（Alpine 也可以） | 依赖 glibc，**Alpine 等 musl 系统只能走 Docker** |
 | 版本状态 | [正式稳定版](https://github.com/KingPrimes/NyxBot/releases) | [预览版](https://github.com/KingPrimes/NyxBot-Go/releases)（下载优先稳定版，无稳定版自动用最新预览版） |
 
-> 💡 **部署 Go 版**（Linux / macOS）：
->
-> ```bash
-> curl -fsSL https://kingprimes.top/script/nyxbot-go-deploy.sh | bash
-> ```
+### 🐹 Go 版部署（Linux / macOS）
+
+**交互式安装**（会依次询问端口、Token、通讯模式等）：
+
+```bash
+curl -fsSL https://kingprimes.top/script/nyxbot-go-deploy.sh | bash
+```
+
+**无人值守安装**（不提问，适合脚本 / CI。`bash -s --` 用于把后面的参数传给脚本本身，**`--token` 必填**）：
+
+```bash
+curl -fsSL https://kingprimes.top/script/nyxbot-go-deploy.sh | bash -s -- --quiet --token=<OneBot令牌>
+```
+
+**参数说明**（除 `--quiet` 外均可省略）：
+
+| 参数 | 作用 | 必填 |
+|------|------|------|
+| `--quiet` | 无人值守：全程不提问 | 无人值守时必填 |
+| `--token=xxx` | OneBot 鉴权令牌 | **无人值守（`--quiet`）必填**；交互模式会提示输入 |
+| `--port=8080` | 服务端口 | 可选，默认 8080 |
+| `--server` / `--client` | OneBot 通讯模式：服务端（默认）/ 客户端 | 可选 |
+| `--ws-url=ws://主机:3001` | 客户端模式的正向 WS 地址 | 仅 `--client` 模式使用 |
+| `--docker` / `--local` | 强制 Docker / 本地二进制安装（默认自动：glibc 系统用本地，Alpine 等 musl 系统用 Docker） | 可选 |
+| `--proxy=URL` | 仅脚本自身下载 GitHub 时走 HTTP 代理 | 可选 |
+| `--inc` / `--noc` | 安装 / 不安装 `nyxbot-go` 系统命令 | 可选（交互模式会询问，无人值守默认不装） |
+| `--unc` | 仅移除已安装的 `nyxbot-go` 系统命令 | 可选 |
+| `--tui` / `--text` | 强制 TUI 表单 / 文本问答界面 | 可选 |
+| `--force` | 检测到冲突的既有安装（如 Java 版同名服务）时直接覆盖，不再询问 | 可选 |
+
+> 查看完整帮助：`curl -fsSL https://kingprimes.top/script/nyxbot-go-deploy.sh | bash -s -- --help`
 >
 > ⚠️ **不建议在同一台机器同时安装两个版本**：服务名（`nyxbot`）与默认端口（8080）相同，会相互冲突。
 

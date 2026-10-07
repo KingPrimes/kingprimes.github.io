@@ -7,6 +7,7 @@
 #   - 产物是单二进制（NyxBot-linux-<arch>），无需安装 Java 运行时
 #   - 安装布局为系统级：/opt/nyxbot + 系统用户 nyxbot + systemd（对齐 NyxBot-Go 官方部署文档）
 #   - 配置以 /opt/nyxbot/config.yaml 为唯一事实来源（不维护脚本侧 JSON 状态文件）
+#   - 支持 curl|bash 管道执行：交互问答自动从 /dev/tty 读取，不会误吞脚本流
 #   - glibc 硬约束：Alpine 等 musl 系统跑不了官方 Linux 产物，只能走 Docker（--docker）
 #   - 下载策略：优先稳定版（releases/latest）；无稳定版时回退最新预览版（releases.atom）
 #   - 首启由程序自行生成 config.yaml（不要预写占位文件，否则会被回填空配置、JWT 仅驻内存）
@@ -15,7 +16,7 @@ set -uo pipefail  # -e disabled: don't exit on non-zero return (handled explicit
 IFS=$'\n\t'
 
 readonly SCRIPT_NAME="nyxbot-go-deploy.sh"
-readonly SCRIPT_VERSION="1.0.0"
+readonly SCRIPT_VERSION="1.0.1"
 readonly SCRIPT_PATH="${BASH_SOURCE[0]:-}"
 readonly SCRIPT_DIR="$(cd "$(dirname "${SCRIPT_PATH:-.}")" && pwd)"
 
@@ -153,6 +154,26 @@ ensure_privilege() {
     if ! sudo -v 2>/dev/null; then
         log_error "sudo authentication failed. Run as root, or run 'sudo -v' first" \
             "sudo 认证失败。请以 root 运行，或先执行 'sudo -v' 缓存凭据"
+    fi
+}
+
+# ============================================================================
+# Interactive Input / 交互输入
+# ============================================================================
+# curl | bash 管道执行时 stdin 是脚本流本身：直接 read 会把后续脚本内容当成输入吃掉。
+# 因此统一检测「是否有可用终端」（stdin 是终端，或存在可打开的控制终端 /dev/tty）。
+# 交互问答一律走 iread：stdin 非终端时改读 /dev/tty，
+# bash 自身仍从 stdin 继续读脚本，互不干扰。
+INTERACTIVE=false
+if [[ -t 0 ]] || { : < /dev/tty; } 2>/dev/null; then
+    INTERACTIVE=true
+fi
+
+iread() {
+    if [[ -t 0 ]]; then
+        read "$@"
+    else
+        read "$@" < /dev/tty
     fi
 }
 
@@ -937,12 +958,12 @@ confirm_overwrite() {
         log_warn "Force mode, skip confirmation" "强制模式，跳过确认"
         return 0
     fi
-    if [[ ! -t 0 ]]; then
+    if [[ "$INTERACTIVE" != "true" ]]; then
         log_error "Conflicting installation detected; re-run with --force to replace" \
             "检测到冲突的既有安装；确认替换请加 --force"
     fi
     local input
-    read -r -t 30 -p "  ${prompt} [y/N]: " input || true
+    iread -r -t 30 -p "  ${prompt} [y/N]: " input || true
     [[ "$input" =~ ^[Yy]$ ]] || { log_error "Cancelled" "已取消"; }
 }
 
@@ -1465,26 +1486,26 @@ show_menu() {
         echo ""
 
         local choice
-        read -r -p "  Select / 选择 [1]: " choice
+        iread -r -p "  Select / 选择 [1]: " choice || exit 0
         choice="${choice:-1}"
 
         case "$choice" in
             2)
                 if [[ "$running" == "true" ]]; then stop_nyxbot; sleep 1; fi
                 start_nyxbot
-                echo ""; read -r -p "  Press Enter to continue / 按回车继续..."
+                echo ""; iread -r -p "  Press Enter to continue / 按回车继续..."
                 ;;
             3)
                 if [[ "$running" == "true" ]]; then stop_nyxbot; fi
-                echo ""; read -r -p "  Press Enter to continue / 按回车继续..."
+                echo ""; iread -r -p "  Press Enter to continue / 按回车继续..."
                 ;;
             4)
                 show_status
-                echo ""; read -r -p "  Press Enter to continue / 按回车继续..."
+                echo ""; iread -r -p "  Press Enter to continue / 按回车继续..."
                 ;;
             5)
                 follow_logs
-                echo ""; read -r -p "  Press Enter to continue / 按回车继续..."
+                echo ""; iread -r -p "  Press Enter to continue / 按回车继续..."
                 ;;
             6)
                 # 读取当前值作为默认，收集新值后应用
@@ -1496,18 +1517,18 @@ show_menu() {
                 apply_config
                 if check_nyxbot_running; then
                     local input
-                    read -r -t 30 -p "  Restart to apply changes? / 是否重启以应用配置? [Y/n]: " input || true
+                    iread -r -t 30 -p "  Restart to apply changes? / 是否重启以应用配置? [Y/n]: " input || true
                     if [[ ! "$input" =~ ^[Nn]$ ]]; then
                         stop_nyxbot; sleep 1; start_nyxbot
                     else
                         log_warn "Config saved, restart required later" "配置已保存，稍后需重启生效"
                     fi
                 fi
-                echo ""; read -r -p "  Press Enter to continue / 按回车继续..."
+                echo ""; iread -r -p "  Press Enter to continue / 按回车继续..."
                 ;;
             7)
                 uninstall_command
-                echo ""; read -r -p "  Press Enter to continue / 按回车继续..."
+                echo ""; iread -r -p "  Press Enter to continue / 按回车继续..."
                 ;;
             8)
                 log_info "Bye / 再见"
@@ -1520,7 +1541,7 @@ show_menu() {
                 else
                     install_local
                 fi
-                echo ""; read -r -p "  Press Enter to continue / 按回车继续..."
+                echo ""; iread -r -p "  Press Enter to continue / 按回车继续..."
                 ;;
         esac
     done
@@ -1534,24 +1555,32 @@ text_config() {
     echo ""
     echo -e "${BOLD}── Basic Config / 基础配置 ──${NC}"
     while true; do
-        read -r -t 30 -p "  Port / 端口 [${PORT}]: " input || true
+        iread -r -t 30 -p "  Port / 端口 [${PORT}]: " input || true
         PORT="${input:-$PORT}"
         if validate_port "$PORT"; then break; fi
         log_warn "Invalid port / 端口无效: ${PORT}"
     done
 
-    read -r -s -p "  Token (required / 必填): " TOKEN; echo ""
+    if ! iread -r -s -p "  Token (required / 必填): " TOKEN; then
+        log_error "Cannot read from terminal; use --quiet --token=xxx" \
+            "无法从终端读取输入；请改用 --quiet --token=xxx"
+    fi
+    echo ""
     while [[ -z "$TOKEN" ]]; do
-        read -r -s -p "  Token cannot be empty / Token 不能为空: " TOKEN; echo ""
+        if ! iread -r -s -p "  Token cannot be empty / Token 不能为空: " TOKEN; then
+            log_error "Cannot read from terminal; use --quiet --token=xxx" \
+                "无法从终端读取输入；请改用 --quiet --token=xxx"
+        fi
+        echo ""
     done
 
     echo ""
     echo -e "${BOLD}── Mode / 通讯模式 ──${NC}"
     echo "  1) Server / 服务端 (recommended / 推荐)  2) Client / 客户端"
-    read -r -t 30 -p "  Select / 选择 [1]: " input || true
+    iread -r -t 30 -p "  Select / 选择 [1]: " input || true
     if [[ "$input" == "2" ]]; then
         WS_MODE="client"
-        read -r -t 30 -p "  OneBot WS URL / 正向 WS 地址 [${WS_CLIENT_URL:-$DEFAULT_WS_CLIENT_URL}]: " input || true
+        iread -r -t 30 -p "  OneBot WS URL / 正向 WS 地址 [${WS_CLIENT_URL:-$DEFAULT_WS_CLIENT_URL}]: " input || true
         WS_CLIENT_URL="${input:-${WS_CLIENT_URL:-$DEFAULT_WS_CLIENT_URL}}"
     else
         WS_MODE="server"
@@ -1560,13 +1589,13 @@ text_config() {
     echo ""
     echo -e "${BOLD}── Download Proxy / 下载代理 (Enter to skip / 回车跳过) ──${NC}"
     echo "  Only affects this script's GitHub downloads / 仅影响脚本自身的 GitHub 下载"
-    read -r -t 30 -p "  Proxy URL / 代理地址 (e.g. http://127.0.0.1:7890): " PROXY_ADDR || true
+    iread -r -t 30 -p "  Proxy URL / 代理地址 (e.g. http://127.0.0.1:7890): " PROXY_ADDR || true
 
     echo ""
     echo -e "${BOLD}── System Command / 系统命令 ──${NC}"
     echo "  Install 'nyxbot-go' command to PATH? / 是否安装 'nyxbot-go' 命令到系统路径?"
     echo "  After install, use 'nyxbot-go' anywhere to manage. / 安装后可在任意位置使用 'nyxbot-go' 管理。"
-    read -r -t 30 -p "  Install command? / 安装命令? [Y/n]: " input || true
+    iread -r -t 30 -p "  Install command? / 安装命令? [Y/n]: " input || true
     if [[ ! "$input" =~ ^[Nn]$ ]]; then
         INSTALL_CMD="true"
     else
@@ -1580,7 +1609,7 @@ text_config() {
         echo -e "  OneBot WS URL: ${CYAN}${WS_CLIENT_URL}${NC}"
     fi
     echo -e "  Proxy / 代理: ${YELLOW}${PROXY_ADDR:-None / 无}${NC}"
-    read -r -t 30 -p "  Proceed? / 确认安装? [Y/n]: " input || true
+    iread -r -t 30 -p "  Proceed? / 确认安装? [Y/n]: " input || true
     [[ "$input" =~ ^[Nn]$ ]] && { log_warn "Cancelled" "已取消"; exit 0; }
     return 0
 }
@@ -1757,6 +1786,8 @@ Other / 其他:
 
 Notes / 说明:
   - Install layout / 安装布局: ${INSTALL_DIR} + system user '${SERVICE_USER}' + systemd
+  - Piped execution (curl | bash) supports interactive prompts;
+    input is read from /dev/tty / 管道执行（curl|bash）同样支持交互问答（读取控制终端）
   - Config is stored in ${CONFIG_FILE} (managed by the app itself)
     配置以程序生成的 config.yaml 为准，脚本只修改端口/模式/Token 等少数键
   - Downloads prefer the latest stable release; if none exists,
@@ -1783,7 +1814,7 @@ reconfigure_flow() {
     echo ""
     if check_nyxbot_running; then
         local input
-        read -r -t 30 -p "  NyxBot is running. Restart now? / 服务在运行，是否重启? [Y/n]: " input || true
+        iread -r -t 30 -p "  NyxBot is running. Restart now? / 服务在运行，是否重启? [Y/n]: " input || true
         if [[ ! "$input" =~ ^[Nn]$ ]]; then
             stop_nyxbot
             sleep 1
@@ -1794,7 +1825,7 @@ reconfigure_flow() {
         fi
     else
         local input
-        read -r -t 30 -p "  Start NyxBot now? / 是否立即启动? [Y/n]: " input || true
+        iread -r -t 30 -p "  Start NyxBot now? / 是否立即启动? [Y/n]: " input || true
         if [[ ! "$input" =~ ^[Nn]$ ]]; then
             start_nyxbot
         else
@@ -1919,8 +1950,8 @@ main() {
     log_info "Directory: ${INSTALL_DIR}" "目录: ${INSTALL_DIR}"
     echo ""
 
-    # 无参数自动模式 + 已安装 + 交互终端 → 管理菜单
-    if [[ "$QUIET" != "true" && "$UI_MODE" == "auto" && -t 0 ]] && is_installation_complete; then
+    # 无参数自动模式 + 已安装 + 有可用终端 → 管理菜单
+    if [[ "$QUIET" != "true" && "$UI_MODE" == "auto" && "$INTERACTIVE" == "true" ]] && is_installation_complete; then
         show_menu
     fi
 
@@ -1937,7 +1968,7 @@ main() {
         echo -e "  Port / 端口: ${GREEN}${PORT}${NC}  Mode / 模式: ${GREEN}${WS_MODE}${NC}  Token: ${GREEN}$(mask_secret "$TOKEN")${NC}"
         echo ""
         local input
-        read -r -t 30 -p "  Use saved config? / 使用已保存配置? [Y/n]: " input || true
+        iread -r -t 30 -p "  Use saved config? / 使用已保存配置? [Y/n]: " input || true
         if [[ ! "$input" =~ ^[Nn]$ ]]; then
             log_info "Using saved config, run --text to reconfigure" "使用已保存配置, 运行 --text 重新配置"
             echo ""
@@ -1946,10 +1977,10 @@ main() {
         fi
     fi
 
-    # 非交互安装必须显式 --quiet
-    if [[ "$QUIET" != "true" && -z "$TOKEN" && ! -t 0 ]] && [[ "$reconfigure_only" != "true" ]]; then
-        log_error "Non-interactive install requires --quiet --token=xxx" \
-            "非交互安装需要提供 --quiet --token=xxx"
+    # 无可用终端（CI/定时任务等）且未提供 token：必须显式 --quiet
+    if [[ "$QUIET" != "true" && -z "$TOKEN" && "$INTERACTIVE" != "true" ]] && [[ "$reconfigure_only" != "true" ]]; then
+        log_error "No terminal available; non-interactive install requires --quiet --token=xxx" \
+            "无可用终端；非交互安装需要提供 --quiet --token=xxx"
     fi
 
     # 收集配置
@@ -1973,7 +2004,8 @@ main() {
         case "$UI_MODE" in
             dialog|tui)
                 if [[ ! -t 0 ]]; then
-                    log_error "--tui requires an interactive terminal." "--tui 需要交互式终端。"
+                    log_error "--tui requires stdin to be a terminal (save the script to a file and run it directly, or keep the default text mode)" \
+                        "--tui 需要 stdin 为终端（请先把脚本保存为文件再运行，或保持默认文本模式）"
                 fi
                 if command -v dialog &>/dev/null; then
                     tui_dialog || { tui_failed=true; }
@@ -1990,7 +2022,8 @@ main() {
                 ;;
             whiptail)
                 if [[ ! -t 0 ]]; then
-                    log_error "--tui requires an interactive terminal." "--tui 需要交互式终端。"
+                    log_error "--tui requires stdin to be a terminal (save the script to a file and run it directly, or keep the default text mode)" \
+                        "--tui 需要 stdin 为终端（请先把脚本保存为文件再运行，或保持默认文本模式）"
                 fi
                 tui_whiptail || {
                     log_warn "whiptail failed, falling back to text" "whiptail 失败，降级到文本模式"
