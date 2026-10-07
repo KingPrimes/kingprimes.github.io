@@ -1,0 +1,5 @@
+# Shell 脚本必须保持 LF 行尾。
+# 本站点直接分发 source/script/ 下的脚本（hexo 逐字节拷贝进 public/ 后发布），
+# 而 Git for Windows 默认 core.autocrlf=true 会在检出时把文本文件转成 CRLF，
+# CRLF 脚本在 Linux / macOS 上执行会报语法错误。此处显式锁定为 eol=lf。
+source/script/*.sh text eol=lf
