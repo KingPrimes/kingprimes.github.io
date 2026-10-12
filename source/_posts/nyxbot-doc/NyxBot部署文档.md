@@ -63,6 +63,10 @@ NyxBot 是一个 QQ 机器人，它不能直接登录 QQ。你需要两样东西
 | **Java 21** | NyxBot 运行需要的环境（就像玩 Java 版 MC 需要装 Java） | [Oracle Java21](https://www.oracle.com/java/technologies/downloads/#java21) |
 | **NyxBot.jar** | 机器人主程序 | [GitHub Releases](https://github.com/KingPrimes/NyxBot/releases) |
 
+{% note blue 'fas fa-server' flat %}
+**想 24 小时在线运行？** 按版本选服务器配置就行：**Java 版推荐 2核4G**，**Go 版 2核2G 即可稳定运行**。精选特惠服务器（低至 **68 元/年**）👉 [云上特惠推广 · NyxBot 部署推荐服务器](/promo/)
+{% endnote %}
+
 ---
 
 ## OneBot客户端

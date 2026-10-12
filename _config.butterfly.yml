@@ -26,6 +26,7 @@ menu:
   归档: /archives/ || fas fa-archive
   标签: /tags/ || fas fa-tags
   分类: /categories/ || fas fa-th-list
+  优惠: /promo/ || fas fa-gift
   友链: /link/ || fas fa-link
   赞助: /reward/ || fas fa-solid fa-hand-holding-dollar
   # List||fas fa-list||hide:

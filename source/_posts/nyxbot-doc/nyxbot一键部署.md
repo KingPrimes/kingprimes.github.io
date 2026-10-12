@@ -4,7 +4,7 @@ comments: true
 sticky: 0
 aside: true
 date: 2025-12-03 23:02:17
-updated: 2026-10-08 01:56:00
+updated: 2026-10-12 21:50:00
 tags:
   - NyxBot
   - qqbot
@@ -43,6 +43,10 @@ NyxBot 目前有两个后端版本。**Go 版是 Java 版（Spring Boot）迁移
 | Docker 镜像 | `kingprimes/nyxbot` | `kingprimes/nyxbot-go`（另有 GHCR 源） |
 | 系统兼容 | 能装 Java 就能跑（Alpine 也可以） | 依赖 glibc，**Alpine 等 musl 系统只能走 Docker** |
 | 版本状态 | [正式稳定版](https://github.com/KingPrimes/NyxBot/releases) | [预览版](https://github.com/KingPrimes/NyxBot-Go/releases)（下载优先稳定版，无稳定版自动用最新预览版） |
+
+{% note blue 'fas fa-server' flat %}
+**还没有服务器？** 按版本对号入座就行：**Java 版推荐 2核4G**，**Go 版 2核2G 即可稳定运行**。精选特惠服务器（低至 **68 元/年**）👉 [云上特惠推广 · NyxBot 部署推荐服务器](/promo/)
+{% endnote %}
 
 ### 🐹 Go 版部署（Linux / macOS）
 
